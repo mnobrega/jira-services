@@ -5,6 +5,8 @@ Homestead.yaml
 composer.lock
 .idea/
 .vagrant/
+.phpstorm.meta.php
+_ide_helper.php
 ### Laravel template
 vendor/
 node_modules/
