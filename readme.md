@@ -20,7 +20,7 @@ once the 10 users threshold is surpassed.
 * Synchronizes all the referred JQL issues with a 
 local database
 * With the information stored creates reports or sends the 
-issues to another slace JIRA instance
+issues to another slave JIRA instance
 
 ### Services (WIP)
 * Issue real time spent calculation
