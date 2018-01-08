@@ -11,7 +11,7 @@ class ServiceProvider extends BaseServiceProvider
         // Register the service providers of your Services here.
         // $this->app->register('full namespace here')
 
-        $this->app->register('App\Services\Synchronizer\Providers\SynchronizerServiceProvider');
-        $this->app->register('App\Services\Statistics\Providers\StatisticsServiceProvider');
+        $this->app->register('App\Services\JiraWrapper\Providers\JiraWrapperServiceProvider');
+
     }
 }
