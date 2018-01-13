@@ -7,4 +7,6 @@ _ide_helper.php
 .env
 composer.lock
 
+Homestead.yaml
+Vagrantfile
 
