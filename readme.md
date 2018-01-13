@@ -6,42 +6,51 @@ once the 10 users threshold is surpassed.
 
 ---
 
-- [Development Environment Installation](#development-environment-installation)
 - [Requirements](#requirements)
+- [Recommended Development Environment](#development-environment-installation)
 - [Quick Start and Examples](#quick-start-and-examples)
 - [Available Services](#available-services)
 - [Run Tests](#run-tests)
 
-### Development Environment Installation
+### Requirements
+##### Production
+- PHP >= 5.6
+- MySQL
+- Git
+- Composer
+- Nginx
+##### Development
+- [Homestead](https://github.com/laravel/homestead)
+- [Virtualbox](https://www.virtualbox.org/wiki/Downloads)
+- [Vagrant](https://www.vagrantup.com/downloads.html)
+
+### Recommended Development Environment
 - Install Virtualbox and Vagrant
-- Install Homestead outside your project and initialize it (use this virtual 
-machine for other projects)
+- Install Homestead outside your project and initialize it (you can use this virtual 
+machine for other PHP projects that share the same requirements)
 ``` sh
     $ git clone https://github.com/laravel/homestead.git homestead
     $ cd homestead
     $ bash init.sh
 ```
-- Configure your Homestead.yaml accordingly
-- Start your Homestead machine and access it
+- Configure your Homestead.yaml accordingly together with your hosts file
+- Start your Homestead machine and access it (user:vagrant | password:vagrant)
 ``` sh
     $ vagrant up
     $ vagrant ssh
 ```
-- Go to your project folder
-- Install dependencies running
+- Configure your host machine
 ``` sh
-    $ composer install
+    $ echo "PATH=$PATH:[path_to_root]/jira-services/vendor/bin/" >> ~/.bashrc
+    $ sudo apt-get update
+    $ sudo apt-get install php-curl
+```
+- Go to your project folder, install dependencies and update
+``` sh
+    $ composer create
+    $ composer update
 ```
 
-### Requirements
-##### Production
-- PHP >= 7.0
-- MySQL
-##### Development
-- [Homestead](https://github.com/laravel/homestead)
-- [Virtualbox](https://www.virtualbox.org/wiki/Downloads)
-- [Vagrant](https://www.vagrantup.com/downloads.html)
-    
 ### Quick Start and Examples
 * Connects to a master JIRA instance
 * Synchronizes all the referred JQL issues with a 
