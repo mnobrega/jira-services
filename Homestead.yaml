@@ -1,0 +1,19 @@
+ip: 192.168.10.20
+memory: 2048
+cpus: 1
+provider: virtualbox
+authorize: ~/.ssh/id_rsa.pub
+keys:
+    - ~/.ssh/id_rsa
+folders:
+    -
+        map: 'C:\Users\mnobrega\workspace\jira-services'
+        to: /home/vagrant/Code/jira-services
+sites:
+    -
+        map: jira-services.app
+        to: /home/vagrant/Code/jira-services/public
+databases:
+    - homestead
+name: jira-services
+hostname: jira-services
