@@ -6,14 +6,16 @@ once the 10 users threshold is surpassed.
 
 ### Installation
 #### Pre Requisites
-* Virtual Machine
-    * Vagrant
-    * Virtualbox
-    
-* Native Machine
-    * PHP 7+
-    * Nginx
-    * MySQL
+* Vagrant
+* Virtualbox
+* Homestead
+
+### Installation
+1. Install Virtualbox and Vagrant
+2. Check the homestead.rb file
+3. Run "vagrant up"
+4. Go to the project folder and run "composer install" for dependencies install
+
     
 ### How It Works (WIP)
 * Connects to a master JIRA instance

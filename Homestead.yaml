@@ -7,7 +7,7 @@ keys:
     - ~/.ssh/id_rsa
 folders:
     -
-        map: 'C:\Users\mnobrega\workspace\jira-services'
+        map: 'path-to-project\jira-services'
         to: /home/vagrant/Code/jira-services
 sites:
     -
