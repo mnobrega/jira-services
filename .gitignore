@@ -9,4 +9,5 @@ composer.lock
 
 Homestead.yaml
 Vagrantfile
-
+aliases
+after.sh

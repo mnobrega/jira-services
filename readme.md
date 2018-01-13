@@ -14,22 +14,23 @@ once the 10 users threshold is surpassed.
 
 ### Development Environment Installation
 - Install Virtualbox and Vagrant
-- Install Composer globally
-- Go to the Project Folder
-- Install Homestead globally and make the config file
+- Install Homestead outside your project and initialize it (use this virtual 
+machine for other projects)
 ``` sh
-    $ composer global require laravel/homestead
-    $ homestead make
+    $ git clone https://github.com/laravel/homestead.git homestead
+    $ cd homestead
+    $ bash init.sh
 ```
-- Check the Homestead.yaml configuration file (leave all default configs if you want 
-to use the .env.example configs)
-- Start your Homestead machine
+- Configure your Homestead.yaml accordingly
+- Start your Homestead machine and access it
 ``` sh
     $ vagrant up
-```
-- Enter your Homestead machine
-``` sh
     $ vagrant ssh
+```
+- Go to your project folder
+- Install dependencies running
+``` sh
+    $ composer install
 ```
 
 ### Requirements
@@ -37,8 +38,7 @@ to use the .env.example configs)
 - PHP >= 7.0
 - MySQL
 ##### Development
-- [Composer](https://getcomposer.org/download/)
-- [Homestead](https://packagist.org/packages/laravel/homestead)
+- [Homestead](https://github.com/laravel/homestead)
 - [Virtualbox](https://www.virtualbox.org/wiki/Downloads)
 - [Vagrant](https://www.vagrantup.com/downloads.html)
     
