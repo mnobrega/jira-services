@@ -12,6 +12,6 @@ class ServiceProvider extends BaseServiceProvider
         // $this->app->register('full namespace here')
 
         $this->app->register('App\Services\JiraWrapper\Providers\JiraWrapperServiceProvider');
-
+        $this->app->register('App\Services\JiraSync\Providers\JiraSyncServiceProvider');
     }
 }
