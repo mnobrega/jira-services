@@ -16,13 +16,12 @@ once the 10 users threshold is surpassed.
 ##### Production
 - PHP >= 5.6
 - MySQL
-- Git
-- Composer
 - Nginx
 ##### Development
 - [Homestead](https://github.com/laravel/homestead)
 - [Virtualbox](https://www.virtualbox.org/wiki/Downloads)
 - [Vagrant](https://www.vagrantup.com/downloads.html)
+- [Composer](https://getcomposer.org/download/) 
 
 ### Recommended Development Environment
 - Install Virtualbox and Vagrant

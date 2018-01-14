@@ -28,9 +28,8 @@ class SearchIssuesByJQLJob extends Job
         $issues = array();
         $this->walker->push($this->query);
         foreach ($this->walker as $issue) {
-            $issues[] = Issue::loadFromJiraApiIssue($issue);
+            $issues[] = $issue;
         }
-        dd($issues);
         return $issues;
     }
 }

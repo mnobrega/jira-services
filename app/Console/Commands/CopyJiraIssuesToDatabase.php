@@ -42,9 +42,12 @@ class CopyJiraIssuesToDatabase extends Command
     public function handle()
     {
         try {
-            $this->serve(CopyJiraIssuesToDatabaseFeature::class);
+            $jobResult = $this->serve(CopyJiraIssuesToDatabaseFeature::class);
+            $this->output->writeln('<info>'.$jobResult['createdIssues'].' Issues Created.</info>');
+            $this->output->writeln('<info>'.$jobResult['updatedIssues'].' Issues Updated.</info>');
         } catch (\Exception $e) {
-            dd ($e);
+            $this->output->writeln('<error>An error has ocurred.</error>');
+            $this->output->writeln('<info>Error: '.$e->getMessage().'</info>');
         }
     }
 }
