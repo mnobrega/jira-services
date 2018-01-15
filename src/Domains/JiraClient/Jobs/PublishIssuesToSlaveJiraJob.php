@@ -68,7 +68,6 @@ class PublishIssuesToSlaveJiraJob extends Job
                 default:
                     throw new \Exception("More than 1 slave Jira issue found for issue_id:".$issue->id);
             }
-            dd($issue);
         }
         return $publishResult;
     }

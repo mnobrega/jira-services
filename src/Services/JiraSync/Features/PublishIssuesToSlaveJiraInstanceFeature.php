@@ -41,9 +41,6 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             'slaveJiraApi'=>$slaveJiraApi,
             'updatedIssues'=>$updatedIssues,
         ]);
-        dd($publishResult);
         //$this->run(UpdateSyncEventJob::class,['SyncEvent'=>$syncEvent]);
-
-        throw new \Exception("debug");
     }
 }
