@@ -30,7 +30,6 @@ class CreateOrUpdateIssuesJob extends Job
             'updatedIssues'=>0,
         ];
         foreach ($this->jiraIssues as $jiraIssue) {
-            dd($jiraIssue);
             $foundIssues = $this->repository->getByAttributes(['key' => $jiraIssue->getKey()]);
             switch (count($foundIssues)) {
                 case 0:
