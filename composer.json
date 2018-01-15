@@ -13,6 +13,7 @@
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.4",
+        "doctrine/dbal": "^2.6",
         "fzaninotto/faker": "~1.4",
         "laravel/homestead": "^7.0",
         "lucid-arch/laravel-console": "5.5.*",
@@ -45,6 +46,7 @@
         "post-update-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postUpdate",
             "php artisan ide-helper:generate",
+            "php artisan ide-helper:models",
             "php artisan ide-helper:meta",
             "php artisan optimize"
         ],

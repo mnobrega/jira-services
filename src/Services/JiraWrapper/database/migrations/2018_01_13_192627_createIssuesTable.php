@@ -13,7 +13,7 @@ class CreateIssuesTable extends Migration
      */
     public function up()
     {
-        Schema::create('issues',function(Blueprint $table) {
+        \Schema::create('issues',function(Blueprint $table) {
             $table->increments('id');
             $table->string('key',50);
             $table->string('project_key',50);
@@ -42,6 +42,6 @@ class CreateIssuesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('issues');
+        \Schema::drop('issues');
     }
 }

@@ -1,9 +1,9 @@
 <?php
-namespace App\Domains\Issue\Jobs;
+namespace App\Domains\Database\Jobs;
 
 use Lucid\Foundation\Job;
 
-class GetCreatedIssuesFromDateTimeJob extends Job
+class BeginDatabaseTransactionJob extends Job
 {
     /**
      * Create a new job instance.
@@ -16,12 +16,10 @@ class GetCreatedIssuesFromDateTimeJob extends Job
     }
 
     /**
-     * Execute the job.
-     *
-     * @return void
+     * @throws \Exception
      */
     public function handle()
     {
-        //
+        \DB::beginTransaction();
     }
 }

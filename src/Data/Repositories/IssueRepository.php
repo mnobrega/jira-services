@@ -12,22 +12,33 @@ use App\Data\Issue;
 
 class IssueRepository extends Repository
 {
+    /**
+     * @param \Jira_Issue $jiraIssue
+     * @return Issue|\Illuminate\Database\Eloquent\Model
+     */
     public function create(\Jira_Issue $jiraIssue)
     {
         $this->model = new Issue();
         $attributes = $this->getAttributesFromJiraIssue($jiraIssue);
-        $this->fillAndSave($attributes);
-        return $this->model;
+        return $this->fillAndSave($attributes);
     }
 
+    /**
+     * @param Issue $issue
+     * @param \Jira_Issue $jiraIssue
+     * @return Issue|\Illuminate\Database\Eloquent\Model
+     */
     public function update(Issue $issue, \Jira_Issue $jiraIssue)
     {
         $this->model = $issue;
         $attributes = array_merge($this->getAttributesFromJiraIssue($jiraIssue));
-        $this->fillAndSave($attributes);
-        return $this->model;
+        return $this->fillAndSave($attributes);
     }
 
+    /**
+     * @param \Jira_Issue $jiraIssue
+     * @return array
+     */
     private function getAttributesFromJiraIssue(\Jira_Issue $jiraIssue)
     {
         $created = new \DateTime($jiraIssue->getCreated());
@@ -49,5 +60,19 @@ class IssueRepository extends Repository
             'original_estimate' => $jiraIssue->getFields()["Original Estimate"],
         );
         return $attributesFromJiraIssue;
+    }
+
+    /**
+     * @param $from
+     * @param $to
+     * @return Issue[]
+     */
+    public function getUpdatedIssuesByDateTimeInterval($from, $to)
+    {
+        return $this->model
+            ->where('updated','>=',$from)
+            ->where('updated','<=',$to)
+            ->orderBy('created','asc')
+            ->get();
     }
 }
