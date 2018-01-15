@@ -62,7 +62,7 @@ class PublishIssuesToSlaveJiraJob extends Job
                     $this->repository->create($issue, $slaveJiraIssueKey);
                     break;
                 case 1:
-                    $jiraSlaveIssueKey = $foundSlaveJiraIssues[0];
+                    $jiraSlaveIssueKey = $foundSlaveJiraIssues[0]->key;
                     $this->updateSlaveJiraIssue($jiraSlaveIssueKey, $issue);
                     break;
                 default:
