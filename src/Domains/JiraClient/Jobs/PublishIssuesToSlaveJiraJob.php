@@ -5,25 +5,42 @@ use App\Data\Repositories\SlaveJiraIssueRepository;
 use App\Data\SlaveJiraIssue;
 use App\Data\Issue;
 use Illuminate\Database\Eloquent\Collection;
+use JiraRestApi\Configuration\ArrayConfiguration;
+use JiraRestApi\Field\FieldService;
+use JiraRestApi\Issue\IssueField;
+use JiraRestApi\Issue\IssueService;
+use JiraRestApi\Issue\TimeTracking;
+use JiraRestApi\Issue\Transition;
 use Lucid\Foundation\Job;
 
 class PublishIssuesToSlaveJiraJob extends Job
 {
     //TODO: HARDCODED - Move this to a table so that it can be configure dynamicaly
-    static $slaveIssueTypeMappings = [
-        'Task'=>10100,
-        'Bug'=>10102,
-        'Epic'=>10000,
-        'Story'=>10001,
-        'New Feature'=>10001,
-        'Improvement'=>10001,
+    private static $slaveIssueTypeMappings = [
+        'Task'=>'Task',
+        'Bug'=>'Bug',
+        'Epic'=>'Epic',
+        'Story'=>'Story',
+        'New Feature'=>'Story',
+        'Improvement'=>'Story',
     ];
-    static $slaveIssueStatusMapping = [
+    private static $slaveIssueStatusTransitionMapping = [
         "To Do"=>"To Do",
         "In Progress"=>"In Progress",
         "Ready To Review"=>"In Progress",
         "Review"=>"In Progress",
         "Done"=>"Done"
+    ];
+    private static $slaveIssuePrioritiesMapping = [
+        "Blocker"=>"Highest",
+        "Critical"=>"High",
+        "Major"=>"Medium",
+        "Minor"=>"Low",
+        "Trivial"=>"Lowest",
+        "Highest"=>"Highest",
+    ];
+    private static $slaveCustomFieldsMapping = [
+        "rank"=>"customfield_10005",
     ];
 
     private $slaveJiraApi;
@@ -33,10 +50,10 @@ class PublishIssuesToSlaveJiraJob extends Job
 
     /**
      * PublishIssuesToSlaveJiraJob constructor.
-     * @param \Jira_Api $slaveJiraApi
+     * @param IssueService $slaveJiraApi
      * @param Collection $updatedIssues
      */
-    public function __construct(\Jira_Api $slaveJiraApi, Collection $updatedIssues)
+    public function __construct(IssueService $slaveJiraApi, Collection $updatedIssues)
     {
         $this->slaveJiraApi = $slaveJiraApi;
         $this->updatedIssues = $updatedIssues;
@@ -59,6 +76,7 @@ class PublishIssuesToSlaveJiraJob extends Job
             switch (count($foundSlaveJiraIssues)) {
                 case 0:
                     $slaveJiraIssueKey = $this->createSlaveJiraIssue($issue);
+                    dd($slaveJiraIssueKey);
                     $this->repository->create($issue, $slaveJiraIssueKey);
                     break;
                 case 1:
@@ -75,34 +93,61 @@ class PublishIssuesToSlaveJiraJob extends Job
     /**
      * @param Issue $issue
      * @return mixed
+     * @throws \JiraRestApi\JiraException
+     * @throws \JsonMapper_Exception
      */
     private function createSlaveJiraIssue(Issue $issue)
     {
-        /** @var $createdJiraIssue \Jira_Api_Result*/
-        $createdJiraIssue = $this->slaveJiraApi->createIssue($issue->project_key,$issue->summary,
-            static::$slaveIssueTypeMappings[$issue->type]);
+        //        $fieldService = new FieldService(new ArrayConfiguration(
+//            array(
+//                'jiraHost' => "http://jira.your.premium-minds.com",
+//                'jiraUser' => "mnobrega",
+//                'jiraPassword'=>"Madeira.24404"
+//            )
+//        ));
+//        $ret = $fieldService->getAllFields();
+//        dd($ret);
 
-        return $this->updateSlaveJiraIssue($createdJiraIssue->getResult()["key"],$issue);
+        $issueField = new IssueField();
+
+        $issueField->setProjectKey($issue->project_key)
+            ->setPriorityName(static::$slaveIssuePrioritiesMapping[$issue->priority])
+            ->setSummary($issue->summary)
+            ->setIssueType(static::$slaveIssueTypeMappings[$issue->type]);
+
+        $createdJiraIssue = $this->slaveJiraApi->create($issueField);
+
+        return $this->updateSlaveJiraIssue($createdJiraIssue->key, $issue);
     }
 
+    /**
+     * @param $slaveJiraIssueKey
+     * @param Issue $issue
+     * @return mixed
+     * @throws \JiraRestApi\JiraException
+     */
     private function updateSlaveJiraIssue($slaveJiraIssueKey, Issue $issue)
     {
+        $issueField = new IssueField();
+        $issueField->setProjectKey($issue->project_key)
+            ->setPriorityName(static::$slaveIssuePrioritiesMapping[$issue->priority])
+            ->setSummary($issue->summary)
+            ->setIssueType(static::$slaveIssueTypeMappings[$issue->type]);
+//            ->addCustomField(static::$slaveCustomFieldsMapping["rank"],["value"=>$issue->rank]);
         $editParams = [
-            "update"=>[
-                "timetracking"=>[
-                    [
-                        "edit" => [
-                            'originalEstimate'=>$issue->original_estimate/(60*60*8)."d",
-                            'remainingEstimate'=>$issue->remaining_estimate/(60*60*8)."d",
-                        ]
-                    ]
-                ]
-            ],
-            "fields"=>[
-                "summary"=>$issue->summary
-            ]
+            'notifyUsers' => false
         ];
-        $this->slaveJiraApi->editIssue($slaveJiraIssueKey,$editParams);
+        $this->slaveJiraApi->update($slaveJiraIssueKey, $issueField, $editParams);
+
+        $timeTracking = new TimeTracking();
+        $timeTracking->setOriginalEstimate($issue->original_estimate/(60*60*8)."d");
+        $timeTracking->setRemainingEstimate($issue->remaining_estimate/(60*60*8)."d");
+        $this->slaveJiraApi->timeTracking($slaveJiraIssueKey,$timeTracking);
+
+        $transition = new Transition();
+        $transition->setTransitionName(static::$slaveIssueStatusTransitionMapping[$issue->status]);
+        $this->slaveJiraApi->transition($slaveJiraIssueKey,$transition);
+
         return $slaveJiraIssueKey;
     }
 

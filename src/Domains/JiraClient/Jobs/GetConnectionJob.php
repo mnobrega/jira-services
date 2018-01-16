@@ -14,15 +14,15 @@ class GetConnectionJob extends Job
      *
      * @param $host
      * @param $user
-     * @param $password
+     * @param $pass
      */
-    public function __construct($host, $user, $password)
+    public function __construct($host, $user, $pass)
     {
         $this->jiraApi = new IssueService(new ArrayConfiguration(
             array(
                 'jiraHost' => $host,
                 'jiraUser' => $user,
-                'jiraPassword'=>$password
+                'jiraPassword'=>$pass
             )
         ));
     }

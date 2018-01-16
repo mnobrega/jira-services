@@ -47,6 +47,7 @@ class IssueRepository extends Repository
             'key' => $jiraIssue->key,
             'project_key' => $jiraIssue->fields->project->key,
             'rank' => $jiraIssue->fields->customFields["customfield_10300"],
+            'priority' => $jiraIssue->fields->priority->name,
             'type' => $jiraIssue->fields->issuetype->name,
             'status' => $jiraIssue->fields->status->name,
             'summary' => $jiraIssue->fields->summary,

@@ -37,6 +37,7 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             'user'=>env('JIRA_SLAVE_USERNAME'),
             'pass'=>env('JIRA_SLAVE_PASSWORD'),
         ]);
+
         $publishResult = $this->run(PublishIssuesToSlaveJiraJob::class,[
             'slaveJiraApi'=>$slaveJiraApi,
             'updatedIssues'=>$updatedIssues,
