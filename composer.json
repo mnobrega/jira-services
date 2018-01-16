@@ -8,8 +8,9 @@
         "php": ">=7.0.0",
         "chobie/jira-api-restclient": "^1.0",
         "laravel/framework": "5.5.*",
-        "lucid-arch/laravel-foundation": "5.5.*",
-        "laravel/tinker": "~1.0"
+        "laravel/tinker": "~1.0",
+        "lesstif/php-jira-rest-client": "^1.16",
+        "lucid-arch/laravel-foundation": "5.5.*"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.4",

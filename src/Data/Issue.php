@@ -8,5 +8,5 @@ class Issue extends Model
 {
     protected $table = 'issues';
     protected $fillable = ['key','project_key','rank','type','status','summary',
-        'created','updated','fix_version','epic_link','remaining_estimate','original_estimate'];
+        'created','updated','fix_version','epic_link','assignee','remaining_estimate','original_estimate'];
 }

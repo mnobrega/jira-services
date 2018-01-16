@@ -1,6 +1,8 @@
 <?php
 namespace App\Domains\JiraClient\Jobs;
 
+use JiraRestApi\Configuration\ArrayConfiguration;
+use JiraRestApi\Issue\IssueService;
 use Lucid\Foundation\Job;
 
 class GetConnectionJob extends Job
@@ -12,17 +14,23 @@ class GetConnectionJob extends Job
      *
      * @param $host
      * @param $user
-     * @param $pass
+     * @param $password
      */
-    public function __construct($host, $user, $pass)
+    public function __construct($host, $user, $password)
     {
-        $this->jiraApi = new \Jira_Api($host, new \Jira_Api_Authentication_Basic($user, $pass));
+        $this->jiraApi = new IssueService(new ArrayConfiguration(
+            array(
+                'jiraHost' => $host,
+                'jiraUser' => $user,
+                'jiraPassword'=>$password
+            )
+        ));
     }
 
     /**
      * Return the JIRA API connection.
      *
-     * @return \Jira_Api
+     * @return IssueService
      */
     public function handle()
     {

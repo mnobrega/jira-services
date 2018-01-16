@@ -13,10 +13,10 @@ use App\Data\Issue;
 class IssueRepository extends Repository
 {
     /**
-     * @param \Jira_Issue $jiraIssue
+     * @param \JiraRestApi\Issue\Issue $jiraIssue
      * @return Issue|\Illuminate\Database\Eloquent\Model
      */
-    public function create(\Jira_Issue $jiraIssue)
+    public function create(\JiraRestApi\Issue\Issue $jiraIssue)
     {
         $this->model = new Issue();
         $attributes = $this->getAttributesFromJiraIssue($jiraIssue);
@@ -25,10 +25,10 @@ class IssueRepository extends Repository
 
     /**
      * @param Issue $issue
-     * @param \Jira_Issue $jiraIssue
+     * @param \JiraRestApi\Issue\Issue $jiraIssue
      * @return Issue|\Illuminate\Database\Eloquent\Model
      */
-    public function update(Issue $issue, \Jira_Issue $jiraIssue)
+    public function update(Issue $issue, \JiraRestApi\Issue\Issue $jiraIssue)
     {
         $this->model = $issue;
         $attributes = array_merge($this->getAttributesFromJiraIssue($jiraIssue));
@@ -36,28 +36,29 @@ class IssueRepository extends Repository
     }
 
     /**
-     * @param \Jira_Issue $jiraIssue
+     * @param \JiraRestApi\Issue\Issue $jiraIssue
      * @return array
      */
-    private function getAttributesFromJiraIssue(\Jira_Issue $jiraIssue)
+    private function getAttributesFromJiraIssue(\JiraRestApi\Issue\Issue $jiraIssue)
     {
-        $created = new \DateTime($jiraIssue->getCreated());
-        $updated = new \DateTime($jiraIssue->getUpdated());
-        $fixVersions = $jiraIssue->getFields()["Fix Version/s"];
-        $version = count($fixVersions)>0?$fixVersions[0]["name"]:null;
+        $fixVersions = $jiraIssue->fields->fixVersions;
+        $version = count($fixVersions)>0?$fixVersions[0]->name:null;
         $attributesFromJiraIssue = array(
-            'key' => $jiraIssue->getKey(),
-            'project_key' => $jiraIssue->getProject()["key"],
-            'rank' => $jiraIssue->getFields()['Rank'],
-            'type' => $jiraIssue->getIssueType()["name"],
-            'status' => $jiraIssue->getStatus()["name"],
-            'summary' => $jiraIssue->getSummary(),
-            'created' => $created->format("Y-m-d H:i:s"),
-            'updated' => $updated->format("Y-m-d H:i:s"),
+            'key' => $jiraIssue->key,
+            'project_key' => $jiraIssue->fields->project->key,
+            'rank' => $jiraIssue->fields->customFields["customfield_10300"],
+            'type' => $jiraIssue->fields->issuetype->name,
+            'status' => $jiraIssue->fields->status->name,
+            'summary' => $jiraIssue->fields->summary,
+            'created' => $jiraIssue->fields->created->format("Y-m-d H:i:s"),
+            'updated' => $jiraIssue->fields->updated->format("Y-m-d H:i:s"),
             'fix_version' => $version,
-            'epic_link' => $jiraIssue->getFields()["Epic Link"],
-            'remaining_estimate' => $jiraIssue->getFields()["Remaining Estimate"],
-            'original_estimate' => $jiraIssue->getFields()["Original Estimate"],
+            'epic_link' => key_exists('customfield_10006',$jiraIssue->fields->customFields)?
+                $jiraIssue->fields->customFields["customfield_10006"]:null,
+            'assignee' => is_object($jiraIssue->fields->assignee)?$jiraIssue->fields->assignee->name:null,
+            'remaining_estimate' => (int)$jiraIssue->fields->timeestimate,
+            'original_estimate' => is_object($jiraIssue->fields->timeoriginalestimate)?
+                $jiraIssue->fields->timeoriginalestimate->scalar:null,
         );
         return $attributesFromJiraIssue;
     }

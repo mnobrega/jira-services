@@ -13,7 +13,7 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
         $jiraApi = $this->run(GetConnectionJob::class, [
             'host'=>env('JIRA_HOST'),
             'user'=>env('JIRA_USERNAME'),
-            'pass'=>env('JIRA_PASSWORD'),
+            'password'=>env('JIRA_PASSWORD'),
         ]);
 
         $jiraIssues = $this->run(SearchIssuesByJQLJob::class, [

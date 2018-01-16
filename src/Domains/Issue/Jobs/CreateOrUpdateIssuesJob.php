@@ -12,7 +12,7 @@ class CreateOrUpdateIssuesJob extends Job
 
     /**
      * CreateOrUpdateIssuesJob constructor.
-     * @param $jiraIssues \Jira_Issue[]
+     * @param $jiraIssues \JiraRestApi\Issue\Issue[]
      */
     public function __construct($jiraIssues)
     {
@@ -30,7 +30,7 @@ class CreateOrUpdateIssuesJob extends Job
             'updatedIssues'=>0,
         ];
         foreach ($this->jiraIssues as $jiraIssue) {
-            $foundIssues = $this->repository->getByAttributes(['key' => $jiraIssue->getKey()]);
+            $foundIssues = $this->repository->getByAttributes(['key' => $jiraIssue->key]);
             switch (count($foundIssues)) {
                 case 0:
                     $this->repository->create($jiraIssue);
@@ -38,8 +38,7 @@ class CreateOrUpdateIssuesJob extends Job
                     break;
                 case 1:
                     $issue = $foundIssues[0];
-                    $updated = new \DateTime($jiraIssue->getUpdated());
-                    if ($issue->updated != $updated->format("Y-m-d H:i:s")) {
+                    if ($issue->updated != $jiraIssue->fields->updated->format("Y-m-d H:i:s")) {
                         $this->repository->update($issue, $jiraIssue);
                         $jobResult['updatedIssues']++;
                     }
