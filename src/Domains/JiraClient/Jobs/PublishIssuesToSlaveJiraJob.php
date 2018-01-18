@@ -42,6 +42,10 @@ class PublishIssuesToSlaveJiraJob extends Job
     private static $slaveCustomFieldsMapping = [
         "rank"=>"customfield_10005",
     ];
+    private static $slaveUsersMapping = [
+        "smartins"=>"smartinsvv",
+        "rfrade"=>"rfradevv"
+    ];
 
     private $slaveJiraApi;
     /** @var \App\Data\Issue[] */
@@ -133,6 +137,10 @@ class PublishIssuesToSlaveJiraJob extends Job
             ->setPriorityName(static::$slaveIssuePrioritiesMapping[$issue->priority])
             ->setSummary($issue->summary)
             ->setIssueType(static::$slaveIssueTypeMappings[$issue->type]);
+        if(!is_null($issue->assignee)) {
+            $issueField->setAssigneeName(static::$slaveUsersMapping[$issue->assignee]);
+        }
+        dd($issueField);
 //            ->addCustomField(static::$slaveCustomFieldsMapping["rank"],["value"=>$issue->rank]);
         $editParams = [
             'notifyUsers' => false
