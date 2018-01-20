@@ -46,7 +46,6 @@ class IssueRepository extends Repository
         $attributesFromJiraIssue = array(
             'key' => $jiraIssue->key,
             'project_key' => $jiraIssue->fields->project->key,
-            'rank' => $jiraIssue->fields->customFields["customfield_10300"],
             'priority' => $jiraIssue->fields->priority->name,
             'type' => $jiraIssue->fields->issuetype->name,
             'status' => $jiraIssue->fields->status->name,
@@ -57,7 +56,7 @@ class IssueRepository extends Repository
             'epic_link' => key_exists('customfield_10006',$jiraIssue->fields->customFields)?
                 $jiraIssue->fields->customFields["customfield_10006"]:null,
             'assignee' => is_object($jiraIssue->fields->assignee)?$jiraIssue->fields->assignee->name:null,
-            'remaining_estimate' => (int)$jiraIssue->fields->timeestimate,
+            'remaining_estimate' => $jiraIssue->fields->timeestimate==0?null:$jiraIssue->fields->timeestimate,
             'original_estimate' => is_object($jiraIssue->fields->timeoriginalestimate)?
                 $jiraIssue->fields->timeoriginalestimate->scalar:null,
         );
@@ -74,6 +73,7 @@ class IssueRepository extends Repository
         return $this->model
             ->where('updated','>=',$from)
             ->where('updated','<=',$to)
+            ->where('type','<>','Epic')
             ->orderBy('created','asc')
             ->get();
     }

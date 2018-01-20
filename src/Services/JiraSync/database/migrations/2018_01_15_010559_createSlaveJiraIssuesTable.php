@@ -13,7 +13,7 @@ class CreateSlaveJiraIssuesTable extends Migration
      */
     public function up()
     {
-        \Schema::create('slave_jira_issues',function(Blueprint $table) {
+        \Schema::create('jira_sync_slave_jira_issues',function(Blueprint $table) {
             $table->increments('id');
             $table->integer('issue_id');
             $table->string('key',50);
@@ -28,6 +28,6 @@ class CreateSlaveJiraIssuesTable extends Migration
      */
     public function down()
     {
-        \Schema::drop('slave_jira_issues');
+        \Schema::drop('jira_sync_slave_jira_issues');
     }
 }

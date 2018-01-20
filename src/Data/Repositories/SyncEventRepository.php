@@ -10,6 +10,7 @@ namespace App\Data\Repositories;
 
 use App\Data\Issue;
 use App\Data\SyncEvent;
+use Illuminate\Support\Collection;
 
 
 class SyncEventRepository extends Repository
@@ -48,7 +49,7 @@ class SyncEventRepository extends Repository
     }
 
     /**
-     * @return SyncEvent
+     * @return Collection
      */
     public function getLatestSyncEvent()
     {

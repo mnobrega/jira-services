@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SlaveJiraIssue extends Model
 {
-    protected $table = 'slave_jira_issues';
+    protected $table = 'jira_sync_slave_jira_issues';
     protected $fillable = ['issue_id','key'];
 
     public function issue()

@@ -1,9 +1,6 @@
 <?php
 namespace App\Services\JiraSync\Features;
 
-use App\Domains\Database\Jobs\BeginDatabaseTransactionJob;
-use App\Domains\Database\Jobs\CommitDatabaseTransactionJob;
-use App\Domains\Database\Jobs\RollbackDatabaseTransactionJob;
 use App\Domains\Issue\Jobs\GetUpdatedIssuesByDateTimeIntervalJob;
 use App\Domains\JiraClient\Jobs\GetConnectionJob;
 use App\Domains\JiraClient\Jobs\PublishIssuesToSlaveJiraJob;
@@ -24,14 +21,14 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             'fromDateTime'=>new \DateTime($latestSyncEvent->to_datetime),
             'toDateTime'=>now()
         ]);
-//        $updatedIssues = $this->run(GetUpdatedIssuesByDateTimeIntervalJob::class,[
-//            'fromDateTime'=>new \DateTime($syncEvent->from_datetime),
-//            'toDateTime'=>new \DateTime($syncEvent->to_datetime)
-//        ]);
         $updatedIssues = $this->run(GetUpdatedIssuesByDateTimeIntervalJob::class,[
-            'fromDateTime'=>new \DateTime("2018-01-12 13:00:00"),
-            'toDateTime'=>new \DateTime()
+            'fromDateTime'=>new \DateTime($syncEvent->from_datetime),
+            'toDateTime'=>new \DateTime($syncEvent->to_datetime)
         ]);
+//        $updatedIssues = $this->run(GetUpdatedIssuesByDateTimeIntervalJob::class,[
+//            'fromDateTime'=>new \DateTime("2018-01-12 13:00:00"),
+//            'toDateTime'=>new \DateTime()
+//        ]);
         $slaveJiraApi = $this->run(GetConnectionJob::class, [
             'host'=>env('JIRA_SLAVE_HOST'),
             'user'=>env('JIRA_SLAVE_USERNAME'),
@@ -41,7 +38,10 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
         $publishResult = $this->run(PublishIssuesToSlaveJiraJob::class,[
             'slaveJiraApi'=>$slaveJiraApi,
             'updatedIssues'=>$updatedIssues,
+            'masterJiraHost'=>env('JIRA_HOST')
         ]);
         //$this->run(UpdateSyncEventJob::class,['SyncEvent'=>$syncEvent]);
+
+        return $publishResult;
     }
 }

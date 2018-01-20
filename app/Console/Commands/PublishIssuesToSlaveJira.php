@@ -42,7 +42,9 @@ class PublishIssuesToSlaveJira extends Command
     public function handle()
     {
         try {
-            $this->serve(PublishIssuesToSlaveJiraInstanceFeature::class);
+            $featureResult = $this->serve(PublishIssuesToSlaveJiraInstanceFeature::class);
+            $this->output->writeln('<info>'.$featureResult['created'].' Issues Created.</info>');
+            $this->output->writeln('<info>'.$featureResult['updated'].' Issues Updated.</info>');
         } catch (\Exception $e) {
             dd($e);
             $this->output->writeln('<error>An error has ocurred.</error>');

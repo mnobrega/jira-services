@@ -13,11 +13,10 @@ class CreateIssuesTable extends Migration
      */
     public function up()
     {
-        \Schema::create('issues',function(Blueprint $table) {
+        \Schema::create('jira_wrapper_issues',function(Blueprint $table) {
             $table->increments('id');
             $table->string('key',50);
             $table->string('project_key',50);
-            $table->string('rank',50);
             $table->string('priority',50);
             $table->string('type',50);
             $table->string('status',50);
@@ -43,6 +42,6 @@ class CreateIssuesTable extends Migration
      */
     public function down()
     {
-        \Schema::drop('issues');
+        \Schema::drop('jira_wrapper_issues');
     }
 }

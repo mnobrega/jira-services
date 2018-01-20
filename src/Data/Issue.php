@@ -2,11 +2,11 @@
 
 namespace App\Data;
 
-use Illuminate\Database\Eloquent\Model;
+use Lucid\Foundation\Model;
 
 class Issue extends Model
 {
-    protected $table = 'issues';
-    protected $fillable = ['key','project_key','rank','priority','type','status','summary',
-        'created','updated','fix_version','epic_link','assignee','remaining_estimate','original_estimate'];
+    protected $table = 'jira_wrapper_issues';
+    protected $fillable = ['key','project_key','priority','type','status','summary', 'created','updated','fix_version',
+        'epic_link','assignee','remaining_estimate','original_estimate'];
 }

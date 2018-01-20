@@ -13,7 +13,7 @@ class CreateSyncTables extends Migration
      */
     public function up()
     {
-        \Schema::create('sync_events', function(Blueprint $table) {
+        \Schema::create('jira_sync_sync_events', function(Blueprint $table) {
             $table->increments('id');
             $table->dateTime('from_datetime');
             $table->dateTime('to_datetime')->nullable();
@@ -31,6 +31,6 @@ class CreateSyncTables extends Migration
      */
     public function down()
     {
-        \Schema::drop('sync_events');
+        \Schema::drop('jira_sync_sync_events');
     }
 }

@@ -44,10 +44,12 @@ class PublishIssuesToSlaveJiraJob extends Job
     ];
     private static $slaveUsersMapping = [
         "smartins"=>"smartinsvv",
-        "rfrade"=>"rfradevv"
+        "rfrade"=>"rfradevv",
+        "ana.martins"=>"ana.martins"
     ];
 
     private $slaveJiraApi;
+    private $masterJiraHost;
     /** @var \App\Data\Issue[] */
     private $updatedIssues;
     private $repository;
@@ -56,10 +58,12 @@ class PublishIssuesToSlaveJiraJob extends Job
      * PublishIssuesToSlaveJiraJob constructor.
      * @param IssueService $slaveJiraApi
      * @param Collection $updatedIssues
+     * @param String $masterJiraHost
      */
-    public function __construct(IssueService $slaveJiraApi, Collection $updatedIssues)
+    public function __construct(IssueService $slaveJiraApi, Collection $updatedIssues, $masterJiraHost)
     {
         $this->slaveJiraApi = $slaveJiraApi;
+        $this->masterJiraHost = $masterJiraHost;
         $this->updatedIssues = $updatedIssues;
         $this->repository = new SlaveJiraIssueRepository(new SlaveJiraIssue());
     }
@@ -80,12 +84,13 @@ class PublishIssuesToSlaveJiraJob extends Job
             switch (count($foundSlaveJiraIssues)) {
                 case 0:
                     $slaveJiraIssueKey = $this->createSlaveJiraIssue($issue);
-                    dd($slaveJiraIssueKey);
                     $this->repository->create($issue, $slaveJiraIssueKey);
+                    $publishResult['created']++;
                     break;
                 case 1:
                     $jiraSlaveIssueKey = $foundSlaveJiraIssues[0]->key;
                     $this->updateSlaveJiraIssue($jiraSlaveIssueKey, $issue);
+                    $publishResult['updated']++;
                     break;
                 default:
                     throw new \Exception("More than 1 slave Jira issue found for issue_id:".$issue->id);
@@ -102,16 +107,6 @@ class PublishIssuesToSlaveJiraJob extends Job
      */
     private function createSlaveJiraIssue(Issue $issue)
     {
-        //        $fieldService = new FieldService(new ArrayConfiguration(
-//            array(
-//                'jiraHost' => "http://jira.your.premium-minds.com",
-//                'jiraUser' => "mnobrega",
-//                'jiraPassword'=>"Madeira.24404"
-//            )
-//        ));
-//        $ret = $fieldService->getAllFields();
-//        dd($ret);
-
         $issueField = new IssueField();
 
         $issueField->setProjectKey($issue->project_key)
@@ -129,22 +124,23 @@ class PublishIssuesToSlaveJiraJob extends Job
      * @param Issue $issue
      * @return mixed
      * @throws \JiraRestApi\JiraException
+     * TODO: Sync Rank, Epic Link
      */
     private function updateSlaveJiraIssue($slaveJiraIssueKey, Issue $issue)
     {
+        $editParams = [
+            'notifyUsers' => false
+        ];
+
         $issueField = new IssueField();
         $issueField->setProjectKey($issue->project_key)
             ->setPriorityName(static::$slaveIssuePrioritiesMapping[$issue->priority])
             ->setSummary($issue->summary)
-            ->setIssueType(static::$slaveIssueTypeMappings[$issue->type]);
-        if(!is_null($issue->assignee)) {
+            ->setIssueType(static::$slaveIssueTypeMappings[$issue->type])
+            ->setDescription("Master JIRA link: ".$this->masterJiraHost."/browse/".$issue->key);
+        if (!is_null($issue->assignee)) {
             $issueField->setAssigneeName(static::$slaveUsersMapping[$issue->assignee]);
         }
-        dd($issueField);
-//            ->addCustomField(static::$slaveCustomFieldsMapping["rank"],["value"=>$issue->rank]);
-        $editParams = [
-            'notifyUsers' => false
-        ];
         $this->slaveJiraApi->update($slaveJiraIssueKey, $issueField, $editParams);
 
         $timeTracking = new TimeTracking();

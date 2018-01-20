@@ -11,6 +11,7 @@ once the 10 users threshold is surpassed.
 - [Quick Start and Examples](#quick-start-and-examples)
 - [Available Services](#available-services)
 - [Run Tests](#run-tests)
+- [Useful Information](#useful-information)
 
 ### Requirements
 ##### Production
@@ -62,3 +63,13 @@ issues to another slave JIRA instance
 * Synchronization with a slave JIRA instance
 
 ### Run Tests
+
+### Useful Information
+#### REST Browser Plugin
+For documentation about JIRA REST API you can use the following plugin:
+https://marketplace.atlassian.com/plugins/com.atlassian.labs.rest-api-browser/server/overview
+Access the following page: [your-jira-domain-name]/plugins/servlet/restbrowser to see the docs.
+
+#### REST API References
+- [JIRA Agile REST API](https://docs.atlassian.com/jira-software/REST/7.0.4/#agile/1.0/issue-rankIssues)
+- [JIRA REST API](https://docs.atlassian.com/software/jira/docs/api/REST/7.0.4/)
