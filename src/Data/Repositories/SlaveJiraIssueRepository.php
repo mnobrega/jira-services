@@ -9,14 +9,17 @@
 namespace App\Data\Repositories;
 
 use App\Data\Issue;
+use App\Data\SlaveJiraIssue;
+use App\Data\SyncEvent;
 
 class SlaveJiraIssueRepository extends Repository
 {
     public function create(Issue $issue, $slaveJiraIssueKey)
     {
+        $this->model = new SlaveJiraIssue();
         $attributes = [
+            'key' => $slaveJiraIssueKey,
             'issue_id' => $issue->id,
-            'key' => $slaveJiraIssueKey
         ];
         return $this->fillAndSave($attributes);
     }

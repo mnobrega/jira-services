@@ -18,6 +18,7 @@ class CreateIssuesTable extends Migration
             $table->string('key',50);
             $table->string('project_key',50);
             $table->string('priority',50);
+            $table->integer('ranking')->nullable();
             $table->string('type',50);
             $table->string('status',50);
             $table->text('summary');

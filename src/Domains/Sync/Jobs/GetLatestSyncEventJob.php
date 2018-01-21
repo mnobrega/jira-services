@@ -29,8 +29,8 @@ class GetLatestSyncEventJob extends Job
         switch (count($syncEvents)) {
             case 0:
                 $syncEvent = new SyncEvent();
-                $syncEvent->from = "2000-01-01 00:00:00";
-                $syncEvent->to = "2000-01-01 00:00:00";
+                $syncEvent->from_datetime = "2000-01-01 00:00:00";
+                $syncEvent->to_datetime = "2000-01-01 00:00:00";
                 break;
             case 1:
                 $syncEvent = $syncEvents[0];

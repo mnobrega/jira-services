@@ -2,6 +2,7 @@
 namespace App\Services\JiraWrapper\Features;
 
 use App\Domains\Issue\Jobs\CreateOrUpdateIssuesJob;
+use App\Domains\Issue\Jobs\UpdateIssuesRankJob;
 use App\Domains\JiraClient\Jobs\GetConnectionJob;
 use App\Domains\JiraClient\Jobs\SearchIssuesByJQLJob;
 use Lucid\Foundation\Feature;
@@ -18,11 +19,20 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
 
         $jiraIssues = $this->run(SearchIssuesByJQLJob::class, [
             'jiraApi'=>$jiraApi,
-            'query'=>env('JIRA_ISSUES_QUERY'),
+            'query'=>env('JIRA_ISSUES_QUERY'." ORDER BY sprint DESC"),
         ]);
 
         $jobResult = $this->run(CreateOrUpdateIssuesJob::class,[
             'jiraIssues'=>$jiraIssues
+        ]);
+
+        $jiraIssuesSortedByRankAsc = $this->run(SearchIssuesByJQLJob::class,[
+            'jiraApi'=>$jiraApi,
+            'query'=>env('JIRA_ISSUES_QUERY')." AND sprint IS NOT EMPTY ORDER BY rank ASC",
+        ]);
+
+        $this->run(UpdateIssuesRankJob::class,[
+            'jiraIssues'=>$jiraIssuesSortedByRankAsc
         ]);
 
         return $jobResult;

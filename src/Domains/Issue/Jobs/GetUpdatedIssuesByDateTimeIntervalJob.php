@@ -13,8 +13,8 @@ class GetUpdatedIssuesByDateTimeIntervalJob extends Job
 
     /**
      * GetCreatedIssuesByDateTimeIntervalJob constructor.
-     * @param \DateTime $from
-     * @param \DateTime $to
+     * @param \DateTime $fromDateTime
+     * @param \DateTime $toDateTime
      */
     public function __construct(\DateTime $fromDateTime, \DateTime $toDateTime)
     {

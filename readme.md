@@ -10,7 +10,6 @@ once the 10 users threshold is surpassed.
 - [Recommended Development Environment](#development-environment-installation)
 - [Quick Start and Examples](#quick-start-and-examples)
 - [Available Services](#available-services)
-- [Run Tests](#run-tests)
 - [Useful Information](#useful-information)
 
 ### Requirements
@@ -73,3 +72,5 @@ Access the following page: [your-jira-domain-name]/plugins/servlet/restbrowser t
 #### REST API References
 - [JIRA Agile REST API](https://docs.atlassian.com/jira-software/REST/7.0.4/#agile/1.0/issue-rankIssues)
 - [JIRA REST API](https://docs.atlassian.com/software/jira/docs/api/REST/7.0.4/)
+
+#### JIRA Configuration

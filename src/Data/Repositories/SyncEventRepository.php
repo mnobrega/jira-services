@@ -16,8 +16,8 @@ use Illuminate\Support\Collection;
 class SyncEventRepository extends Repository
 {
     /**
-     * @param $from
-     * @param $to
+     * @param $fromDateTime
+     * @param $toDateTime
      * @return SyncEvent|\Illuminate\Database\Eloquent\Model
      */
     public function create($fromDateTime, $toDateTime)

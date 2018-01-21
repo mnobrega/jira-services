@@ -24,6 +24,7 @@ class PublishIssuesToSlaveJiraJob extends Job
         'New Feature'=>'Story',
         'Improvement'=>'Story',
     ];
+    //TODO: HARDCODED - Move this to a table so that it can be configure dynamicaly
     private static $slaveIssueStatusTransitionMapping = [
         "To Do"=>"To Do",
         "In Progress"=>"In Progress",
@@ -31,27 +32,34 @@ class PublishIssuesToSlaveJiraJob extends Job
         "Review"=>"In Progress",
         "Done"=>"Done"
     ];
+    //TODO: HARDCODED - Move this to a table so that it can be configure dynamicaly
     private static $slaveIssuePrioritiesMapping = [
         "Blocker"=>"Highest",
         "Critical"=>"High",
         "Major"=>"Medium",
+        "Medium"=>"Medium",
         "Minor"=>"Low",
         "Trivial"=>"Lowest",
         "Highest"=>"Highest",
     ];
+    //TODO: HARDCODED - Move this to a table so that it can be configure dynamicaly
     private static $slaveCustomFieldsMapping = [
         "rank"=>"customfield_10005",
     ];
+    //TODO: HARDCODED - Move this to a table so that it can be configure dynamicaly
     private static $slaveUsersMapping = [
         "smartins"=>"smartinsvv",
         "rfrade"=>"rfradevv",
         "ana.martins"=>"ana.martins"
     ];
 
+    /** @var IssueService */
     private $slaveJiraApi;
+    /** @var String */
     private $masterJiraHost;
     /** @var \App\Data\Issue[] */
     private $updatedIssues;
+    /** @var SlaveJiraIssueRepository */
     private $repository;
 
     /**
@@ -143,10 +151,12 @@ class PublishIssuesToSlaveJiraJob extends Job
         }
         $this->slaveJiraApi->update($slaveJiraIssueKey, $issueField, $editParams);
 
-        $timeTracking = new TimeTracking();
-        $timeTracking->setOriginalEstimate($issue->original_estimate/(60*60*8)."d");
-        $timeTracking->setRemainingEstimate($issue->remaining_estimate/(60*60*8)."d");
-        $this->slaveJiraApi->timeTracking($slaveJiraIssueKey,$timeTracking);
+        if (static::$slaveIssueTypeMappings[$issue->type]!='Bug') {
+            $timeTracking = new TimeTracking();
+            $timeTracking->setOriginalEstimate($issue->original_estimate/(60*60*8)."d");
+            $timeTracking->setRemainingEstimate($issue->remaining_estimate/(60*60*8)."d");
+            $this->slaveJiraApi->timeTracking($slaveJiraIssueKey,$timeTracking);
+        }
 
         $transition = new Transition();
         $transition->setTransitionName(static::$slaveIssueStatusTransitionMapping[$issue->status]);
