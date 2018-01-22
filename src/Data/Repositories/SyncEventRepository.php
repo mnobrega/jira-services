@@ -31,24 +31,6 @@ class SyncEventRepository extends Repository
     }
 
     /**
-     * @param SyncEvent $syncEvent
-     * @param $tuplesCreated
-     * @param $tuplesUpdated
-     * @param $tuplesDeleted
-     * @return SyncEvent|\Illuminate\Database\Eloquent\Model
-     */
-    public function update(SyncEvent $syncEvent, $tuplesCreated, $tuplesUpdated, $tuplesDeleted)
-    {
-        $this->model = $syncEvent;
-        $attributes = [
-            'tuples_created' => $tuplesCreated,
-            'tuples_updated' => $tuplesUpdated,
-            'tuples_deleted' => $tuplesDeleted,
-        ];
-        return $this->fillAndSave($attributes);
-    }
-
-    /**
      * @return Collection
      */
     public function getLatestSyncEvent()

@@ -132,7 +132,6 @@ class PublishIssuesToSlaveJiraJob extends Job
      * @param Issue $issue
      * @return mixed
      * @throws \JiraRestApi\JiraException
-     * TODO: Sync Rank, Epic Link
      */
     private function updateSlaveJiraIssue($slaveJiraIssueKey, Issue $issue)
     {

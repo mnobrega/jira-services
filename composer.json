@@ -4,12 +4,19 @@
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "type": "project",
+    "repositories": [
+        {
+            "type":"vcs",
+            "url":"https://github.com/mnobrega/php-jira-agile-rest-client.git"
+        }
+    ],
     "require": {
         "php": ">=7.0.0",
         "laravel/framework": "5.5.*",
         "laravel/tinker": "~1.0",
         "lesstif/php-jira-rest-client": "^1.16",
-        "lucid-arch/laravel-foundation": "5.5.*"
+        "lucid-arch/laravel-foundation": "5.5.*",
+        "mnobrega/php-jira-agile-rest-client":"1.*"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.4",

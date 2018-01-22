@@ -35,7 +35,6 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             'updatedIssues'=>$updatedIssues,
             'masterJiraHost'=>env('JIRA_HOST')
         ]);
-        //$this->run(UpdateSyncEventJob::class,['SyncEvent'=>$syncEvent]);
 
         return $publishResult;
     }

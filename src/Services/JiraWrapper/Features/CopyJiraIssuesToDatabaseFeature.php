@@ -31,6 +31,7 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
             'query'=>env('JIRA_ISSUES_QUERY')." AND sprint IS NOT EMPTY ORDER BY rank ASC",
         ]);
 
+        dd($jiraIssuesSortedByRankAsc[0]);
         $this->run(UpdateIssuesRankJob::class,[
             'jiraIssues'=>$jiraIssuesSortedByRankAsc
         ]);

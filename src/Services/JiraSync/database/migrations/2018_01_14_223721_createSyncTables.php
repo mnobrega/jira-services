@@ -17,9 +17,6 @@ class CreateSyncTables extends Migration
             $table->increments('id');
             $table->dateTime('from_datetime');
             $table->dateTime('to_datetime')->nullable();
-            $table->integer('tuples_created')->default(0);
-            $table->integer('tuples_updated')->default(0);
-            $table->integer('tuples_deleted')->default(0);
             $table->timestamps();
         });
     }
