@@ -50,7 +50,8 @@ class PublishIssuesToSlaveJiraJob extends Job
     private static $slaveUsersMapping = [
         "smartins"=>"smartinsvv",
         "rfrade"=>"rfradevv",
-        "ana.martins"=>"ana.martins"
+        "ana.martins"=>"ana.martins",
+        "cribeiro"=>"smartinsvv",
     ];
 
     /** @var IssueService */

@@ -9,6 +9,9 @@ use Lucid\Foundation\Feature;
 
 class CopyJiraIssuesToDatabaseFeature extends Feature
 {
+    /** TODO: move this to the database */
+    const JIRA_ISSUES_QUERY = 'project IN (VVESTIOS) AND resolution IS NULL';
+
     public function handle()
     {
         $jiraApi = $this->run(GetConnectionJob::class, [
@@ -19,7 +22,7 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
 
         $jiraIssues = $this->run(SearchIssuesByJQLJob::class, [
             'jiraApi'=>$jiraApi,
-            'query'=>env('JIRA_ISSUES_QUERY'." ORDER BY sprint DESC"),
+            'query'=>static::JIRA_ISSUES_QUERY." ORDER BY sprint DESC",
         ]);
 
         $jobResult = $this->run(CreateOrUpdateIssuesJob::class,[
@@ -28,10 +31,9 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
 
         $jiraIssuesSortedByRankAsc = $this->run(SearchIssuesByJQLJob::class,[
             'jiraApi'=>$jiraApi,
-            'query'=>env('JIRA_ISSUES_QUERY')." AND sprint IS NOT EMPTY ORDER BY rank ASC",
+            'query'=>static::JIRA_ISSUES_QUERY." AND sprint IS NOT EMPTY ORDER BY rank ASC",
         ]);
 
-        dd($jiraIssuesSortedByRankAsc[0]);
         $this->run(UpdateIssuesRankJob::class,[
             'jiraIssues'=>$jiraIssuesSortedByRankAsc
         ]);

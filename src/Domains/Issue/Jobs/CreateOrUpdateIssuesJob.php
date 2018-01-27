@@ -33,13 +33,13 @@ class CreateOrUpdateIssuesJob extends Job
             $foundIssues = $this->repository->getByAttributes(['key' => $jiraIssue->key]);
             switch (count($foundIssues)) {
                 case 0:
-                    $this->repository->create($jiraIssue);
+                    $this->repository->create(IssueRepository::getAttributesFromJiraIssue($jiraIssue));
                     $jobResult['createdIssues']++;
                     break;
                 case 1:
                     $issue = $foundIssues[0];
                     if ($issue->updated != $jiraIssue->fields->updated->format("Y-m-d H:i:s")) {
-                        $this->repository->update($issue, $jiraIssue);
+                        $this->repository->update($issue, IssueRepository::getAttributesFromJiraIssue($jiraIssue));
                         $jobResult['updatedIssues']++;
                     }
                     break;

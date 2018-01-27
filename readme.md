@@ -52,10 +52,12 @@ machine for other PHP projects that share the same requirements)
 
 ### Quick Start and Examples
 * Connects to a master JIRA instance
-* Synchronizes all the referred JQL issues with a 
-local database
+* Synchronizes all the referred JQL issues with a local database
 * With the information stored creates reports or sends the 
 issues to another slave JIRA instance
+
+* Slave JIRA
+- Create a project
 
 ### Available Services
 * Issue real time spent calculation

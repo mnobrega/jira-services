@@ -48,6 +48,7 @@ class CopyJiraIssuesToDatabase extends Command
         } catch (\Exception $e) {
             $this->output->writeln('<error>An error has ocurred.</error>');
             $this->output->writeln('<info>Error: '.$e->getMessage().'</info>');
+            dump($e);
         }
     }
 }

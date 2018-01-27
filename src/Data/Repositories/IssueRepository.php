@@ -17,40 +17,46 @@ class IssueRepository extends Repository
     ];
 
     /**
-     * @param \JiraRestApi\Issue\Issue $jiraIssue
-     * @return Issue|\Illuminate\Database\Eloquent\Model
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    public function create(\JiraRestApi\Issue\Issue $jiraIssue)
+    public function create(array $attributes)
     {
         $this->model = new Issue();
-        $attributes = $this->getAttributesFromJiraIssue($jiraIssue);
         return $this->fillAndSave($attributes);
     }
 
     /**
      * @param Issue $issue
-     * @param \JiraRestApi\Issue\Issue $jiraIssue
-     * @return Issue|\Illuminate\Database\Eloquent\Model
+     * @param array $attributes
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    public function update(Issue $issue, \JiraRestApi\Issue\Issue $jiraIssue)
+    public function update(Issue $issue, array $attributes)
     {
         $this->model = $issue;
-        $attributes = $this->getAttributesFromJiraIssue($jiraIssue);
         return $this->fillAndSave($attributes);
     }
 
-    public function updateRanking(Issue $issue, $newRanking)
+    /**
+     * @param $from
+     * @param $to
+     * @return Issue[]
+     */
+    public function getUpdatedIssuesByDateTimeInterval($from, $to)
     {
-        $this->model = $issue;
-        $attributes = array('ranking'=>$newRanking);
-        return $this->fillAndSave($attributes);
+        return $this->model
+            ->where('updated','>=',$from)
+            ->where('updated','<=',$to)
+            ->where('type','<>','Epic')
+            ->orderBy('created','asc')
+            ->get();
     }
 
     /**
      * @param \JiraRestApi\Issue\Issue $jiraIssue
      * @return array
      */
-    private function getAttributesFromJiraIssue(\JiraRestApi\Issue\Issue $jiraIssue)
+    static public function getAttributesFromJiraIssue(\JiraRestApi\Issue\Issue $jiraIssue)
     {
         $fixVersions = $jiraIssue->fields->fixVersions;
         $attributesFromJiraIssue = array(
@@ -72,20 +78,5 @@ class IssueRepository extends Repository
                 $jiraIssue->fields->timeoriginalestimate->scalar:null,
         );
         return $attributesFromJiraIssue;
-    }
-
-    /**
-     * @param $from
-     * @param $to
-     * @return Issue[]
-     */
-    public function getUpdatedIssuesByDateTimeInterval($from, $to)
-    {
-        return $this->model
-            ->where('updated','>=',$from)
-            ->where('updated','<=',$to)
-            ->where('type','<>','Epic')
-            ->orderBy('created','asc')
-            ->get();
     }
 }
