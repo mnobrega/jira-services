@@ -8,8 +8,8 @@
 
 namespace App\Data\RestApis;
 
-
-use Mockery\Exception;
+use JiraAgileRestApi\JiraClient as JiraAgileClient;
+use JiraGreenhopperRestApi\JiraClient as JiraGreenhopperClient;
 
 class CredentialsFactory
 {
@@ -18,6 +18,7 @@ class CredentialsFactory
 
     /**
      * @param $instance
+     * @return array
      * @throws \Exception
      */
     static public function getCredentials($instance)
@@ -41,6 +42,23 @@ class CredentialsFactory
                 break;
             default:
                 throw new \Exception("Unknown jira instance:".$instance);
+        }
+    }
+
+    /**
+     * @param $version
+     * @param $instance
+     * @return JiraAgile|JiraGreenhopper
+     * @throws \Exception
+     */
+    static public function getJiraAgile($version, $instance)
+    {
+        if (in_array($version,JiraAgileClient::$compatibleJiraVersions)) {
+            return new JiraAgile($instance);
+        } elseif (in_array($version,JiraGreenhopperClient::$compatibleJiraVersions)) {
+            return new JiraGreenhopper($instance);
+        } else {
+            throw new \Exception("Your JIRA version is not compatible with any available library");
         }
     }
 }

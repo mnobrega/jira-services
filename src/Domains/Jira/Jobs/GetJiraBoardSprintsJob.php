@@ -1,33 +1,30 @@
 <?php
 namespace App\Domains\Jira\Jobs;
 
-use App\Data\RestApis\JiraAgile;
-use App\Data\RestApis\JiraApi;
+use App\Data\RestApis\CredentialsFactory;
 use Lucid\Foundation\Job;
+
 
 class GetJiraBoardSprintsJob extends Job
 {
-    private $jiraApi;
+    private $jiraAgile;
     private $jiraBoardName;
 
     /**
-     * Create a new job instance.
-     *
-     * @return void
+     * GetJiraBoardSprintsJob constructor.
+     * @param $jiraInstance
+     * @param $jiraVersion
+     * @param $jiraBoardName
+     * @throws \Exception
      */
-    public function __construct($jiraInstance, $jiraBoardName)
+    public function __construct($jiraInstance, $jiraVersion, $jiraBoardName)
     {
-        $this->jiraApi = new JiraAgile($jiraInstance);
         $this->jiraBoardName = $jiraBoardName;
+        $this->jiraAgile = CredentialsFactory::getJiraAgile($jiraVersion,$jiraInstance);
     }
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
     public function handle()
     {
-        //
+
     }
 }

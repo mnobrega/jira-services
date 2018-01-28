@@ -2,28 +2,28 @@
 /**
  * Created by PhpStorm.
  * User: mnobrega
- * Date: 27/01/2018
- * Time: 23:59
+ * Date: 28/01/2018
+ * Time: 20:49
  */
 
 namespace App\Data\RestApis;
 
-use JiraAgileRestApi\Configuration\ArrayConfiguration;
-use JiraAgileRestApi\Issue\IssueService;
+use JiraGreenhopperRestApi\Configuration\ArrayConfiguration;
+use JiraGreenhopperRestApi\ExperimentalApi\Board\BoardService;
 
-class JiraAgile implements JiraAgileInterface
+class JiraGreenhopper implements JiraAgileInterface
 {
-    private $issueService;
+    private $boardService;
 
     /**
-     * JiraAgile constructor.
+     * JiraGreenhopper constructor.
      * @param $instance
      * @throws \Exception
      */
     public function __construct($instance)
     {
         $configuration = new ArrayConfiguration(CredentialsFactory::getCredentials($instance));
-        $this->issueService = new IssueService($configuration);
+        $this->boardService = new BoardService($configuration);
     }
 
     public function getBoard($boardName)

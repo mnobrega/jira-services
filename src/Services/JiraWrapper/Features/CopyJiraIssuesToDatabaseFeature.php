@@ -37,6 +37,7 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
 
             $jiraSprints = $this->run(GetJiraBoardSprintsJob::class,[
                 'jiraInstance' => CredentialsFactory::JIRA_MASTER_INSTANCE,
+                'jiraVersion' => env('JIRA_VERSION'),
                 'jiraBoardName' => static::JIRA_ISSUES_BOARD_NAME,
             ]);
 //
