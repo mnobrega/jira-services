@@ -35,10 +35,10 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
 
         if (static::JIRA_ISSUES_BOARD_TYPE==static::BOARD_TYPE_SCRUM) {
 
-//            $jiraSprints = $this->run(GetJiraBoardSprintsJob::class,[
-//                'jiraInstance' => CredentialsFactory::JIRA_MASTER_INSTANCE,
-//                'jiraBoardName' => static::JIRA_ISSUES_BOARD_NAME,
-//            ]);
+            $jiraSprints = $this->run(GetJiraBoardSprintsJob::class,[
+                'jiraInstance' => CredentialsFactory::JIRA_MASTER_INSTANCE,
+                'jiraBoardName' => static::JIRA_ISSUES_BOARD_NAME,
+            ]);
 //
 //            $sprints = $this->run(CreateOrUpdateSprintsJob::class,[
 //                'sprints' => $jiraSprints

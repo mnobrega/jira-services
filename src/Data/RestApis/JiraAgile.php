@@ -25,7 +25,6 @@ class JiraAgile
     public function __construct($instance)
     {
         $configuration = new ArrayConfiguration(CredentialsFactory::getCredentials($instance));
-        $this->sprintService = new SprintService($configuration);
         $this->issueService = new IssueService($configuration);
     }
 

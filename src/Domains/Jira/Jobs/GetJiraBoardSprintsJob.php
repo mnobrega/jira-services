@@ -1,11 +1,13 @@
 <?php
 namespace App\Domains\Jira\Jobs;
 
+use App\Data\RestApis\JiraAgile;
+use App\Data\RestApis\JiraApi;
 use Lucid\Foundation\Job;
 
 class GetJiraBoardSprintsJob extends Job
 {
-    private $api;
+    private $jiraApi;
     private $jiraBoardName;
 
     /**
@@ -13,8 +15,9 @@ class GetJiraBoardSprintsJob extends Job
      *
      * @return void
      */
-    public function __construct($jiraBoardName)
+    public function __construct($jiraInstance, $jiraBoardName)
     {
+        $this->jiraApi = new JiraAgile($jiraInstance);
         $this->jiraBoardName = $jiraBoardName;
     }
 
