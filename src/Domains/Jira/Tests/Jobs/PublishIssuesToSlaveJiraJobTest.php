@@ -1,5 +1,5 @@
 <?php
-namespace App\Domains\JiraClient\Tests\Jobs;
+namespace App\Domains\Jira\Tests\Jobs;
 
 use App\Domains\JiraClient\Jobs\PublishIssuesToSlaveJiraJob;
 use Tests\TestCase;

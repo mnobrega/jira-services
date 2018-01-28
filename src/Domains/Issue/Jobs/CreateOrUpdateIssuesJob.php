@@ -44,7 +44,7 @@ class CreateOrUpdateIssuesJob extends Job
                     }
                     break;
                 default:
-                    throw new \Exception("Found more than 1 issue with the same key:".$jiraIssue->getKey());
+                    throw new \Exception("Found more than 1 issue with the same key:".$jiraIssue->key);
             }
         }
         return $jobResult;

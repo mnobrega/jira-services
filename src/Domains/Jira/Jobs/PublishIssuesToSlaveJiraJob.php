@@ -1,5 +1,5 @@
 <?php
-namespace App\Domains\JiraClient\Jobs;
+namespace App\Domains\Jira\Jobs;
 
 use App\Data\Repositories\SlaveJiraIssueRepository;
 use App\Data\SlaveJiraIssue;

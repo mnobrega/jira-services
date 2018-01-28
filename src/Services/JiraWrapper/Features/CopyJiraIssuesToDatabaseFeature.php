@@ -1,10 +1,12 @@
 <?php
 namespace App\Services\JiraWrapper\Features;
 
+use App\Data\RestApis\CredentialsFactory;
 use App\Domains\Issue\Jobs\CreateOrUpdateIssuesJob;
 use App\Domains\Issue\Jobs\UpdateIssuesRankJob;
-use App\Domains\JiraClient\Jobs\GetConnectionJob;
-use App\Domains\JiraClient\Jobs\SearchIssuesByJQLJob;
+use App\Domains\Jira\Jobs\GetJiraSprintsFromIssuesJob;
+use App\Domains\Jira\Jobs\SearchJiraIssuesByJQLJob;
+use App\Domains\Sprint\Jobs\CreateOrUpdateSprintsIssuesJob;
 use Lucid\Foundation\Feature;
 
 class CopyJiraIssuesToDatabaseFeature extends Feature
@@ -14,30 +16,35 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
 
     public function handle()
     {
-        $jiraApi = $this->run(GetConnectionJob::class, [
-            'host'=>env('JIRA_HOST'),
-            'user'=>env('JIRA_USERNAME'),
-            'pass'=>env('JIRA_PASSWORD'),
+        $jiraIssues = $this->run(SearchJiraIssuesByJQLJob::class, [
+            'jiraInstance'=>CredentialsFactory::JIRA_MASTER_INSTANCE,
+            'jiraQuery'=>static::JIRA_ISSUES_QUERY." ORDER BY created ASC",
         ]);
 
-        $jiraIssues = $this->run(SearchIssuesByJQLJob::class, [
-            'jiraApi'=>$jiraApi,
-            'query'=>static::JIRA_ISSUES_QUERY." ORDER BY sprint DESC",
+        $featureResult = $this->run(CreateOrUpdateIssuesJob::class,[
+            'jiraIssues'=>$jiraIssues,
         ]);
 
-        $jobResult = $this->run(CreateOrUpdateIssuesJob::class,[
-            'jiraIssues'=>$jiraIssues
-        ]);
+        if (env('JIRA_AGILE_ENABLED')) {
+            $jiraIssuesSortedByRankAsc = $this->run(SearchJiraIssuesByJQLJob::class,[
+                'jiraInstance'=>CredentialsFactory::JIRA_MASTER_INSTANCE,
+                'jiraQuery'=>static::JIRA_ISSUES_QUERY." AND sprint IS NOT EMPTY ORDER BY rank ASC",
+            ]);
 
-        $jiraIssuesSortedByRankAsc = $this->run(SearchIssuesByJQLJob::class,[
-            'jiraApi'=>$jiraApi,
-            'query'=>static::JIRA_ISSUES_QUERY." AND sprint IS NOT EMPTY ORDER BY rank ASC",
-        ]);
+            $this->run(UpdateIssuesRankJob::class,[
+                'jiraIssues'=>$jiraIssuesSortedByRankAsc
+            ]);
 
-        $this->run(UpdateIssuesRankJob::class,[
-            'jiraIssues'=>$jiraIssuesSortedByRankAsc
-        ]);
+            $sprintsIssues = $this->run(GetJiraSprintsFromIssuesJob::class,[
+                'jiraInstance' => CredentialsFactory::JIRA_MASTER_INSTANCE,
+                'jiraIssues'=>$jiraIssuesSortedByRankAsc
+            ]);
 
-        return $jobResult;
+            $this->run(CreateOrUpdateSprintsIssuesJob::class,[
+                'sprintsIssues'=>$sprintsIssues
+            ]);
+        }
+
+        return $featureResult;
     }
 }
