@@ -27,6 +27,6 @@ class SearchJiraIssuesByJQLJob extends Job
      */
     public function handle()
     {
-        return $this->jiraApi->getJiraIssuesByJQL($this->jiraQuery);
+        return $this->jiraApi->getIssuesByJQL($this->jiraQuery);
     }
 }
