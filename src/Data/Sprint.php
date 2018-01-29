@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Sprint extends Model
 {
     protected $table = 'jira_wrapper_sprints';
-    protected $fillable = ['sprint_id','state','start_date','end_date'];
+    protected $fillable = ['jira_id','name','state','start_date','end_date'];
 
     public function issues()
     {

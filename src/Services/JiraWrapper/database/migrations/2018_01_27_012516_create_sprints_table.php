@@ -15,7 +15,8 @@ class CreateSprintsTable extends Migration
     {
         Schema::create('jira_wrapper_sprints', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('sprint_id');
+            $table->integer('jira_id');
+            $table->string('name');
             $table->string('state');
             $table->dateTime('start_date');
             $table->dateTime('end_date');

@@ -23,12 +23,17 @@ class SprintRepository extends Repository
         return $this->fillAndSave($attributes);
     }
 
-    static public function getAttributesFromJiraSprint(\JiraAgileRestApi\Sprint\Sprint $jiraSprint)
+    /**
+     * @param \JiraGreenhopperRestApi\ExperimentalApi\Sprint\Sprint|\JiraAgileRestApi\Sprint\Sprint $jiraSprint
+     * @return array
+     */
+    static public function getAttributesFromJiraSprint($jiraSprint)
     {
         $startDate = new \DateTime($jiraSprint->startDate);
         $endDate = new \DateTime($jiraSprint->endDate);
         $attributesFromJiraSprint = [
-            'sprint_id' => $jiraSprint->id,
+            'jira_id' => $jiraSprint->id,
+            'name' => $jiraSprint->name,
             'state' => $jiraSprint->state,
             'start_date' => $startDate->format("Y-m-d H:i:s"),
             'end_date' => $endDate->format("Y-m-d H:i:s")

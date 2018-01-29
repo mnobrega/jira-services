@@ -38,7 +38,7 @@ class JiraAgile implements JiraAgileInterface
     public function getBoardByName($boardName)
     {
         $boardSearchResult = $this->boardService->getAllBoards(['name'=>$boardName]);
-        return $boardSearchResult->values[0];
+        return count($boardSearchResult->values)==1?$boardSearchResult->values[0]:null;
     }
 
     /**

@@ -26,6 +26,6 @@ class GetJiraBoardSprintsJob extends Job
     public function handle()
     {
         $board = $this->jiraAgile->getBoardByName($this->jiraBoardName);
-        return $this->jiraAgile->getBoardOpenSprints($board->id);
+        return !is_null($board)?$this->jiraAgile->getBoardOpenSprints($board->id):array();
     }
 }

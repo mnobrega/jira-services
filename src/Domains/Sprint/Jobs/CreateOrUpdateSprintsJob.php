@@ -30,7 +30,7 @@ class CreateOrUpdateSprintsJob extends Job
             'updated'=>array(),
         ];
         foreach ($this->jiraSprints as $jiraSprint) {
-            $foundSprints = $this->repository->getByAttributes(['sprint_id'=>$jiraSprint->id]);
+            $foundSprints = $this->repository->getByAttributes(['jira_id'=>$jiraSprint->id]);
             switch(count($foundSprints)) {
                 case 0:
                     $createdSprint = $this->repository->create(

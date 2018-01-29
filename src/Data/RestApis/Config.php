@@ -46,7 +46,6 @@ class Config
     }
 
     /**
-     * @param $version
      * @param $instance
      * @return JiraAgile|JiraAgileGreenhopper
      * @throws \Exception

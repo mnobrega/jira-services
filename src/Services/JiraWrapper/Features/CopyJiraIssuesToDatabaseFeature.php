@@ -2,6 +2,7 @@
 namespace App\Services\JiraWrapper\Features;
 
 use App\Data\RestApis\Config;
+use App\Domains\Database\Jobs\BeginDatabaseTransactionJob;
 use App\Domains\Issue\Jobs\CreateOrUpdateIssuesJob;
 use App\Domains\Issue\Jobs\UpdateIssuesRankJob;
 use App\Domains\Jira\Jobs\GetJiraBoardSprintsJob;
@@ -35,6 +36,8 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
 
         if (static::JIRA_ISSUES_BOARD_TYPE==static::BOARD_TYPE_SCRUM) {
 
+
+            $this->run(BeginDatabaseTransactionJob::class);
             $jiraSprints = $this->run(GetJiraBoardSprintsJob::class,[
                 'jiraInstance' => Config::JIRA_MASTER_INSTANCE,
                 'jiraBoardName' => static::JIRA_ISSUES_BOARD_NAME,
@@ -43,6 +46,7 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
             $sprints = $this->run(CreateOrUpdateSprintsJob::class,[
                 'jiraSprints' => $jiraSprints
             ]);
+            dd($sprints);
 //
 //            $this->run(SyncSprintsIssuesJobTest::any(),[
 //                'sprints' => $sprints,
