@@ -12,3 +12,6 @@ Homestead.yaml
 Vagrantfile
 aliases
 after.sh
+*jira-agile-rest-client.log
+*jira-api-rest-client.log
+*jira-greenhopper-rest-client.log
