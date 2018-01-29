@@ -16,10 +16,13 @@ class CreateOrUpdateSprintsJob extends Job
      */
     public function __construct(Array $jiraSprints)
     {
+        $this->jiraSprints = $jiraSprints;
         $this->repository = new SprintRepository(new Sprint());
     }
 
-
+    /**
+     * @throws \Exception
+     */
     public function handle()
     {
         $sprints = [
@@ -27,33 +30,22 @@ class CreateOrUpdateSprintsJob extends Job
             'updated'=>array(),
         ];
         foreach ($this->jiraSprints as $jiraSprint) {
-
-        }
-    }
-
-    public function removethis(){
-        $issues = [
-            'created'=>array(),
-            'updated'=>array(),
-        ];
-        foreach ($this->jiraIssues as $jiraIssue) {
-            $foundIssues = $this->repository->getByAttributes(['key' => $jiraIssue->key]);
-            switch (count($foundIssues)) {
+            $foundSprints = $this->repository->getByAttributes(['sprint_id'=>$jiraSprint->id]);
+            switch(count($foundSprints)) {
                 case 0:
-                    $createdIssue = $this->repository->create(IssueRepository::getAttributesFromJiraIssue($jiraIssue));
-                    $issues['created'][] = $createdIssue;
+                    $createdSprint = $this->repository->create(
+                        SprintRepository::getAttributesFromJiraSprint($jiraSprint));
+                    $sprints['created'][] = $createdSprint;
                     break;
                 case 1:
-                    $foundIssue = $foundIssues[0];
-                    if ($foundIssue->updated != $jiraIssue->fields->updated->format("Y-m-d H:i:s")) {
-                        $updatedIssue = $this->repository->update($foundIssue, IssueRepository::getAttributesFromJiraIssue($jiraIssue));
-                        $issues['updated'][] = $updatedIssue;
-                    }
+                    $updatedSprint = $this->repository->update($foundSprints[0],
+                        SprintRepository::getAttributesFromJiraSprint($jiraSprint));
+                    $sprints['updated'] = $updatedSprint;
                     break;
                 default:
-                    throw new \Exception("Found more than 1 issue with the same key:".$jiraIssue->key);
+                    throw new \Exception("Found more than 1 sprint with the same sprint_id:".$jiraSprint->id);
             }
         }
-        return $issues;
+        return $sprints;
     }
 }

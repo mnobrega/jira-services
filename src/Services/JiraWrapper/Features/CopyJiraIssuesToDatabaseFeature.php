@@ -41,7 +41,7 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
             ]);
 
             $sprints = $this->run(CreateOrUpdateSprintsJob::class,[
-                'sprints' => $jiraSprints
+                'jiraSprints' => $jiraSprints
             ]);
 //
 //            $this->run(SyncSprintsIssuesJobTest::any(),[

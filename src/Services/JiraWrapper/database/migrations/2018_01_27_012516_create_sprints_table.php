@@ -19,7 +19,6 @@ class CreateSprintsTable extends Migration
             $table->string('state');
             $table->dateTime('start_date');
             $table->dateTime('end_date');
-            $table->integer('origin_board_id');
             $table->timestamps();
         });
 

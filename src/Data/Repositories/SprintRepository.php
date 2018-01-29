@@ -17,10 +17,21 @@ class SprintRepository extends Repository
         return $this->fillAndSave($attributes);
     }
 
+    public function update($sprint, array $attributes)
+    {
+        $this->model = $sprint;
+        return $this->fillAndSave($attributes);
+    }
+
     static public function getAttributesFromJiraSprint(\JiraAgileRestApi\Sprint\Sprint $jiraSprint)
     {
+        $startDate = new \DateTime($jiraSprint->startDate);
+        $endDate = new \DateTime($jiraSprint->endDate);
         $attributesFromJiraSprint = [
-
+            'sprint_id' => $jiraSprint->id,
+            'state' => $jiraSprint->state,
+            'start_date' => $startDate->format("Y-m-d H:i:s"),
+            'end_date' => $endDate->format("Y-m-d H:i:s")
         ];
         return $attributesFromJiraSprint;
     }
