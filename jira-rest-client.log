@@ -2,3 +2,4 @@
 [2018-01-28 00:46:52] JiraClient.ERROR: CURL Error: http response=0, <url> malformed [] []
 [2018-01-28 00:47:12] JiraClient.ERROR: CURL Error: http response=0, <url> malformed [] []
 [2018-01-28 00:47:17] JiraClient.ERROR: CURL Error: http response=0, <url> malformed [] []
+[2018-01-28 23:14:52] JiraClient.ERROR: CURL Error: http response=0, Could not resolve host: gojira.premium-minds.local [] []

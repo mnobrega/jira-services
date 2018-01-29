@@ -11,6 +11,6 @@ namespace App\Data\RestApis;
 
 interface JiraAgileInterface
 {
-    public function getBoard($boardName);
-    public function getBoardSprints($boardId);
+    public function getBoardByName($boardName);
+    public function getBoardOpenSprints($boardId);
 }

@@ -19,6 +19,9 @@ class SprintRepository extends Repository
 
     static public function getAttributesFromJiraSprint(\JiraAgileRestApi\Sprint\Sprint $jiraSprint)
     {
+        $attributesFromJiraSprint = [
 
+        ];
+        return $attributesFromJiraSprint;
     }
 }

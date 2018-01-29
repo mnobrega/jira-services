@@ -8,12 +8,14 @@
 
 namespace App\Data\RestApis;
 
+use JiraAgileRestApi\Board\BoardService;
 use JiraAgileRestApi\Configuration\ArrayConfiguration;
 use JiraAgileRestApi\Issue\IssueService;
 
 class JiraAgile implements JiraAgileInterface
 {
     private $issueService;
+    private $boardService;
 
     /**
      * JiraAgile constructor.
@@ -22,17 +24,32 @@ class JiraAgile implements JiraAgileInterface
      */
     public function __construct($instance)
     {
-        $configuration = new ArrayConfiguration(CredentialsFactory::getCredentials($instance));
+        $configuration = new ArrayConfiguration(Config::getCredentials($instance));
         $this->issueService = new IssueService($configuration);
+        $this->boardService = new BoardService($configuration);
     }
 
-    public function getBoard($boardName)
+    /**
+     * @param $boardName
+     * @return \JiraAgileRestApi\Board\Board[]|null
+     * @throws \JiraAgileRestApi\JiraException
+     * @throws \JsonMapper_Exception
+     */
+    public function getBoardByName($boardName)
     {
-        // TODO: Implement getBoard() method.
+        $boardSearchResult = $this->boardService->getAllBoards(['name'=>$boardName]);
+        return $boardSearchResult->values[0];
     }
 
-    public function getBoardSprints($boardId)
+    /**
+     * @param $boardId
+     * @return \JiraAgileRestApi\Sprint\Sprint[]|null
+     * @throws \JiraAgileRestApi\JiraException
+     * @throws \JsonMapper_Exception
+     */
+    public function getBoardOpenSprints($boardId)
     {
-        // TODO: Implement getBoardSprints() method.
+        $sprintSearchResult = $this->boardService->getSprints($boardId,['state'=>'future,active']);
+        return $sprintSearchResult->values;
     }
 }

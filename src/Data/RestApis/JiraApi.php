@@ -22,7 +22,7 @@ class JiraApi
      */
     public function __construct($instance)
     {
-        $configuration = new ArrayConfiguration(CredentialsFactory::getCredentials($instance));
+        $configuration = new ArrayConfiguration(Config::getCredentials($instance));
         $this->issueService = new IssueService($configuration);
     }
 

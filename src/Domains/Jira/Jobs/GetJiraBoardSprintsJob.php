@@ -1,7 +1,7 @@
 <?php
 namespace App\Domains\Jira\Jobs;
 
-use App\Data\RestApis\CredentialsFactory;
+use App\Data\RestApis\Config;
 use Lucid\Foundation\Job;
 
 
@@ -13,18 +13,19 @@ class GetJiraBoardSprintsJob extends Job
     /**
      * GetJiraBoardSprintsJob constructor.
      * @param $jiraInstance
-     * @param $jiraVersion
      * @param $jiraBoardName
      * @throws \Exception
      */
-    public function __construct($jiraInstance, $jiraVersion, $jiraBoardName)
+    public function __construct($jiraInstance, $jiraBoardName)
     {
         $this->jiraBoardName = $jiraBoardName;
-        $this->jiraAgile = CredentialsFactory::getJiraAgile($jiraVersion,$jiraInstance);
+        $this->jiraAgile = Config::getJiraAgile($jiraInstance);
     }
+
 
     public function handle()
     {
-
+        $board = $this->jiraAgile->getBoardByName($this->jiraBoardName);
+        return $this->jiraAgile->getBoardOpenSprints($board->id);
     }
 }

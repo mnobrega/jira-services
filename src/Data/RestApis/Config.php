@@ -11,7 +11,7 @@ namespace App\Data\RestApis;
 use JiraAgileRestApi\JiraClient as JiraAgileClient;
 use JiraGreenhopperRestApi\JiraClient as JiraGreenhopperClient;
 
-class CredentialsFactory
+class Config
 {
     const JIRA_MASTER_INSTANCE = 'master';
     const JIRA_SLAVE_INSTANCE = 'slave';
@@ -48,15 +48,16 @@ class CredentialsFactory
     /**
      * @param $version
      * @param $instance
-     * @return JiraAgile|JiraGreenhopper
+     * @return JiraAgile|JiraAgileGreenhopper
      * @throws \Exception
      */
-    static public function getJiraAgile($version, $instance)
+    static public function getJiraAgile($instance)
     {
-        if (in_array($version,JiraAgileClient::$compatibleJiraVersions)) {
+        $credentials = static::getCredentials($instance);
+        if (in_array($credentials['jiraVersion'],JiraAgileClient::$compatibleJiraVersions)) {
             return new JiraAgile($instance);
-        } elseif (in_array($version,JiraGreenhopperClient::$compatibleJiraVersions)) {
-            return new JiraGreenhopper($instance);
+        } elseif (in_array($credentials['jiraVersion'],JiraGreenhopperClient::$compatibleJiraVersions)) {
+            return new JiraAgileGreenhopper($instance);
         } else {
             throw new \Exception("Your JIRA version is not compatible with any available library");
         }

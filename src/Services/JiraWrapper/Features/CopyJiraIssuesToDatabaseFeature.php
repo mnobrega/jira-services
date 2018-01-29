@@ -1,7 +1,7 @@
 <?php
 namespace App\Services\JiraWrapper\Features;
 
-use App\Data\RestApis\CredentialsFactory;
+use App\Data\RestApis\Config;
 use App\Domains\Issue\Jobs\CreateOrUpdateIssuesJob;
 use App\Domains\Issue\Jobs\UpdateIssuesRankJob;
 use App\Domains\Jira\Jobs\GetJiraBoardSprintsJob;
@@ -25,7 +25,7 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
     public function handle()
     {
         $jiraIssues = $this->run(SearchJiraIssuesByJQLJob::class, [
-            'jiraInstance'=>CredentialsFactory::JIRA_MASTER_INSTANCE,
+            'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
             'jiraQuery'=>static::JIRA_ISSUES_QUERY." ORDER BY created ASC",
         ]);
 
@@ -36,14 +36,13 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
         if (static::JIRA_ISSUES_BOARD_TYPE==static::BOARD_TYPE_SCRUM) {
 
             $jiraSprints = $this->run(GetJiraBoardSprintsJob::class,[
-                'jiraInstance' => CredentialsFactory::JIRA_MASTER_INSTANCE,
-                'jiraVersion' => env('JIRA_VERSION'),
+                'jiraInstance' => Config::JIRA_MASTER_INSTANCE,
                 'jiraBoardName' => static::JIRA_ISSUES_BOARD_NAME,
             ]);
-//
-//            $sprints = $this->run(CreateOrUpdateSprintsJob::class,[
-//                'sprints' => $jiraSprints
-//            ]);
+
+            $sprints = $this->run(CreateOrUpdateSprintsJob::class,[
+                'sprints' => $jiraSprints
+            ]);
 //
 //            $this->run(SyncSprintsIssuesJobTest::any(),[
 //                'sprints' => $sprints,
@@ -51,7 +50,7 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
 //            ]);
 
             $jiraIssuesSortedByRankAsc = $this->run(SearchJiraIssuesByJQLJob::class,[
-                'jiraInstance'=>CredentialsFactory::JIRA_MASTER_INSTANCE,
+                'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
                 'jiraQuery'=>static::JIRA_ISSUES_QUERY." AND sprint IS NOT EMPTY ORDER BY rank ASC",
             ]);
 
