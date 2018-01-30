@@ -7,6 +7,7 @@ use App\Domains\Database\Jobs\CommitDatabaseTransactionJob;
 use App\Domains\Database\Jobs\RollbackDatabaseTransactionJob;
 use App\Domains\Issue\Jobs\CreateOrUpdateIssuesJob;
 use App\Domains\Issue\Jobs\UpdateIssuesRankJob;
+use App\Domains\Jira\Jobs\GetJiraBoardOpenSprintsJob;
 use App\Domains\Jira\Jobs\GetJiraBoardSprintsJob;
 use App\Domains\Jira\Jobs\GetJiraIssuesWithSprintsJob;
 use App\Domains\Jira\Jobs\GetJiraSprintCustomFieldJob;
@@ -14,6 +15,7 @@ use App\Domains\Jira\Jobs\GetJiraSprintsFromIssuesJob;
 use App\Domains\Jira\Jobs\SearchJiraIssuesByJQLJob;
 use App\Domains\Sprint\Jobs\CreateOrUpdateSprintsIssuesJob;
 use App\Domains\Sprint\Jobs\CreateOrUpdateSprintsJob;
+use App\Domains\Sprint\Jobs\SyncSprintsIssuesJob;
 use App\Domains\Sprint\Tests\Jobs\SyncSprintsIssuesJobTest;
 use Lucid\Foundation\Feature;
 
@@ -21,6 +23,8 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
 {
     const BOARD_TYPE_SCRUM = 'scrum';
     const BOARD_TYPE_KANBAN = 'kanban';
+
+    const FIELD_NAME_SPRINT = 'Sprint';
 
     /** TODO: move this to the database */
     const JIRA_ISSUES_QUERY = 'project IN (VVESTIOS) AND resolution IS NULL';
@@ -33,8 +37,7 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
             'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
             'jiraQuery'=>static::JIRA_ISSUES_QUERY." ORDER BY created ASC",
         ]);
-
-        $issues = $this->run(CreateOrUpdateIssuesJob::class,[
+        $issuesCreatedOrUpdated = $this->run(CreateOrUpdateIssuesJob::class,[
             'jiraIssues'=>$jiraIssues,
         ]);
 
@@ -44,48 +47,23 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
                 'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
                 'jiraQuery'=>static::JIRA_ISSUES_QUERY." AND sprint IS NOT EMPTY ORDER BY rank ASC",
             ]);
-
             $this->run(UpdateIssuesRankJob::class,[
-                'jiraIssues'=>$jiraIssuesWithSprintSortedByRankAsc
+                'jiraIssues'=>$jiraIssuesWithSprintSortedByRankAsc,
             ]);
 
             $jiraSprints = $this->run(GetJiraBoardSprintsJob::class,[
                 'jiraInstance' => Config::JIRA_MASTER_INSTANCE,
                 'jiraBoardName' => static::JIRA_ISSUES_BOARD_NAME,
             ]);
-
-            $jiraSprintCustomFieldId = $this->run(GetJiraSprintCustomFieldJob::class,[
-                'jiraInstance' => Config::JIRA_MASTER_INSTANCE,
+            $sprintsCreatedOrUpdated = $this->run(CreateOrUpdateSprintsJob::class,[
+                'jiraSprints' => $jiraSprints,
             ]);
-
-            dd($jiraSprintCustomFieldId);
-
-            $this->run(BeginDatabaseTransactionJob::class);
-            try {
-                $sprints = $this->run(CreateOrUpdateSprintsJob::class,[
-                    'jiraSprints' => $jiraSprints
-                ]);
-
-                //TODO: foreach issueWithSprint call a static method that
-
-                dd($jiraIssues[0]);
-
-                $this->run(CommitDatabaseTransactionJob::class);
-            } catch (\Exception $e) {
-                $this->run(RollbackDatabaseTransactionJob::class);
-            }
-
-//            $this->run(SyncSprintsIssuesJobTest::any(),[
-//                'sprints' => $sprints,
-//                'issues' => $issues,
-//            ]);
-
 
         }
 
         return [
-            'createdIssues'=>count($issues['created']),
-            'updatedIssues'=>count($issues['updated'])
+            'createdIssues'=>count($issuesCreatedOrUpdated['created']),
+            'updatedIssues'=>count($issuesCreatedOrUpdated['updated'])
         ];
     }
 }
