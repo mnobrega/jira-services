@@ -12,6 +12,6 @@ class Sprint extends Model
     public function issues()
     {
         return $this->belongsToMany('App\Data\Issue','jira_wrapper_sprints_issues',
-            'sprint_id','issue_id');
+            'sprint_id','issue_id')->withTimestamps();
     }
 }

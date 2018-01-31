@@ -45,6 +45,8 @@ class CopyJiraIssuesToDatabase extends Command
             $featureResult = $this->serve(CopyJiraIssuesToDatabaseFeature::class);
             $this->output->writeln('<info>'.$featureResult['createdIssues'].' Issues Created.</info>');
             $this->output->writeln('<info>'.$featureResult['updatedIssues'].' Issues Updated.</info>');
+            $this->output->writeln('<info>'.$featureResult['createdSprints'].' Sprints Created.</info>');
+            $this->output->writeln('<info>'.$featureResult['updatedSprints'].' Sprints Updated.</info>');
         } catch (\Exception $e) {
             $this->output->writeln('<error>An error has ocurred.</error>');
             $this->output->writeln('<info>Error: '.$e->getMessage().'</info>');

@@ -52,6 +52,12 @@ class IssueRepository extends Repository
             ->get();
     }
 
+    public function syncSprints(Issue $issue, $sprintIds)
+    {
+        $this->model = $issue;
+        return $this->model->sprints()->sync($sprintIds);
+    }
+
     /**
      * @param \JiraRestApi\Issue\Issue $jiraIssue
      * @return array

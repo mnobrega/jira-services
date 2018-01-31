@@ -7,11 +7,13 @@ use App\Domains\Database\Jobs\CommitDatabaseTransactionJob;
 use App\Domains\Database\Jobs\RollbackDatabaseTransactionJob;
 use App\Domains\Issue\Jobs\CreateOrUpdateIssuesJob;
 use App\Domains\Issue\Jobs\UpdateIssuesRankJob;
+use App\Domains\Jira\Jobs\GetCustomFieldIdJob;
 use App\Domains\Jira\Jobs\GetJiraBoardOpenSprintsJob;
 use App\Domains\Jira\Jobs\GetJiraBoardSprintsJob;
 use App\Domains\Jira\Jobs\GetJiraIssuesWithSprintsJob;
 use App\Domains\Jira\Jobs\GetJiraSprintCustomFieldJob;
 use App\Domains\Jira\Jobs\GetJiraSprintsFromIssuesJob;
+use App\Domains\Jira\Jobs\SearchJiraBoardSprintsJob;
 use App\Domains\Jira\Jobs\SearchJiraIssuesByJQLJob;
 use App\Domains\Sprint\Jobs\CreateOrUpdateSprintsIssuesJob;
 use App\Domains\Sprint\Jobs\CreateOrUpdateSprintsJob;
@@ -41,6 +43,10 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
             'jiraIssues'=>$jiraIssues,
         ]);
 
+        $sprintsCreatedOrUpdated = [
+            'created'=>array(),
+            'updated'=>array(),
+        ];
         if (static::JIRA_ISSUES_BOARD_TYPE==static::BOARD_TYPE_SCRUM) {
 
             $jiraIssuesWithSprintSortedByRankAsc = $this->run(SearchJiraIssuesByJQLJob::class,[
@@ -51,19 +57,28 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
                 'jiraIssues'=>$jiraIssuesWithSprintSortedByRankAsc,
             ]);
 
-            $jiraSprints = $this->run(GetJiraBoardSprintsJob::class,[
+            $jiraSprints = $this->run(SearchJiraBoardSprintsJob::class,[
                 'jiraInstance' => Config::JIRA_MASTER_INSTANCE,
                 'jiraBoardName' => static::JIRA_ISSUES_BOARD_NAME,
+            ]);
+            $jiraSprintCustomFieldId = $this->run(GetCustomFieldIdJob::class,[
+                'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
+                'fieldName'=>static::FIELD_NAME_SPRINT,
             ]);
             $sprintsCreatedOrUpdated = $this->run(CreateOrUpdateSprintsJob::class,[
                 'jiraSprints' => $jiraSprints,
             ]);
-
+            $this->run(SyncSprintsIssuesJob::class,[
+                'jiraSprintCustomFieldId'=>$jiraSprintCustomFieldId,
+                'jiraIssues'=>$jiraIssues,
+            ]);
         }
 
         return [
             'createdIssues'=>count($issuesCreatedOrUpdated['created']),
-            'updatedIssues'=>count($issuesCreatedOrUpdated['updated'])
+            'updatedIssues'=>count($issuesCreatedOrUpdated['updated']),
+            'createdSprints'=>count($sprintsCreatedOrUpdated['created']),
+            'updatedSprints'=>count($sprintsCreatedOrUpdated['updated']),
         ];
     }
 }

@@ -43,18 +43,20 @@ class JiraApi
             ->getIssues();
     }
 
-    public function getIssueSprint(Issue $issue)
+    /**
+     * @param $fieldName
+     * @return \JiraRestApi\Field\Field|null
+     * @throws \JiraRestApi\JiraException
+     */
+    public function getCustomFieldByName($fieldName)
     {
-
-    }
-
-    public function getAllFields()
-    {
-        return $this->fieldService->getAllFields();
-    }
-
-    private function unserializeIssueSprint($issueSprint)
-    {
-
+        $fields = $this->fieldService->getAllFields();
+        /** @var \JiraRestApi\Field\Field $field */
+        foreach ($fields as $field) {
+            if ($field->name==$fieldName) {
+                return $field;
+            }
+        }
+        return null;
     }
 }

@@ -5,7 +5,7 @@ use App\Data\RestApis\Config;
 use Lucid\Foundation\Job;
 
 
-class GetJiraBoardSprintsJob extends Job
+class SearchJiraBoardSprintsJob extends Job
 {
     private $jiraAgile;
     private $jiraBoardName;

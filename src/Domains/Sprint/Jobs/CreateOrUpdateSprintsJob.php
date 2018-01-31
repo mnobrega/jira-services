@@ -40,7 +40,7 @@ class CreateOrUpdateSprintsJob extends Job
                 case 1:
                     $updatedSprint = $this->repository->update($foundSprints[0],
                         SprintRepository::getAttributesFromJiraSprint($jiraSprint));
-                    $sprints['updated'] = $updatedSprint;
+                    $sprints['updated'][] = $updatedSprint;
                     break;
                 default:
                     throw new \Exception("Found more than 1 sprint with the same sprint_id:".$jiraSprint->id);
