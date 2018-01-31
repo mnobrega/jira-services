@@ -2,11 +2,8 @@
 namespace App\Services\JiraSync\Features;
 
 use App\Domains\Issue\Jobs\GetUpdatedIssuesByDateTimeIntervalJob;
-use App\Domains\JiraClient\Jobs\GetConnectionJob;
-use App\Domains\JiraClient\Jobs\PublishIssuesToSlaveJiraJob;
 use App\Domains\Sync\Jobs\CreateSyncEventJob;
 use App\Domains\Sync\Jobs\GetLatestSyncEventJob;
-use App\Domains\Sync\Jobs\UpdateSyncEventJob;
 use Lucid\Foundation\Feature;
 
 class PublishIssuesToSlaveJiraInstanceFeature extends Feature
