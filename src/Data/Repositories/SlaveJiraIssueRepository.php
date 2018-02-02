@@ -18,9 +18,14 @@ class SlaveJiraIssueRepository extends Repository
     {
         $this->model = new SlaveJiraIssue();
         $attributes = [
-            'key' => $slaveJiraIssueKey,
-            'issue_id' => $issue->id,
+            'slave_issue_key' => $slaveJiraIssueKey,
+            'master_issue_key' => $issue->key,
         ];
         return $this->fillAndSave($attributes);
+    }
+
+    public function searchByMasterJiraKey($key)
+    {
+        
     }
 }

@@ -15,8 +15,8 @@ class CreateSlaveJiraIssuesTable extends Migration
     {
         \Schema::create('jira_sync_slave_jira_issues',function(Blueprint $table) {
             $table->increments('id');
-            $table->integer('issue_id');
-            $table->string('key',50);
+            $table->string('master_issue_key', 50);
+            $table->string('slave_issue_key',50);
             $table->timestamps();
         });
     }

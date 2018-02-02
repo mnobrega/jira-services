@@ -2,6 +2,7 @@
 namespace App\Domains\Jira\Jobs;
 
 use App\Data\Repositories\SlaveJiraIssueRepository;
+use App\Data\RestApis\JiraApi;
 use App\Data\SlaveJiraIssue;
 use App\Data\Issue;
 use Illuminate\Database\Eloquent\Collection;
@@ -43,10 +44,6 @@ class PublishIssuesToSlaveJiraJob extends Job
         "Highest"=>"Highest",
     ];
     //TODO: HARDCODED - Move this to a table so that it can be configure dynamicaly
-    private static $slaveCustomFieldsMapping = [
-        "rank"=>"customfield_10005",
-    ];
-    //TODO: HARDCODED - Move this to a table so that it can be configure dynamicaly
     private static $slaveUsersMapping = [
         "smartins"=>"smartinsvv",
         "rfrade"=>"rfradevv",
@@ -65,13 +62,13 @@ class PublishIssuesToSlaveJiraJob extends Job
 
     /**
      * PublishIssuesToSlaveJiraJob constructor.
-     * @param IssueService $slaveJiraApi
+     * @param $slaveJiraInstance
+     * @param $masterJiraHost
      * @param Collection $updatedIssues
-     * @param String $masterJiraHost
      */
-    public function __construct(IssueService $slaveJiraApi, Collection $updatedIssues, $masterJiraHost)
+    public function __construct($slaveJiraInstance, $masterJiraHost, Collection $updatedIssues)
     {
-        $this->slaveJiraApi = $slaveJiraApi;
+        $this->slaveJiraApi = new JiraApi($slaveJiraInstance);
         $this->masterJiraHost = $masterJiraHost;
         $this->updatedIssues = $updatedIssues;
         $this->repository = new SlaveJiraIssueRepository(new SlaveJiraIssue());

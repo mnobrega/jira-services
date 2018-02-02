@@ -1,7 +1,12 @@
 <?php
 namespace App\Services\JiraSync\Features;
 
+use App\Data\RestApis\Config;
+use App\Domains\Issue\Jobs\CreateSlaveJiraIssueJob;
 use App\Domains\Issue\Jobs\GetUpdatedIssuesByDateTimeIntervalJob;
+use App\Domains\Issue\Jobs\SearchSlaveJiraIssueByMasterJiraIssueJob;
+use App\Domains\Jira\Jobs\PublishIssuesToSlaveJiraJob;
+use App\Domains\Jira\Jobs\PublishIssueToJiraJob;
 use App\Domains\Sync\Jobs\CreateSyncEventJob;
 use App\Domains\Sync\Jobs\GetLatestSyncEventJob;
 use Lucid\Foundation\Feature;
@@ -22,16 +27,29 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             'fromDateTime'=>new \DateTime($syncEvent->from_datetime),
             'toDateTime'=>new \DateTime($syncEvent->to_datetime)
         ]);
-        $slaveJiraApi = $this->run(GetConnectionJob::class, [
-            'host'=>env('JIRA_SLAVE_HOST'),
-            'user'=>env('JIRA_SLAVE_USERNAME'),
-            'pass'=>env('JIRA_SLAVE_PASSWORD'),
-        ]);
-        $publishResult = $this->run(PublishIssuesToSlaveJiraJob::class,[
-            'slaveJiraApi'=>$slaveJiraApi,
-            'updatedIssues'=>$updatedIssues,
-            'masterJiraHost'=>env('JIRA_HOST')
-        ]);
+
+        $publishResult = [
+            'createdSlaveJiraIssues'=>0,
+            'updatedSlaveJiraIssues'=>0,
+        ];
+        foreach ($updatedIssues as $issue) {
+            $slaveJiraIssue = $this->run(SearchSlaveJiraIssueByMasterJiraIssueJob::class,[
+                'masterJiraIssue'=>$issue,
+            ]);
+            $slaveJiraIssue = $this->run(PublishIssueToJiraJob::class,[
+                'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
+                'issue'=>$issue,
+                'slaveJiraIssue'=>$slaveJiraIssue,
+            ]);
+            $this->run(CreateSlaveJiraIssueJob::class,[
+                'issue'=>$issue,
+                'slaveJiraIssue'=>$slaveJiraIssue,
+            ]);
+        }
+//        $publishResult = $this->run(PublishIssuesToSlaveJiraJob::class,[
+//            'slaveJiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
+//            'updatedIssues'=>$updatedIssues
+//        ]);
 
         return $publishResult;
     }
