@@ -24,8 +24,23 @@ class SlaveJiraIssueRepository extends Repository
         return $this->fillAndSave($attributes);
     }
 
-    public function searchByMasterJiraKey($key)
+    /**
+     * @param $masterJiraKey
+     * @return mixed|null
+     * @throws \Exception
+     */
+    public function searchByMasterJiraKey($masterJiraKey)
     {
-        
+        $issues = $this->getByAttributes(["master_issue_key"=>$masterJiraKey]);
+        switch (count($issues)) {
+            case 0:
+                return null;
+                break;
+            case 1:
+                return $issues[0];
+                break;
+            default:
+                throw new \Exception("More than 1 result found for the same Master Issue key:".$masterJiraKey);
+        }
     }
 }

@@ -80,6 +80,36 @@ class JiraApi
     }
 
     /**
+     * @param $query string
+     * @return \JiraRestApi\Issue\Issue[]
+     * @throws \JiraRestApi\JiraException
+     * @throws \JsonMapper_Exception
+     */
+    public function getIssuesByJQL($query)
+    {
+        return $this->issueService
+            ->search($query,0,1000)
+            ->getIssues();
+    }
+
+    /**
+     * @param $fieldName
+     * @return \JiraRestApi\Field\Field|null
+     * @throws \JiraRestApi\JiraException
+     */
+    public function getCustomFieldByName($fieldName)
+    {
+        $fields = $this->fieldService->getAllFields();
+        /** @var \JiraRestApi\Field\Field $field */
+        foreach ($fields as $field) {
+            if ($field->name==$fieldName) {
+                return $field;
+            }
+        }
+        return null;
+    }
+
+    /**
      * @param $issueKey
      * @return \JiraRestApi\Issue\IssueSearchResult|object
      * @throws \JiraRestApi\JiraException
@@ -131,6 +161,7 @@ class JiraApi
         if (!is_null($issue->assignee)) {
             $issueField->setAssigneeName(static::$slaveUsersMapping[$issue->assignee]);
         }
+
         $this->issueService->update($issueIdOrKey, $issueField, $editParams);
 
         if (static::$slaveIssueTypeMappings[$issue->type]!='Bug') {
@@ -145,35 +176,5 @@ class JiraApi
         $this->issueService->transition($issueIdOrKey,$transition);
 
         return $this->get($issueIdOrKey);
-    }
-
-    /**
-     * @param $query string
-     * @return \JiraRestApi\Issue\Issue[]
-     * @throws \JiraRestApi\JiraException
-     * @throws \JsonMapper_Exception
-     */
-    public function getIssuesByJQL($query)
-    {
-        return $this->issueService
-            ->search($query,0,1000)
-            ->getIssues();
-    }
-
-    /**
-     * @param $fieldName
-     * @return \JiraRestApi\Field\Field|null
-     * @throws \JiraRestApi\JiraException
-     */
-    public function getCustomFieldByName($fieldName)
-    {
-        $fields = $this->fieldService->getAllFields();
-        /** @var \JiraRestApi\Field\Field $field */
-        foreach ($fields as $field) {
-            if ($field->name==$fieldName) {
-                return $field;
-            }
-        }
-        return null;
     }
 }

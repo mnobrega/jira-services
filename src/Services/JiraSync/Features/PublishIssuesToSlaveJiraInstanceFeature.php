@@ -23,34 +23,30 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             'fromDateTime'=>new \DateTime($latestSyncEvent->to_datetime),
             'toDateTime'=>now()
         ]);
+
         $updatedIssues = $this->run(GetUpdatedIssuesByDateTimeIntervalJob::class,[
             'fromDateTime'=>new \DateTime($syncEvent->from_datetime),
             'toDateTime'=>new \DateTime($syncEvent->to_datetime)
         ]);
 
         $publishResult = [
-            'createdSlaveJiraIssues'=>0,
-            'updatedSlaveJiraIssues'=>0,
+            'publishedIssues'=>0,
         ];
         foreach ($updatedIssues as $issue) {
             $slaveJiraIssue = $this->run(SearchSlaveJiraIssueByMasterJiraIssueJob::class,[
                 'masterJiraIssue'=>$issue,
             ]);
-            $slaveJiraIssue = $this->run(PublishIssueToJiraJob::class,[
+            $jiraIssue = $this->run(PublishIssueToJiraJob::class,[
                 'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
                 'issue'=>$issue,
-                'slaveJiraIssue'=>$slaveJiraIssue,
+                'remoteIssueKey'=>is_null($slaveJiraIssue)?null:$slaveJiraIssue->slave_issue_key,
             ]);
             $this->run(CreateSlaveJiraIssueJob::class,[
-                'issue'=>$issue,
-                'slaveJiraIssue'=>$slaveJiraIssue,
+                'masterJiraIssue'=>$issue,
+                'slaveJiraIssue'=>$jiraIssue,
             ]);
+            $publishResult['publishedIssues']++;
         }
-//        $publishResult = $this->run(PublishIssuesToSlaveJiraJob::class,[
-//            'slaveJiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
-//            'updatedIssues'=>$updatedIssues
-//        ]);
-
         return $publishResult;
     }
 }

@@ -43,8 +43,7 @@ class PublishIssuesToSlaveJira extends Command
     {
         try {
             $featureResult = $this->serve(PublishIssuesToSlaveJiraInstanceFeature::class);
-            $this->output->writeln('<info>'.$featureResult['createdSlaveJiraIssues'].' Jira Slave Issues Created.</info>');
-            $this->output->writeln('<info>'.$featureResult['updatedSlaveJiraIssues'].' Jira Slave Issues Updated.</info>');
+            $this->output->writeln('<info>'.$featureResult['publishedIssues'].' master JIRA issues published.</info>');
         } catch (\Exception $e) {
             dd($e);
             $this->output->writeln('<error>An error has ocurred.</error>');

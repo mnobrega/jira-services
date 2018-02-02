@@ -3,6 +3,7 @@ namespace App\Domains\Jira\Jobs;
 
 use App\Data\Issue;
 use App\Data\RestApis\JiraApi;
+use App\Data\SlaveJiraIssue;
 use Lucid\Foundation\Job;
 
 class PublishIssueToJiraJob extends Job
@@ -11,31 +12,33 @@ class PublishIssueToJiraJob extends Job
     private $jiraApi;
     /** @var Issue */
     private $issue;
-    /** @var \App\Data\SlaveJiraIssue */
-    private $slaveJiraIssue;
+    /** @var string|null */
+    private $remoteIssueKey;
 
     /**
      * PublishIssueToJiraJob constructor.
-     * @param $jiraInstance
+     * @param string $jiraInstance
      * @param Issue $issue
-     * @param \App\Data\SlaveJiraIssue $slaveJiraIssue
+     * @param string|null $remoteIssueKey
      */
-    public function __construct($jiraInstance, Issue $issue, \App\Data\SlaveJiraIssue $slaveJiraIssue)
+    public function __construct($jiraInstance, Issue $issue, $remoteIssueKey=null)
     {
         $this->jiraApi = new JiraApi($jiraInstance);
         $this->issue = $issue;
-        $this->slaveJiraIssue = $slaveJiraIssue;
+        $this->remoteIssueKey = $remoteIssueKey;
     }
 
     /**
-     * @throws \Exception
+     * @return \JiraRestApi\Issue\Issue|mixed|object
+     * @throws \JiraRestApi\JiraException
+     * @throws \JsonMapper_Exception
      */
     public function handle()
     {
-        if (is_null($this->slaveJiraIssue)) {
+        if (is_null($this->remoteIssueKey)) {
             return $this->jiraApi->create($this->issue);
         } else {
-            return $this->jiraApi->update($this->slaveJiraIssue->slave_issue_key, $issue);
+            return $this->jiraApi->update($this->remoteIssueKey, $this->issue);
         }
     }
 

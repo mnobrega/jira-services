@@ -22,10 +22,10 @@ class SearchSlaveJiraIssueByMasterJiraIssueJob extends Job
     }
 
     /**
-     * @return mixed
+     * @throws \Exception
      */
     public function handle()
     {
-        return null;
+        return $this->repository->searchByMasterJiraKey($this->masterJiraIssue->key);
     }
 }
