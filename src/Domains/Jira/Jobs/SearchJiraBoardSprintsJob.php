@@ -8,24 +8,23 @@ use Lucid\Foundation\Job;
 class SearchJiraBoardSprintsJob extends Job
 {
     private $jiraAgile;
-    private $jiraBoardName;
+    private $jiraBoardId;
 
     /**
-     * GetJiraBoardSprintsJob constructor.
+     * SearchJiraBoardSprintsJob constructor.
      * @param $jiraInstance
-     * @param $jiraBoardName
+     * @param $jiraBoardId
      * @throws \Exception
      */
-    public function __construct($jiraInstance, $jiraBoardName)
+    public function __construct($jiraInstance, $jiraBoardId)
     {
-        $this->jiraBoardName = $jiraBoardName;
+        $this->jiraBoardId = $jiraBoardId;
         $this->jiraAgile = Config::getJiraAgile($jiraInstance);
     }
 
 
     public function handle()
     {
-        $board = $this->jiraAgile->getBoardByName($this->jiraBoardName);
-        return !is_null($board)?$this->jiraAgile->getBoardOpenSprints($board->id):array();
+        return $this->jiraAgile->getBoardOpenSprints($this->jiraBoardId);
     }
 }

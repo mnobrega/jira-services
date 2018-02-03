@@ -6,6 +6,7 @@ use App\Data\RestApis\JiraAgile;
 use App\Domains\Issue\Jobs\CreateOrUpdateIssuesJob;
 use App\Domains\Issue\Jobs\UpdateIssuesRankJob;
 use App\Domains\Jira\Jobs\GetCustomFieldIdJob;
+use App\Domains\Jira\Jobs\SearchJiraBoardByNameJob;
 use App\Domains\Jira\Jobs\SearchJiraBoardSprintsJob;
 use App\Domains\Jira\Jobs\SearchJiraIssuesByJQLJob;
 use App\Domains\Sprint\Jobs\CreateOrUpdateSprintsJob;
@@ -43,21 +44,28 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
                 'jiraIssues'=>$jiraIssuesWithSprintSortedByRankAsc,
             ]);
 
-            $jiraSprints = $this->run(SearchJiraBoardSprintsJob::class,[
-                'jiraInstance' => Config::JIRA_MASTER_INSTANCE,
-                'jiraBoardName' => static::JIRA_ISSUES_BOARD_NAME,
-            ]);
-            $jiraSprintCustomFieldId = $this->run(GetCustomFieldIdJob::class,[
+            $jiraBoard = $this->run(SearchJiraBoardByNameJob::class,[
                 'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
-                'fieldName'=>JiraAgile::FIELD_NAME_SPRINT,
+                'jiraBoardName'=>static::JIRA_ISSUES_BOARD_NAME,
             ]);
-            $sprintsCreatedOrUpdated = $this->run(CreateOrUpdateSprintsJob::class,[
-                'jiraSprints' => $jiraSprints,
-            ]);
-            $this->run(SyncSprintsIssuesJob::class,[
-                'jiraSprintCustomFieldId'=>$jiraSprintCustomFieldId,
-                'jiraIssues'=>$jiraIssues,
-            ]);
+
+            if (!is_null($jiraBoard)) {
+                $jiraSprints = $this->run(SearchJiraBoardSprintsJob::class,[
+                    'jiraInstance' => Config::JIRA_MASTER_INSTANCE,
+                    'jiraBoardId' => $jiraBoard->id,
+                ]);
+                $jiraSprintCustomFieldId = $this->run(GetCustomFieldIdJob::class,[
+                    'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
+                    'fieldName'=>JiraAgile::FIELD_NAME_SPRINT,
+                ]);
+                $sprintsCreatedOrUpdated = $this->run(CreateOrUpdateSprintsJob::class,[
+                    'jiraSprints' => $jiraSprints,
+                ]);
+                $this->run(SyncSprintsIssuesJob::class,[
+                    'jiraSprintCustomFieldId'=>$jiraSprintCustomFieldId,
+                    'jiraIssues'=>$jiraIssues,
+                ]);
+            }
         }
 
         return [
