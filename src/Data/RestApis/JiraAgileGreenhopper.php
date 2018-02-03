@@ -8,7 +8,7 @@
 
 namespace App\Data\RestApis;
 
-use JiraAgileRestApi\Sprint\Sprint;
+use App\Data\Sprint;
 use JiraGreenhopperRestApi\Configuration\ArrayConfiguration;
 use JiraGreenhopperRestApi\ExperimentalApi\Board\BoardService;
 
@@ -66,5 +66,15 @@ class JiraAgileGreenhopper implements JiraAgileInterface
             $startAt = $startAt + $maxResults + 1;
         }
         return $sprints;
+    }
+
+    public function createSprint(Sprint $sprint)
+    {
+
+    }
+
+    public function updateSprint($sprintId, Sprint $sprint)
+    {
+
     }
 }

@@ -36,9 +36,9 @@ class PublishIssueToJiraJob extends Job
     public function handle()
     {
         if (is_null($this->remoteIssueKey)) {
-            return $this->jiraApi->create($this->issue);
+            return $this->jiraApi->createIssue($this->issue);
         } else {
-            return $this->jiraApi->update($this->remoteIssueKey, $this->issue);
+            return $this->jiraApi->updateIssue($this->remoteIssueKey, $this->issue);
         }
     }
 

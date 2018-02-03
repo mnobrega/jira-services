@@ -8,8 +8,11 @@
 
 namespace App\Data\RestApis;
 
+use App\Data\Sprint;
+use JiraAgileRestApi\Sprint\Sprint as JiraSprint;
 use JiraAgileRestApi\Board\BoardService;
 use JiraAgileRestApi\Configuration\ArrayConfiguration;
+use JiraAgileRestApi\Sprint\SprintService;
 
 class JiraAgile implements JiraAgileInterface
 {
@@ -19,6 +22,7 @@ class JiraAgile implements JiraAgileInterface
     const FIELD_NAME_SPRINT = 'Sprint';
 
     private $boardService;
+    private $sprintService;
 
     /**
      * JiraAgile constructor.
@@ -29,6 +33,7 @@ class JiraAgile implements JiraAgileInterface
     {
         $configuration = new ArrayConfiguration(Config::getCredentials($instance));
         $this->boardService = new BoardService($configuration);
+        $this->sprintService = new SprintService($configuration);
     }
 
     /**
@@ -53,6 +58,17 @@ class JiraAgile implements JiraAgileInterface
     {
         $sprintSearchResult = $this->boardService->getSprints($boardId,['state'=>'future,active']);
         return $sprintSearchResult->values;
+    }
+
+    public function createSprint(Sprint $sprint)
+    {
+        $jiraSprint = new JiraSprint();
+        //TODO - set params
+    }
+
+    public function updateSprint($sprintId, Sprint $sprint)
+    {
+
     }
 
 }

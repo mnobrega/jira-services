@@ -74,7 +74,7 @@ class JiraApi
      * @throws \JiraRestApi\JiraException
      * @throws \JsonMapper_Exception
      */
-    public function get($issueIdOrKey)
+    public function getIssue($issueIdOrKey)
     {
         return $this->issueService->get($issueIdOrKey);
     }
@@ -115,7 +115,7 @@ class JiraApi
      * @throws \JiraRestApi\JiraException
      * @throws \JsonMapper_Exception
      */
-    public function searchByKey($issueKey)
+    public function searchIssueByKey($issueKey)
     {
         return $this->issueService->search("key=".$issueKey);
     }
@@ -126,7 +126,7 @@ class JiraApi
      * @throws \JiraRestApi\JiraException
      * @throws \JsonMapper_Exception
      */
-    public function create(\App\Data\Issue $issue)
+    public function createIssue(\App\Data\Issue $issue)
     {
         $issueField = new IssueField();
 
@@ -137,7 +137,7 @@ class JiraApi
 
         $createdJiraIssue = $this->issueService->create($issueField);
 
-        return $this->update($createdJiraIssue->key, $issue);
+        return $this->updateIssue($createdJiraIssue->key, $issue);
     }
 
     /**
@@ -147,7 +147,7 @@ class JiraApi
      * @throws \JiraRestApi\JiraException
      * @throws \JsonMapper_Exception
      */
-    public function update($issueIdOrKey, \App\Data\Issue $issue)
+    public function updateIssue($issueIdOrKey, \App\Data\Issue $issue)
     {
         $editParams = [
             'notifyUsers' => false
@@ -175,6 +175,6 @@ class JiraApi
         $transition->setTransitionName(static::$slaveIssueStatusTransitionMapping[$issue->status]);
         $this->issueService->transition($issueIdOrKey,$transition);
 
-        return $this->get($issueIdOrKey);
+        return $this->getIssue($issueIdOrKey);
     }
 }

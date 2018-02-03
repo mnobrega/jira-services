@@ -69,6 +69,7 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
 
             if (!is_null($jiraBoard)) {
                 foreach ($sprints as $sprint) {
+                    dd($sprint);
                     $slaveJiraSprint = $this->run(SearchSlaveJiraSprintByMasterJiraSprintJob::class,[
                         'masterJiraSprint'=>$sprint
                     ]);

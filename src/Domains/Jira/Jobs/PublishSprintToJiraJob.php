@@ -30,6 +30,10 @@ class PublishSprintToJiraJob extends Job
 
     public function handle()
     {
-        //TODO - add methods create and update to JiraAgileApi and JiraGreenHopperApi (if exist)
+        if(is_null($this->remoteSprintId)) {
+            return $this->jiraAgileApi->createSprint($this->sprint);
+        } else {
+            return $this->jiraAgileApi->updateSprint($this->remoteSprintId,$this->sprint);
+        }
     }
 }
