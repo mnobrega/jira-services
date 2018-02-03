@@ -2,6 +2,7 @@
 namespace App\Services\JiraWrapper\Features;
 
 use App\Data\RestApis\Config;
+use App\Data\RestApis\JiraAgile;
 use App\Domains\Issue\Jobs\CreateOrUpdateIssuesJob;
 use App\Domains\Issue\Jobs\UpdateIssuesRankJob;
 use App\Domains\Jira\Jobs\GetCustomFieldIdJob;
@@ -13,11 +14,6 @@ use Lucid\Foundation\Feature;
 
 class CopyJiraIssuesToDatabaseFeature extends Feature
 {
-    const BOARD_TYPE_SCRUM = 'scrum';
-    const BOARD_TYPE_KANBAN = 'kanban';
-
-    const FIELD_NAME_SPRINT = 'Sprint';
-
     /** TODO: move this to the database */
     const JIRA_ISSUES_QUERY = 'project IN (VVESTIOS) AND resolution IS NULL';
     const JIRA_ISSUES_BOARD_NAME = 'Mobile';
@@ -37,7 +33,7 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
             'created'=>array(),
             'updated'=>array(),
         ];
-        if (static::JIRA_ISSUES_BOARD_TYPE==static::BOARD_TYPE_SCRUM) {
+        if (static::JIRA_ISSUES_BOARD_TYPE==JiraAgile::BOARD_TYPE_SCRUM) {
 
             $jiraIssuesWithSprintSortedByRankAsc = $this->run(SearchJiraIssuesByJQLJob::class,[
                 'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
@@ -53,7 +49,7 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
             ]);
             $jiraSprintCustomFieldId = $this->run(GetCustomFieldIdJob::class,[
                 'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
-                'fieldName'=>static::FIELD_NAME_SPRINT,
+                'fieldName'=>JiraAgile::FIELD_NAME_SPRINT,
             ]);
             $sprintsCreatedOrUpdated = $this->run(CreateOrUpdateSprintsJob::class,[
                 'jiraSprints' => $jiraSprints,

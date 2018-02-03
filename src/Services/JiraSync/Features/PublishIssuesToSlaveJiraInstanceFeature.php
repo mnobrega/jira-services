@@ -2,17 +2,26 @@
 namespace App\Services\JiraSync\Features;
 
 use App\Data\RestApis\Config;
+use App\Data\RestApis\JiraAgile;
 use App\Domains\Issue\Jobs\CreateSlaveJiraIssueJob;
+use App\Domains\Issue\Jobs\GetAllSlaveJiraIssuesJob;
+use App\Domains\Issue\Jobs\GetIssueByKeyJob;
 use App\Domains\Issue\Jobs\GetUpdatedIssuesByDateTimeIntervalJob;
 use App\Domains\Issue\Jobs\SearchSlaveJiraIssueByMasterJiraIssueJob;
 use App\Domains\Jira\Jobs\PublishIssuesToSlaveJiraJob;
 use App\Domains\Jira\Jobs\PublishIssueToJiraJob;
+use App\Domains\Jira\Jobs\SearchJiraIssuesByJQLJob;
 use App\Domains\Sync\Jobs\CreateSyncEventJob;
 use App\Domains\Sync\Jobs\GetLatestSyncEventJob;
+use App\Services\JiraWrapper\Features\CopyJiraIssuesToDatabaseFeature;
 use Lucid\Foundation\Feature;
 
 class PublishIssuesToSlaveJiraInstanceFeature extends Feature
 {
+    /** TODO: move this to the database */
+    const JIRA_ISSUES_BOARD_NAME = 'VVESTIOS';
+    const JIRA_ISSUES_BOARD_TYPE = 'scrum';
+
     /**
      * @throws \Exception
      */
@@ -33,6 +42,7 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             'publishedIssues'=>0,
         ];
         foreach ($updatedIssues as $issue) {
+            /** @var $issue \App\Data\Issue */
             $slaveJiraIssue = $this->run(SearchSlaveJiraIssueByMasterJiraIssueJob::class,[
                 'masterJiraIssue'=>$issue,
             ]);
@@ -47,6 +57,15 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             ]);
             $publishResult['publishedIssues']++;
         }
+
+        if (static::JIRA_ISSUES_BOARD_TYPE==JiraAgile::BOARD_TYPE_SCRUM) {
+            $slaveJiraIssues = $this->run(GetAllSlaveJiraIssuesJob::class);
+            foreach ($slaveJiraIssues as $slaveJiraIssue) {
+                $issue = $this->run(GetIssueByKeyJob::class,['issueKey'=>$slaveJiraIssue->master_issue_key]);
+                dd($issue->sprints());
+            }
+        }
+
         return $publishResult;
     }
 }

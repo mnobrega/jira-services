@@ -23,7 +23,9 @@ class GetUpdatedIssuesByDateTimeIntervalJob extends Job
         $this->repository = new IssueRepository(new Issue());
     }
 
-
+    /**
+     * @return \App\Data\Issue[]
+     */
     public function handle()
     {
         return $this->repository->getUpdatedIssuesByDateTimeInterval($this->fromDateTime->format("Y-m-d H:i:s"),

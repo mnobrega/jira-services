@@ -38,9 +38,24 @@ class IssueRepository extends Repository
     }
 
     /**
+     * @param $key
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getByKey($key)
+    {
+        $issues = $this->getByAttributes(['key'=>$key]);
+        if (count($issues)==1) {
+            return $issues[0];
+        } else {
+            throw new \Exception("Not found or wrong number of issues with key:".$key);
+        }
+    }
+
+    /**
      * @param $from
      * @param $to
-     * @return Issue[]
+     * @return \App\Data\Issue[]
      */
     public function getUpdatedIssuesByDateTimeInterval($from, $to)
     {

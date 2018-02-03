@@ -14,6 +14,11 @@ use JiraAgileRestApi\Issue\IssueService;
 
 class JiraAgile implements JiraAgileInterface
 {
+    const BOARD_TYPE_SCRUM = 'scrum';
+    const BOARD_TYPE_KANBAN = 'kanban';
+
+    const FIELD_NAME_SPRINT = 'Sprint';
+
     private $issueService;
     private $boardService;
 
