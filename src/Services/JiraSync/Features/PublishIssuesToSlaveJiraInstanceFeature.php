@@ -60,12 +60,22 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
 
         if (static::JIRA_ISSUES_BOARD_TYPE==JiraAgile::BOARD_TYPE_SCRUM) {
 
-            //TODO - publish sprints with issues to Slave JIRA (create or update)
+            //TODO - local - get all sprints
 
-            //TODO - create slave jira sprints in local database for mapping
+            //TODO - foreach sprint
 
-            //TODO - foreach issue in slave jira issues, get master issue and sprints and associate
-//            $slaveJiraIssues = $this->run(GetAllSlaveJiraIssuesJob::class);
+                //TODO - local - search slave jira sprint
+
+                //TODO - remote - publish sprint with issues to Slave JIRA (create or update)
+
+                //TODO - local - create slave jira sprints in local database for mapping
+
+            $slaveJiraIssues = $this->run(GetAllSlaveJiraIssuesJob::class);
+            //TODO - foreach issue in slave jira issues
+                // TODO - get master issue
+                // TODO - foreach master issue sprint
+                    //TODO - get slave jira sprint
+                    //TODO - associate slave issue to slave jira
 //            foreach ($slaveJiraIssues as $slaveJiraIssue) {
 //                $issue = $this->run(GetIssueByKeyJob::class,[
 //                    'issueKey'=>$slaveJiraIssue->master_issue_key,
