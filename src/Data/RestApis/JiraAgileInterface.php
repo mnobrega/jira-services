@@ -8,13 +8,15 @@
 
 namespace App\Data\RestApis;
 
-
+use App\Data\Issue;
 use App\Data\Sprint;
 
 interface JiraAgileInterface
 {
     public function getBoardByName($boardName);
     public function getBoardOpenSprints($boardId);
-    public function createSprint(Sprint $sprint);
+    public function createBoardSprint($boardId, Sprint $sprint);
     public function updateSprint($sprintId, Sprint $sprint);
+    public function moveIssueToSprint($issueKey, $sprintId);
+    public function moveIssueToBacklog($issueKey);
 }

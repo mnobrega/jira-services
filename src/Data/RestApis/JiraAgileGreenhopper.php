@@ -8,6 +8,7 @@
 
 namespace App\Data\RestApis;
 
+use App\Data\Issue;
 use App\Data\Sprint;
 use JiraGreenhopperRestApi\Configuration\ArrayConfiguration;
 use JiraGreenhopperRestApi\ExperimentalApi\Board\BoardService;
@@ -68,13 +69,42 @@ class JiraAgileGreenhopper implements JiraAgileInterface
         return $sprints;
     }
 
-    public function createSprint(Sprint $sprint)
+    /**
+     * @param $boardId
+     * @param Sprint $sprint
+     * @throws \Exception
+     */
+    public function createBoardSprint($boardId, Sprint $sprint)
     {
-
+        throw new \Exception("Not Implemented yet");
     }
 
+    /**
+     * @param $sprintId
+     * @param Sprint $sprint
+     * @throws \Exception
+     */
     public function updateSprint($sprintId, Sprint $sprint)
     {
+        throw new \Exception("Not implemented yet");
+    }
 
+    /**
+     * @param $issueKey
+     * @param $sprintId
+     * @throws \Exception
+     */
+    public function moveIssueToSprint($issueKey, $sprintId)
+    {
+        throw new \Exception("Not implemented yet");
+    }
+
+    /**
+     * @param $issueKey
+     * @throws \Exception
+     */
+    public function moveIssueToBacklog($issueKey)
+    {
+        throw new \Exception("Not implemented yet");
     }
 }

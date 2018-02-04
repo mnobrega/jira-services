@@ -8,10 +8,15 @@
 
 namespace App\Data\RestApis;
 
+use App\Data\Issue;
 use App\Data\Sprint;
+use JiraAgileRestApi\BacklogIssue\BacklogIssue;
+use JiraAgileRestApi\BacklogIssue\BacklogIssueService;
+use JiraAgileRestApi\JiraClient;
 use JiraAgileRestApi\Sprint\Sprint as JiraSprint;
 use JiraAgileRestApi\Board\BoardService;
 use JiraAgileRestApi\Configuration\ArrayConfiguration;
+use JiraAgileRestApi\Sprint\SprintIssue;
 use JiraAgileRestApi\Sprint\SprintService;
 
 class JiraAgile implements JiraAgileInterface
@@ -23,6 +28,7 @@ class JiraAgile implements JiraAgileInterface
 
     private $boardService;
     private $sprintService;
+    private $backlogIssueService;
 
     /**
      * JiraAgile constructor.
@@ -34,6 +40,7 @@ class JiraAgile implements JiraAgileInterface
         $configuration = new ArrayConfiguration(Config::getCredentials($instance));
         $this->boardService = new BoardService($configuration);
         $this->sprintService = new SprintService($configuration);
+        $this->backlogIssueService = new BacklogIssueService($configuration);
     }
 
     /**
@@ -60,15 +67,77 @@ class JiraAgile implements JiraAgileInterface
         return $sprintSearchResult->values;
     }
 
-    public function createSprint(Sprint $sprint)
+    /**
+     * @param $boardId
+     * @param Sprint $sprint
+     * @return JiraSprint|object
+     * @throws \JiraAgileRestApi\JiraException
+     * @throws \JsonMapper_Exception
+     */
+    public function createBoardSprint($boardId, Sprint $sprint)
     {
-        $jiraSprint = new JiraSprint();
-        //TODO - set params
+        $jiraSprint = $this->getJiraSprintFromSprint($sprint);
+        $jiraSprint->setOriginBoardId($boardId);
+        return $this->sprintService->create($jiraSprint);
     }
 
-    public function updateSprint($sprintId, Sprint $sprint)
+    /**
+     * @param $jiraSprintId
+     * @param Sprint $sprint
+     * @return string
+     * @throws \JiraAgileRestApi\JiraException
+     * @throws \JsonMapper_Exception
+     */
+    public function updateSprint($jiraSprintId, Sprint $sprint)
     {
+        $jiraSprint = $this->getJiraSprintFromSprint($sprint);
+        return $this->sprintService->update($jiraSprintId,$jiraSprint);
+    }
 
+    /**
+     * @param Issue $issueKey
+     * @param Sprint $sprintId
+     * @return string
+     * @throws \JiraAgileRestApi\JiraException
+     */
+    public function moveIssueToSprint($issueKey, $sprintId)
+    {
+        $sprintIssue = new SprintIssue();
+        $sprintIssue->issues = array($issueKey);
+        return $this->sprintService->addIssues($sprintId, $sprintIssue);
+    }
+
+    /**
+     * @param $issueKey
+     * @return string
+     * @throws \JiraAgileRestApi\JiraException
+     */
+    public function moveIssueToBacklog($issueKey)
+    {
+        $backlogIssue = new BacklogIssue();
+        $backlogIssue->issues = array($issueKey);
+        return $this->backlogIssueService->create($backlogIssue);
+    }
+
+    /**
+     * @param Sprint $sprint
+     * @return JiraSprint
+     */
+    private function getJiraSprintFromSprint(Sprint $sprint)
+    {
+        $startDate = new \DateTime($sprint->start_date);
+        $endDate = new \DateTime($sprint->end_date);
+
+        if ($startDate->getTimestamp()==$endDate->getTimestamp()) {
+            $startDate->modify("-1 second");
+        }
+
+        $jiraSprint = new JiraSprint();
+        $jiraSprint->setState($sprint->state)
+            ->setName($sprint->name)
+            ->setStartDate($startDate->format(JiraClient::JIRA_DATE_FORMAT))
+            ->setEndDate($endDate->format(JiraClient::JIRA_DATE_FORMAT));
+        return $jiraSprint;
     }
 
 }

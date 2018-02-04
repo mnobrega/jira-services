@@ -11,9 +11,8 @@ class GetIssueByKeyJob extends Job
     private $issueKey;
 
     /**
-     * Create a new job instance.
-     *
-     * @return void
+     * GetIssueByKeyJob constructor.
+     * @param $issueKey
      */
     public function __construct($issueKey)
     {
@@ -22,6 +21,7 @@ class GetIssueByKeyJob extends Job
     }
 
     /**
+     * @return mixed
      * @throws \Exception
      */
     public function handle()
