@@ -18,9 +18,6 @@ use JiraRestApi\Issue\Transition;
 
 class JiraApi
 {
-    private $issueService;
-    private $fieldService;
-
     //TODO: HARDCODED - Move this to a table so that it can be configure dynamicaly
     private static $slaveIssueTypeMappings = [
         'Task'=>'Task',
@@ -55,6 +52,17 @@ class JiraApi
         "ana.martins"=>"ana.martins",
         "cribeiro"=>"smartinsvv",
     ];
+
+    const FIELD_NAME_EPIC_LINK = 'Epic Link';
+    const FIELD_NAME_EPIC_NAME = 'Epic Name';
+    const FIELD_NAME_EPIC_COLOR = 'Epic Colour';
+
+    private $issueService;
+    private $fieldService;
+
+    private $epicLinkCustomFieldId=null;
+    private $epicNameCustomFieldId=null;
+    private $epicColorCustomFieldId=null;
 
     /**
      * JiraApi constructor.
@@ -108,6 +116,39 @@ class JiraApi
         }
         return null;
     }
+    /**
+     * @return null|string
+     * @throws \JiraRestApi\JiraException
+     */
+    public function getEpicLinkCustomFieldId()
+    {
+        if (!is_null($this->epicLinkCustomFieldId)) {
+            return $this->epicLinkCustomFieldId;
+        }
+        return $this->epicLinkCustomFieldId = $this->getCustomFieldByName(static::FIELD_NAME_EPIC_LINK)->id;
+    }
+    /**
+     * @return null|string
+     * @throws \JiraRestApi\JiraException
+     */
+    public function getEpicNameCustomFieldId()
+    {
+        if (!is_null($this->epicNameCustomFieldId)) {
+            return $this->epicNameCustomFieldId;
+        }
+        return $this->epicNameCustomFieldId = $this->getCustomFieldByName(static::FIELD_NAME_EPIC_NAME)->id;
+    }
+    /**
+     * @return null|string
+     * @throws \JiraRestApi\JiraException
+     */
+    public function getEpicColorCustomFieldId()
+    {
+        if (!is_null($this->epicColorCustomFieldId)) {
+            return $this->epicColorCustomFieldId;
+        }
+        return $this->epicColorCustomFieldId = $this->getCustomFieldByName(static::FIELD_NAME_EPIC_COLOR)->id;
+    }
 
     /**
      * @param $issueKey
@@ -135,6 +176,13 @@ class JiraApi
             ->setSummary($issue->summary)
             ->setIssueType(static::$slaveIssueTypeMappings[$issue->type]);
 
+        if ($issue->type=='Epic') {
+            $issueField->addCustomField($this->getEpicNameCustomFieldId(),$issue->epic_name);
+            $issueField->addCustomField($this->getEpicColorCustomFieldId(),$issue->epic_color);
+        } else if (!is_null($issue->epic_link)) {
+            $issueField->addCustomField($this->getEpicLinkCustomFieldId(),$issue->epic_link);
+        }
+
         $createdJiraIssue = $this->issueService->create($issueField);
 
         return $this->updateIssue($createdJiraIssue->key, $issue);
@@ -160,6 +208,12 @@ class JiraApi
             ->setIssueType(static::$slaveIssueTypeMappings[$issue->type]);
         if (!is_null($issue->assignee)) {
             $issueField->setAssigneeName(static::$slaveUsersMapping[$issue->assignee]);
+        }
+        if ($issue->type=='Epic') {
+            $issueField->addCustomField($this->getEpicNameCustomFieldId(),$issue->epic_name);
+            $issueField->addCustomField($this->getEpicColorCustomFieldId(),$issue->epic_color);
+        } else if (!is_null($issue->epic_link)) {
+            $issueField->addCustomField($this->getEpicLinkCustomFieldId(),$issue->epic_link);
         }
 
         $this->issueService->update($issueIdOrKey, $issueField, $editParams);

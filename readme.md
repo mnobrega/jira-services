@@ -69,7 +69,11 @@ machine for other PHP projects that share the same requirements)
 1. Create a project with the same key as your Master JIRA instance
 2. Change the project screen scheme to the default
 3. Do the steps 1 and 2 for all the projects your syncing between JIRA instances
-4. Add to the default screen the time estimating fields 
+4. Add to the default screen the following fields:
+ * Time Tracking
+ * Epic Link
+ * Epic Name
+ * Epic Colour
 
 #### REST Browser Plugin
 For documentation about JIRA REST API you can use the following plugin:

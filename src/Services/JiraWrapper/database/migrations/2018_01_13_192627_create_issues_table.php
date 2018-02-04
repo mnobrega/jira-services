@@ -26,6 +26,8 @@ class CreateIssuesTable extends Migration
             $table->dateTime('updated');
             $table->string('fix_version',50)->nullable();
             $table->string('epic_link',50)->nullable();
+            $table->string('epic_name',50)->nullable();
+            $table->string('epic_color',50)->nullable();
             $table->string('assignee',50)->nullable();
             $table->integer('remaining_estimate')->nullable();
             $table->integer('original_estimate')->nullable();

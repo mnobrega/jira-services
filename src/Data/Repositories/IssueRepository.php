@@ -14,6 +14,8 @@ class IssueRepository extends Repository
 {
     static private $jiraCustomFieldsMapping = [
         'epic_link'=>'customfield_10006',
+        'epic_name'=>'customfield_10007',
+        'epic_color'=>'customfield_10009',
     ];
 
     /**
@@ -101,6 +103,10 @@ class IssueRepository extends Repository
             'fix_version' => count($fixVersions)>0?$fixVersions[0]->name:null,
             'epic_link' => key_exists(static::$jiraCustomFieldsMapping['epic_link'],$jiraIssue->fields->customFields)?
                 $jiraIssue->fields->customFields[static::$jiraCustomFieldsMapping['epic_link']]:null,
+            'epic_name'=>key_exists(static::$jiraCustomFieldsMapping['epic_name'],$jiraIssue->fields->customFields)?
+                $jiraIssue->fields->customFields[static::$jiraCustomFieldsMapping['epic_name']]:null,
+            'epic_color'=>key_exists(static::$jiraCustomFieldsMapping['epic_color'],$jiraIssue->fields->customFields)?
+                $jiraIssue->fields->customFields[static::$jiraCustomFieldsMapping['epic_color']]:null,
             'assignee' => is_object($jiraIssue->fields->assignee)?$jiraIssue->fields->assignee->name:null,
             'remaining_estimate' => $jiraIssue->fields->timeestimate==0?null:$jiraIssue->fields->timeestimate,
             'original_estimate' => is_object($jiraIssue->fields->timeoriginalestimate)?

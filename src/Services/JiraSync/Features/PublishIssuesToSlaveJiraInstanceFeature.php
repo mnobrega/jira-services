@@ -4,6 +4,7 @@ namespace App\Services\JiraSync\Features;
 use App\Data\RestApis\Config;
 use App\Data\RestApis\JiraAgile;
 use App\Domains\Issue\Jobs\CreateSlaveJiraIssueJob;
+use App\Domains\Issue\Jobs\GetAllEpicIssuesJob;
 use App\Domains\Issue\Jobs\GetAllSlaveJiraIssuesJob;
 use App\Domains\Issue\Jobs\GetIssueByKeyJob;
 use App\Domains\Issue\Jobs\GetIssuesSortedByRankJob;
@@ -43,6 +44,9 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             'issuesMovedToBacklog'=>0,
         ];
 
+        $epicIssues = $this->run(GetAllEpicIssuesJob::class);
+        $publishResult = $this->publishIssues($epicIssues,$publishResult);
+
         $latestSyncEvent = $this->run(GetLatestSyncEventJob::class);
         $syncEvent = $this->run(CreateSyncEventJob::class,[
             'fromDateTime'=>new \DateTime($latestSyncEvent->to_datetime),
@@ -52,7 +56,7 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             'fromDateTime'=>new \DateTime($syncEvent->from_datetime),
             'toDateTime'=>new \DateTime($syncEvent->to_datetime)
         ]);
-        $publishResult = $this->publishUpdatedIssues($updatedIssues,$publishResult);
+        $publishResult = $this->publishIssues($updatedIssues,$publishResult);
 
         if (static::JIRA_ISSUES_BOARD_TYPE==JiraAgile::BOARD_TYPE_SCRUM) {
             $sprints = $this->run(GetAllSprintsJob::class);
@@ -94,9 +98,9 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
         return $publishResult;
     }
 
-    private function publishUpdatedIssues($updatedIssues, $publishResult)
+    private function publishIssues($issues, $publishResult)
     {
-        foreach ($updatedIssues as $issue) {
+        foreach ($issues as $issue) {
             /** @var $issue \App\Data\Issue */
             $slaveJiraIssue = $this->run(SearchSlaveJiraIssueByMasterJiraIssueJob::class,[
                 'masterJiraIssue'=>$issue,
