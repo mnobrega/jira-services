@@ -8,9 +8,9 @@ once the 10 users threshold is surpassed.
 
 - [Requirements](#requirements)
 - [Recommended Development Environment](#development-environment-installation)
-- [Quick Start and Examples](#quick-start-and-examples)
 - [Available Services](#available-services)
 - [Useful Information](#useful-information)
+- [REST API References](#rest-api-references)
 
 ### Requirements
 ##### Production
@@ -50,23 +50,27 @@ machine for other PHP projects that share the same requirements)
     $ composer update
 ```
 
-### Quick Start and Examples
-* Connects to a master JIRA instance
-* Synchronizes all the referred JQL issues with a local database
-* With the information stored creates reports or sends the 
-issues to another slave JIRA instance
-
-* Slave JIRA
-- Replicate the projects found in your Master JIRA
-- Modify the project screens to include timetracking
-
 ### Available Services
 * Wrapping a JIRA Instance into a local database
-* Synchronization with a slave JIRA instance
-
-### Run Tests
+``` sh
+    php artisan jira-wrapper:issues:copy
+```
+* Publish your local database issues to a remote slave JIRA
+``` sh
+    php artisan jira-sync:issues:publish
+```
+* See other available commands
+``` sh
+    php artisan
+```
 
 ### Useful Information
+#### Slave JIRA Instances
+1. Create a project with the same key as your Master JIRA instance
+2. Change the project screen scheme to the default
+3. Do the steps 1 and 2 for all the projects your syncing between JIRA instances
+4. Add to the default screen the time estimating fields 
+
 #### REST Browser Plugin
 For documentation about JIRA REST API you can use the following plugin:
 https://marketplace.atlassian.com/plugins/com.atlassian.labs.rest-api-browser/server/overview
@@ -75,5 +79,4 @@ Access the following page: [your-jira-domain-name]/plugins/servlet/restbrowser t
 #### REST API References
 - [JIRA Agile REST API](https://docs.atlassian.com/jira-software/REST/7.0.4/#agile/1.0/issue-rankIssues)
 - [JIRA REST API](https://docs.atlassian.com/software/jira/docs/api/REST/7.0.4/)
-
-#### JIRA Configuration
+- [JIRA Agile Greenhopper REST API]()
