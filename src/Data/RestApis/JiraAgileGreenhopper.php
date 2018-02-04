@@ -107,4 +107,14 @@ class JiraAgileGreenhopper implements JiraAgileInterface
     {
         throw new \Exception("Not implemented yet");
     }
+
+    /**
+     * @param $issueA
+     * @param $issueB
+     * @throws \Exception
+     */
+    public function rankIssueABeforeIssueB($issueA, $issueB)
+    {
+        throw new \Exception("Not implemented yet");
+    }
 }

@@ -19,4 +19,5 @@ interface JiraAgileInterface
     public function updateSprint($sprintId, Sprint $sprint);
     public function moveIssueToSprint($issueKey, $sprintId);
     public function moveIssueToBacklog($issueKey);
+    public function rankIssueABeforeIssueB($issueAKey, $issueBKey);
 }

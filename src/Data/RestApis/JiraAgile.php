@@ -12,6 +12,8 @@ use App\Data\Issue;
 use App\Data\Sprint;
 use JiraAgileRestApi\BacklogIssue\BacklogIssue;
 use JiraAgileRestApi\BacklogIssue\BacklogIssueService;
+use JiraAgileRestApi\IssueRank\IssueRank;
+use JiraAgileRestApi\IssueRank\IssueRankService;
 use JiraAgileRestApi\JiraClient;
 use JiraAgileRestApi\Sprint\Sprint as JiraSprint;
 use JiraAgileRestApi\Board\BoardService;
@@ -29,6 +31,7 @@ class JiraAgile implements JiraAgileInterface
     private $boardService;
     private $sprintService;
     private $backlogIssueService;
+    private $issueRankService;
 
     /**
      * JiraAgile constructor.
@@ -41,6 +44,7 @@ class JiraAgile implements JiraAgileInterface
         $this->boardService = new BoardService($configuration);
         $this->sprintService = new SprintService($configuration);
         $this->backlogIssueService = new BacklogIssueService($configuration);
+        $this->issueRankService = new IssueRankService($configuration);
     }
 
     /**
@@ -117,6 +121,20 @@ class JiraAgile implements JiraAgileInterface
         $backlogIssue = new BacklogIssue();
         $backlogIssue->issues = array($issueKey);
         return $this->backlogIssueService->create($backlogIssue);
+    }
+
+    /**
+     * @param $issueAKey
+     * @param $issueBKey
+     * @return string
+     * @throws \JiraAgileRestApi\JiraException
+     */
+    public function rankIssueABeforeIssueB($issueAKey, $issueBKey)
+    {
+        $issueRank = new IssueRank();
+        $issueRank->addIssue($issueAKey)
+            ->setRankBeforeIssue($issueBKey);
+        return $this->issueRankService->update($issueRank);
     }
 
     /**

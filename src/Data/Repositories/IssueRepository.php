@@ -67,6 +67,14 @@ class IssueRepository extends Repository
             ->get();
     }
 
+    public function getIssuesSortedByRank($sortOrder)
+    {
+        return $this->model
+            ->whereNotNull('ranking')
+            ->orderBy('ranking',$sortOrder)
+            ->get();
+    }
+
     public function syncSprints(Issue $issue, $sprintIds)
     {
         $this->model = $issue;
