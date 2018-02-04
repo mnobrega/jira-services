@@ -33,8 +33,6 @@ class GetSlaveJiraIssuesByIssuesJob extends Job
             $foundIssues = $this->repository->getByAttributes(['master_issue_key'=>$issue->key]);
             if (count($foundIssues)==1) {
                 $slaveIssues[] = $foundIssues[0];
-            } else {
-                throw new \Exception("Wrong number of slave issues found:".count($foundIssues));
             }
         }
         return $slaveIssues;

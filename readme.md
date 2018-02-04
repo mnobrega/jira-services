@@ -57,10 +57,11 @@ machine for other PHP projects that share the same requirements)
 issues to another slave JIRA instance
 
 * Slave JIRA
-- Create a project
+- Replicate the projects found in your Master JIRA
+- Modify the project screens to include timetracking
 
 ### Available Services
-* Issue real time spent calculation
+* Wrapping a JIRA Instance into a local database
 * Synchronization with a slave JIRA instance
 
 ### Run Tests

@@ -53,7 +53,6 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             'toDateTime'=>new \DateTime($syncEvent->to_datetime)
         ]);
         $publishResult = $this->publishUpdatedIssues($updatedIssues,$publishResult);
-        $publishResult = $this->publishIssuesRank($publishResult);
 
         if (static::JIRA_ISSUES_BOARD_TYPE==JiraAgile::BOARD_TYPE_SCRUM) {
             $sprints = $this->run(GetAllSprintsJob::class);
@@ -68,6 +67,8 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
                 $publishResult = $this->publishSlaveJiraIssuesForSprintOrBacklog($slaveJiraIssues, $publishResult);
             }
         }
+
+        $publishResult = $this->publishIssuesRank($publishResult);
 
         return $publishResult;
     }
