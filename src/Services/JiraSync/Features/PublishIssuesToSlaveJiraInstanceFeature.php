@@ -46,12 +46,31 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             'fromDateTime'=>new \DateTime($latestSyncEvent->to_datetime),
             'toDateTime'=>now()
         ]);
-
         $updatedIssues = $this->run(GetUpdatedIssuesByDateTimeIntervalJob::class,[
             'fromDateTime'=>new \DateTime($syncEvent->from_datetime),
             'toDateTime'=>new \DateTime($syncEvent->to_datetime)
         ]);
+        $publishResult = $this->publishUpdatedIssues($updatedIssues,$publishResult);
 
+        if (static::JIRA_ISSUES_BOARD_TYPE==JiraAgile::BOARD_TYPE_SCRUM) {
+            $sprints = $this->run(GetAllSprintsJob::class);
+            $jiraBoard = $this->run(SearchJiraBoardByNameJob::class,[
+                'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
+                'jiraBoardName'=>static::JIRA_ISSUES_BOARD_NAME,
+            ]);
+
+            if (!is_null($jiraBoard)) {
+                $publishResult = $this->publishSprints($sprints, $jiraBoard->id, $publishResult);
+                $slaveJiraIssues = $this->run(GetAllSlaveJiraIssuesJob::class);
+                $publishResult = $this->publishSlaveJiraIssuesForSprintOrBacklog($slaveJiraIssues, $publishResult);
+            }
+        }
+
+        return $publishResult;
+    }
+
+    private function publishUpdatedIssues($updatedIssues, $publishResult)
+    {
         foreach ($updatedIssues as $issue) {
             /** @var $issue \App\Data\Issue */
             $slaveJiraIssue = $this->run(SearchSlaveJiraIssueByMasterJiraIssueJob::class,[
@@ -68,69 +87,61 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             ]);
             $publishResult['publishedIssues']++;
         }
+        return $publishResult;
+    }
 
-        if (static::JIRA_ISSUES_BOARD_TYPE==JiraAgile::BOARD_TYPE_SCRUM) {
-
-            $sprints = $this->run(GetAllSprintsJob::class);
-
-            $jiraBoard = $this->run(SearchJiraBoardByNameJob::class,[
-                'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
-                'jiraBoardName'=>static::JIRA_ISSUES_BOARD_NAME,
-            ]);
-
-            if (!is_null($jiraBoard)) {
-
-                foreach ($sprints as $sprint) {
-                    if (count($sprint->issues)) {
-                        $slaveJiraSprint = $this->run(SearchSlaveJiraSprintByMasterJiraSprintJob::class,[
-                            'masterJiraSprint'=>$sprint
-                        ]);
-                        $jiraSprint =  $this->run(PublishSprintToJiraJob::class,[
-                            'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
-                            'boardId'=>$jiraBoard->id,
-                            'sprint'=>$sprint,
-                            'remoteSprintId'=>is_null($slaveJiraSprint)?null:$slaveJiraSprint->slave_sprint_id,
-                        ]);
-                        if (is_null($slaveJiraSprint)) {
-                            $this->run(CreateSlaveJiraSprintJob::class,[
-                                'masterJiraSprint'=>$sprint,
-                                'slaveJiraSprint'=>$jiraSprint,
-                            ]);
-                        }
-                        $publishResult['publishedSprints']++;
-                    }
-                }
-
-                $slaveJiraIssues = $this->run(GetAllSlaveJiraIssuesJob::class);
-                foreach ($slaveJiraIssues as $slaveJiraIssue) {
-                    $issue = $this->run(GetIssueByKeyJob::class,[
-                        'issueKey'=>$slaveJiraIssue->master_issue_key,
+    private function publishSprints($sprints, $jiraBoardId, $publishResult)
+    {
+        foreach ($sprints as $sprint) {
+            if (count($sprint->issues)) {
+                $slaveJiraSprint = $this->run(SearchSlaveJiraSprintByMasterJiraSprintJob::class,[
+                    'masterJiraSprint'=>$sprint
+                ]);
+                $jiraSprint =  $this->run(PublishSprintToJiraJob::class,[
+                    'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
+                    'boardId'=>$jiraBoardId,
+                    'sprint'=>$sprint,
+                    'remoteSprintId'=>is_null($slaveJiraSprint)?null:$slaveJiraSprint->slave_sprint_id,
+                ]);
+                if (is_null($slaveJiraSprint)) {
+                    $this->run(CreateSlaveJiraSprintJob::class,[
+                        'masterJiraSprint'=>$sprint,
+                        'slaveJiraSprint'=>$jiraSprint,
                     ]);
-                    $sprint = $this->run(GetIssueUnclosedSprintJob::class,[
-                        'issue'=>$issue,
-                    ]);
-                    if (!is_null($sprint)) {
-                        $slaveJiraSprint = $this->run(SearchSlaveJiraSprintByMasterJiraSprintJob::class,[
-                            'masterJiraSprint'=>$sprint
-                        ]);
-                        $this->run(PublishIssueForSprintToJiraJob::class,[
-                            'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
-                            'slaveJiraIssue'=>$slaveJiraIssue,
-                            'slaveJiraSprint'=>$slaveJiraSprint,
-                        ]);
-                        $publishResult['issuesMovedToSprint']++;
-                    } else {
-                        $this->run(PublishIssueForBacklogToJiraJob::class,[
-                            'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
-                            'slaveJiraIssue'=>$slaveJiraIssue,
-                        ]);
-                        $publishResult['issuesMovedToBacklog']++;
-                    }
                 }
+                $publishResult['publishedSprints']++;
             }
-
         }
+        return $publishResult;
+    }
 
+    private function publishSlaveJiraIssuesForSprintOrBacklog($slaveJiraIssues, $publishResult)
+    {
+        foreach ($slaveJiraIssues as $slaveJiraIssue) {
+            $issue = $this->run(GetIssueByKeyJob::class,[
+                'issueKey'=>$slaveJiraIssue->master_issue_key,
+            ]);
+            $sprint = $this->run(GetIssueUnclosedSprintJob::class,[
+                'issue'=>$issue,
+            ]);
+            if (!is_null($sprint)) {
+                $slaveJiraSprint = $this->run(SearchSlaveJiraSprintByMasterJiraSprintJob::class,[
+                    'masterJiraSprint'=>$sprint
+                ]);
+                $this->run(PublishIssueForSprintToJiraJob::class,[
+                    'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
+                    'slaveJiraIssue'=>$slaveJiraIssue,
+                    'slaveJiraSprint'=>$slaveJiraSprint,
+                ]);
+                $publishResult['issuesMovedToSprint']++;
+            } else {
+                $this->run(PublishIssueForBacklogToJiraJob::class,[
+                    'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
+                    'slaveJiraIssue'=>$slaveJiraIssue,
+                ]);
+                $publishResult['issuesMovedToBacklog']++;
+            }
+        }
         return $publishResult;
     }
 }
