@@ -101,19 +101,31 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
     private function publishIssues($issues, $publishResult)
     {
         foreach ($issues as $issue) {
+            $slaveJiraEpicIssue = null;
             /** @var $issue \App\Data\Issue */
             $slaveJiraIssue = $this->run(SearchSlaveJiraIssueByMasterJiraIssueJob::class,[
                 'masterJiraIssue'=>$issue,
             ]);
+            if (!is_null($issue->epic_link)) {
+                $epicIssue = $this->run(GetIssueByKeyJob::class,[
+                    'issueKey'=>$issue->epic_link,
+                ]);
+                $slaveJiraEpicIssue = $this->run(SearchSlaveJiraIssueByMasterJiraIssueJob::class,[
+                    'masterJiraIssue'=>$epicIssue,
+                ]);
+            }
             $jiraIssue = $this->run(PublishIssueToJiraJob::class,[
                 'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
                 'issue'=>$issue,
                 'remoteIssueKey'=>is_null($slaveJiraIssue)?null:$slaveJiraIssue->slave_issue_key,
+                'remoteEpicIssueKey'=>is_null($slaveJiraEpicIssue)?null:$slaveJiraEpicIssue->slave_issue_key,
             ]);
-            $this->run(CreateSlaveJiraIssueJob::class,[
-                'masterJiraIssue'=>$issue,
-                'slaveJiraIssue'=>$jiraIssue,
-            ]);
+            if (is_null($slaveJiraIssue)) {
+                $this->run(CreateSlaveJiraIssueJob::class,[
+                    'masterJiraIssue'=>$issue,
+                    'slaveJiraIssue'=>$jiraIssue,
+                ]);
+            }
             $publishResult['publishedIssues']++;
         }
         return $publishResult;

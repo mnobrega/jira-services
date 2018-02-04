@@ -14,18 +14,22 @@ class PublishIssueToJiraJob extends Job
     private $issue;
     /** @var string|null */
     private $remoteIssueKey;
+    /** @var string|null */
+    private $remoteEpicIssueKey;
 
     /**
      * PublishIssueToJiraJob constructor.
      * @param string $jiraInstance
      * @param Issue $issue
+     * @param string|null $remoteEpicIssueKey
      * @param string|null $remoteIssueKey
      */
-    public function __construct($jiraInstance, Issue $issue, $remoteIssueKey=null)
+    public function __construct($jiraInstance, Issue $issue, $remoteIssueKey=null, $remoteEpicIssueKey=null)
     {
         $this->jiraApi = new JiraApi($jiraInstance);
         $this->issue = $issue;
         $this->remoteIssueKey = $remoteIssueKey;
+        $this->remoteEpicIssueKey = $remoteEpicIssueKey;
     }
 
     /**
@@ -35,6 +39,7 @@ class PublishIssueToJiraJob extends Job
      */
     public function handle()
     {
+        $this->issue->epic_link = $this->remoteEpicIssueKey;
         if (is_null($this->remoteIssueKey)) {
             return $this->jiraApi->createIssue($this->issue);
         } else {
