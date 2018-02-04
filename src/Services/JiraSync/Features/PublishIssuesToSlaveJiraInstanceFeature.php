@@ -34,6 +34,13 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
      */
     public function handle()
     {
+        $publishResult = [
+            'publishedIssues'=>0,
+            'publishedSprints'=>0,
+            'issuesMovedToSprint'=>0,
+            'issuesMovedToBacklog'=>0,
+        ];
+
         $latestSyncEvent = $this->run(GetLatestSyncEventJob::class);
         $syncEvent = $this->run(CreateSyncEventJob::class,[
             'fromDateTime'=>new \DateTime($latestSyncEvent->to_datetime),
@@ -45,9 +52,6 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             'toDateTime'=>new \DateTime($syncEvent->to_datetime)
         ]);
 
-        $publishResult = [
-            'publishedIssues'=>0,
-        ];
         foreach ($updatedIssues as $issue) {
             /** @var $issue \App\Data\Issue */
             $slaveJiraIssue = $this->run(SearchSlaveJiraIssueByMasterJiraIssueJob::class,[
@@ -93,6 +97,7 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
                                 'slaveJiraSprint'=>$jiraSprint,
                             ]);
                         }
+                        $publishResult['publishedSprints']++;
                     }
                 }
 
@@ -104,7 +109,6 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
                     $sprint = $this->run(GetIssueUnclosedSprintJob::class,[
                         'issue'=>$issue,
                     ]);
-                    dump($sprint->name);
                     if (!is_null($sprint)) {
                         $slaveJiraSprint = $this->run(SearchSlaveJiraSprintByMasterJiraSprintJob::class,[
                             'masterJiraSprint'=>$sprint
@@ -114,14 +118,15 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
                             'slaveJiraIssue'=>$slaveJiraIssue,
                             'slaveJiraSprint'=>$slaveJiraSprint,
                         ]);
+                        $publishResult['issuesMovedToSprint']++;
                     } else {
                         $this->run(PublishIssueForBacklogToJiraJob::class,[
                             'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
                             'slaveJiraIssue'=>$slaveJiraIssue,
                         ]);
+                        $publishResult['issuesMovedToBacklog']++;
                     }
                 }
-
             }
 
         }

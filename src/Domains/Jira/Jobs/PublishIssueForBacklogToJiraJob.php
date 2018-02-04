@@ -22,9 +22,6 @@ class PublishIssueForBacklogToJiraJob extends Job
         $this->slaveJiraIssue =$slaveJiraIssue;
     }
 
-    /**
-     * @return string|void
-     */
     public function handle()
     {
         return $this->jiraAgileApi->moveIssueToBacklog($this->slaveJiraIssue->slave_issue_key);
