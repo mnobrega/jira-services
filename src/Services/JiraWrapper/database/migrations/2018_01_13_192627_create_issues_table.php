@@ -24,7 +24,7 @@ class CreateIssuesTable extends Migration
             $table->text('summary');
             $table->dateTime('created');
             $table->dateTime('updated');
-            $table->string('fix_version',50)->nullable();
+            $table->string('fix_version_id',20)->nullable();
             $table->string('epic_link',50)->nullable();
             $table->string('epic_name',50)->nullable();
             $table->string('epic_color',50)->nullable();

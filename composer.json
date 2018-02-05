@@ -12,16 +12,20 @@
         {
             "type":"vcs",
             "url":"https://github.com/mnobrega/php-jira-greenhopper-rest-client.git"
+        },
+        {
+            "type":"vcs",
+            "url":"https://github.com/mnobrega/php-jira-rest-client.git"
         }
     ],
     "require": {
         "php": ">=7.0.0",
         "laravel/framework": "5.5.*",
         "laravel/tinker": "~1.0",
-        "lesstif/php-jira-rest-client": "^1.16",
         "lucid-arch/laravel-foundation": "5.5.*",
         "mnobrega/php-jira-agile-rest-client":"1.*",
-        "mnobrega/php-jira-greenhopper-rest-client":"1.*"
+        "mnobrega/php-jira-greenhopper-rest-client":"1.*",
+        "lesstif/php-jira-rest-client": "dev-feature/versions"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.4",

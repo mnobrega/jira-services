@@ -77,6 +77,16 @@ class IssueRepository extends Repository
             ->get();
     }
 
+    public function getIssuesDistinctVersions()
+    {
+        return $this->model
+            ->select('project_key','fix_version_id')
+            ->whereNotNull('fix_version_id')
+            ->groupBy('fix_version_id')
+            ->groupBy('project_key')
+            ->get();
+    }
+
     public function syncSprints(Issue $issue, $sprintIds)
     {
         $this->model = $issue;
@@ -100,7 +110,7 @@ class IssueRepository extends Repository
             'summary' => $jiraIssue->fields->summary,
             'created' => $jiraIssue->fields->created->format("Y-m-d H:i:s"),
             'updated' => $jiraIssue->fields->updated->format("Y-m-d H:i:s"),
-            'fix_version' => count($fixVersions)>0?$fixVersions[0]->name:null,
+            'fix_version_id' => count($fixVersions)>0?$fixVersions[0]->id:null,
             'epic_link' => key_exists(static::$jiraCustomFieldsMapping['epic_link'],$jiraIssue->fields->customFields)?
                 $jiraIssue->fields->customFields[static::$jiraCustomFieldsMapping['epic_link']]:null,
             'epic_name'=>key_exists(static::$jiraCustomFieldsMapping['epic_name'],$jiraIssue->fields->customFields)?

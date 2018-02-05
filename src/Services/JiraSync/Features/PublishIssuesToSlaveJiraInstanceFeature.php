@@ -1,21 +1,27 @@
 <?php
 namespace App\Services\JiraSync\Features;
 
+use App\Data\Issue;
 use App\Data\RestApis\Config;
 use App\Data\RestApis\JiraAgile;
 use App\Domains\Issue\Jobs\CreateSlaveJiraIssueJob;
 use App\Domains\Issue\Jobs\GetAllEpicIssuesJob;
+use App\Domains\Issue\Jobs\GetAllIssueVersionIdsJob;
 use App\Domains\Issue\Jobs\GetAllSlaveJiraIssuesJob;
 use App\Domains\Issue\Jobs\GetIssueByKeyJob;
+use App\Domains\Issue\Jobs\GetIssueDistinctVersionsJob;
 use App\Domains\Issue\Jobs\GetIssuesSortedByRankJob;
 use App\Domains\Issue\Jobs\GetSlaveJiraIssuesByIssuesJob;
 use App\Domains\Issue\Jobs\GetUpdatedIssuesByDateTimeIntervalJob;
 use App\Domains\Issue\Jobs\SearchSlaveJiraIssueByMasterJiraIssueJob;
+use App\Domains\Jira\Jobs\GetJiraVersionJob;
+use App\Domains\Jira\Jobs\GetProjectJob;
 use App\Domains\Jira\Jobs\PublishIssueForBacklogToJiraJob;
 use App\Domains\Jira\Jobs\PublishIssueForSprintToJiraJob;
 use App\Domains\Jira\Jobs\PublishIssueRankJob;
 use App\Domains\Jira\Jobs\PublishIssueToJiraJob;
 use App\Domains\Jira\Jobs\PublishSprintToJiraJob;
+use App\Domains\Jira\Jobs\PublishVersionToJiraJob;
 use App\Domains\Jira\Jobs\SearchJiraBoardByNameJob;
 use App\Domains\Sprint\Jobs\CreateSlaveJiraSprintJob;
 use App\Domains\Sprint\Jobs\GetAllSprintsJob;
@@ -23,6 +29,8 @@ use App\Domains\Sprint\Jobs\GetIssueUnclosedSprintJob;
 use App\Domains\Sprint\Jobs\SearchSlaveJiraSprintByMasterJiraSprintJob;
 use App\Domains\Sync\Jobs\CreateSyncEventJob;
 use App\Domains\Sync\Jobs\GetLatestSyncEventJob;
+use App\Domains\Version\Jobs\CreateSlaveJiraVersionJob;
+use App\Domains\Version\Jobs\SearchSlaveJiraVersionByMasterJiraVersionIdJob;
 use Lucid\Foundation\Feature;
 
 class PublishIssuesToSlaveJiraInstanceFeature extends Feature
@@ -40,9 +48,13 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             'publishedIssues'=>0,
             'publishedIssueRanks'=>0,
             'publishedSprints'=>0,
+            'publishedVersions'=>0,
             'issuesMovedToSprint'=>0,
             'issuesMovedToBacklog'=>0,
         ];
+
+        $issueVersions = $this->run(GetIssueDistinctVersionsJob::class);
+        $publishResult = $this->publishVersions($issueVersions, $publishResult);
 
         $epicIssues = $this->run(GetAllEpicIssuesJob::class);
         $publishResult = $this->publishIssues($epicIssues,$publishResult);
@@ -77,23 +89,38 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
         return $publishResult;
     }
 
-    private function publishIssuesRank($publishResult)
+    /**
+     * @param Issue[] $issueVersions
+     * @param $publishResult
+     * @return mixed
+     */
+    private function publishVersions($issueVersions, $publishResult)
     {
-        $issuesSortedByRank = $this->run(GetIssuesSortedByRankJob::class,[
-            'sortOrder'=>'desc',
-        ]);
-        $slaveJiraIssuesSortedByRank = $this->run(GetSlaveJiraIssuesByIssuesJob::class,[
-            'issues'=>$issuesSortedByRank,
-        ]);
-        foreach ($slaveJiraIssuesSortedByRank as $arrayIndex=>$slaveJiraIssue) {
-            if ($arrayIndex > 0) {
-                $this->run(PublishIssueRankJob::class,[
-                    'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
-                    'slaveJiraIssue'=>$slaveJiraIssue,
-                    'rankBeforeSlaveJiraIssue'=>$slaveJiraIssuesSortedByRank[$arrayIndex-1],
+        foreach ($issueVersions as $issueVersion) {
+            $masterJiraVersion = $this->run(GetJiraVersionJob::class,[
+                'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
+                'versionId'=>$issueVersion->fix_version_id,
+            ]);
+            $slaveJiraVersion = $this->run(SearchSlaveJiraVersionByMasterJiraVersionIdJob::class,[
+                'masterVersionId'=>$masterJiraVersion->id
+            ]);
+            $slaveJiraProject = $this->run(GetProjectJob::class,[
+                'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
+                'projectKey'=>$issueVersion->project_key,
+            ]);
+            $jiraVersion = $this->run(PublishVersionToJiraJob::class,[
+                'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
+                'version'=>$masterJiraVersion,
+                'remoteVersionId'=>is_null($slaveJiraVersion)?null:$slaveJiraVersion->slave_version_id,
+                'remoteProjectId'=>$slaveJiraProject->id,
+            ]);
+            if (is_null($slaveJiraVersion)) {
+                $this->run(CreateSlaveJiraVersionJob::class,[
+                    'masterVersionId'=>$masterJiraVersion->id,
+                    'slaveVersionId'=>$jiraVersion->id,
                 ]);
-                $publishResult['publishedIssueRanks']++;
             }
+            $publishResult['publishedVersions']++;
         }
         return $publishResult;
     }
@@ -105,6 +132,9 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             /** @var $issue \App\Data\Issue */
             $slaveJiraIssue = $this->run(SearchSlaveJiraIssueByMasterJiraIssueJob::class,[
                 'masterJiraIssue'=>$issue,
+            ]);
+            $slaveJiraVersion = $this->run(SearchSlaveJiraVersionByMasterJiraVersionIdJob::class,[
+                'masterVersionId'=>$issue->fix_version_id,
             ]);
             if (!is_null($issue->epic_link)) {
                 $epicIssue = $this->run(GetIssueByKeyJob::class,[
@@ -119,6 +149,7 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
                 'issue'=>$issue,
                 'remoteIssueKey'=>is_null($slaveJiraIssue)?null:$slaveJiraIssue->slave_issue_key,
                 'remoteEpicIssueKey'=>is_null($slaveJiraEpicIssue)?null:$slaveJiraEpicIssue->slave_issue_key,
+                'remoteVersionId'=>is_null($slaveJiraVersion)?null:$slaveJiraVersion->slave_version_id,
             ]);
             if (is_null($slaveJiraIssue)) {
                 $this->run(CreateSlaveJiraIssueJob::class,[
@@ -181,6 +212,27 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
                     'slaveJiraIssue'=>$slaveJiraIssue,
                 ]);
                 $publishResult['issuesMovedToBacklog']++;
+            }
+        }
+        return $publishResult;
+    }
+
+    private function publishIssuesRank($publishResult)
+    {
+        $issuesSortedByRank = $this->run(GetIssuesSortedByRankJob::class,[
+            'sortOrder'=>'desc',
+        ]);
+        $slaveJiraIssuesSortedByRank = $this->run(GetSlaveJiraIssuesByIssuesJob::class,[
+            'issues'=>$issuesSortedByRank,
+        ]);
+        foreach ($slaveJiraIssuesSortedByRank as $arrayIndex=>$slaveJiraIssue) {
+            if ($arrayIndex > 0) {
+                $this->run(PublishIssueRankJob::class,[
+                    'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
+                    'slaveJiraIssue'=>$slaveJiraIssue,
+                    'rankBeforeSlaveJiraIssue'=>$slaveJiraIssuesSortedByRank[$arrayIndex-1],
+                ]);
+                $publishResult['publishedIssueRanks']++;
             }
         }
         return $publishResult;
