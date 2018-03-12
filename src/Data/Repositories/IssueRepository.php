@@ -103,7 +103,7 @@ class IssueRepository extends Repository
         $attributesFromJiraIssue = array(
             'key' => $jiraIssue->key,
             'project_key' => $jiraIssue->fields->project->key,
-            'priority' => $jiraIssue->fields->priority->name,
+            'priority' => (is_object($jiraIssue->fields->priority))?$jiraIssue->fields->priority->name:null,
             'ranking' => null,//not available from JIRA directly
             'type' => $jiraIssue->fields->issuetype->name,
             'status' => $jiraIssue->fields->status->name,

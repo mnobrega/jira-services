@@ -95,6 +95,28 @@ class JiraApi
     }
 
     /**
+     * @param $issueIdOrKey
+     * @param \DateTime $fromDateTime
+     * @param \DateTime $toDateTime
+     * @return array
+     * @throws \JiraRestApi\JiraException
+     * @throws \JsonMapper_Exception
+     */
+    public function getIssueHistoriesByDateInterval($issueIdOrKey, \DateTime $fromDateTime, \DateTime $toDateTime)
+    {
+        $issueHistoriesForDateInterval = array();
+        $issueChangelog = $this->issueService->get($issueIdOrKey,array('expand'=>'changelog'));
+        foreach ($issueChangelog->changelog->histories as $issueHistory) {
+            $issueHistoryDateTime= new \DateTime($issueHistory->created);
+            if ($issueHistoryDateTime->getTimestamp()>=$fromDateTime->getTimestamp() &&
+                $issueHistoryDateTime->getTimestamp()<=$toDateTime->getTimestamp()) {
+                $issueHistoriesForDateInterval[] = $issueHistory;
+            }
+        }
+        return $issueHistoriesForDateInterval;
+    }
+
+    /**
      * @param $projectKey
      * @return \JiraRestApi\Project\Project|object
      * @throws \JiraRestApi\JiraException

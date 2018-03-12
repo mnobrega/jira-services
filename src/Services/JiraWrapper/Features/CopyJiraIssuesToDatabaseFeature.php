@@ -16,8 +16,8 @@ use Lucid\Foundation\Feature;
 class CopyJiraIssuesToDatabaseFeature extends Feature
 {
     /** TODO: move this to the database */
-    const JIRA_ISSUES_QUERY = 'project IN (VVESTIOS,VVESTAND) AND resolution IS NULL';
-    const JIRA_ISSUES_BOARD_NAME = 'Mobile';
+    const JIRA_ISSUES_QUERY = 'project IN (TOW) AND resolution IS NULL';
+    const JIRA_ISSUES_BOARD_NAME = 'EOS Towing Board';
     const JIRA_ISSUES_BOARD_TYPE = 'scrum';
 
     public function handle()

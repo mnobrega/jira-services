@@ -8,31 +8,37 @@
 
 namespace App\Data\Repositories;
 
-use App\Data\SyncEvent;
+use App\Data\WrapperSyncEvent;
 use Illuminate\Support\Collection;
 
 
-class SyncEventRepository extends Repository
+class WrapperSyncEventRepository extends Repository
 {
     /**
      * @param $fromDateTime
      * @param $toDateTime
-     * @return SyncEvent|\Illuminate\Database\Eloquent\Model
+     * @return WrapperSyncEvent|\Illuminate\Database\Eloquent\Model
      */
     public function create($fromDateTime, $toDateTime)
     {
-        $this->model = new SyncEvent();
+        $this->model = new WrapperSyncEvent();
         $attributes = [
             'from_datetime' => $fromDateTime,
             'to_datetime' => $toDateTime,
         ];
+
+        // TODO- remove its a test
+        $this->fill($attributes);
+        return $this->model;
+        // TODO- remove its a test
+
         return $this->fillAndSave($attributes);
     }
 
     /**
      * @return Collection
      */
-    public function getLatestSyncEvent()
+    public function getLatestWrapperSyncEvent()
     {
         return $this->model
             ->orderBy('to_datetime','desc')

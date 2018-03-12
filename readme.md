@@ -78,7 +78,7 @@ machine for other PHP projects that share the same requirements)
 #### REST Browser Plugin
 For documentation about JIRA REST API you can use the following plugin:
 https://marketplace.atlassian.com/plugins/com.atlassian.labs.rest-api-browser/server/overview
-Access the following page: [your-jira-domain-name]/plugins/servlet/restbrowser to see the docs.
+Access the following page: [your-jira-domain-name]/restbrowser to see the docs.
 
 #### REST API References
 - [JIRA Agile REST API](https://docs.atlassian.com/jira-software/REST/7.0.4/#agile/1.0/issue-rankIssues)

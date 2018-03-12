@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\CopyJiraIssuesToDatabase::class,
+        Commands\CopyJiraIssuesHistoryToDatabase::class,
         Commands\PublishIssuesToSlaveJira::class,
     ];
 
