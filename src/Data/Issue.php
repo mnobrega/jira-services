@@ -17,4 +17,10 @@ class Issue extends Model
         return $this->belongsToMany('App\Data\Sprint','jira_wrapper_sprints_issues',
             'issue_id','sprint_id')->withTimestamps();
     }
+
+    public function histories()
+    {
+        return $this->hasMany('App\Data\IssueHistory','jira_wrapper_issues_histories',
+            'issue_id');
+    }
 }

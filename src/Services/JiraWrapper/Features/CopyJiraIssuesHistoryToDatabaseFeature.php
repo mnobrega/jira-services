@@ -2,6 +2,7 @@
 namespace App\Services\JiraWrapper\Features;
 
 use App\Data\RestApis\Config;
+use App\Domains\Issue\Jobs\CreateOrUpdateIssueHistoriesJob;
 use App\Domains\Issue\Jobs\GetUpdatedIssuesByDateTimeIntervalJob;
 use App\Domains\Jira\Jobs\GetIssueHistoriesForDateIntervalJob;
 use App\Domains\Sync\Jobs\CreateWrapperSyncEventJob;
@@ -30,11 +31,10 @@ class CopyJiraIssuesHistoryToDatabaseFeature extends Feature
                 'fromDateTime'=>new \DateTime($syncEvent->from_datetime),
                 'toDateTime'=>new \DateTime($syncEvent->to_datetime),
             ]);
-            dd($issueHistoriesForDateInterval);
+            $issuesHistories = $this->run(CreateOrUpdateIssueHistoriesJob::class,[
+                'issue'=>$updatedIssue,
+                'issueHistories'=>$issueHistoriesForDateInterval
+            ]);
         }
-        //get local updated JIRA Issues
-        //foreach
-            //get history from JIRA
-            //store it in database
     }
 }

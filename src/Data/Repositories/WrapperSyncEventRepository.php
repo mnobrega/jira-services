@@ -26,12 +26,6 @@ class WrapperSyncEventRepository extends Repository
             'from_datetime' => $fromDateTime,
             'to_datetime' => $toDateTime,
         ];
-
-        // TODO- remove its a test
-        $this->fill($attributes);
-        return $this->model;
-        // TODO- remove its a test
-
         return $this->fillAndSave($attributes);
     }
 
