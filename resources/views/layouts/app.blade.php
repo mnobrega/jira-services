@@ -28,7 +28,7 @@
                     </button>
 
                     <!-- Branding Image -->
-                    <a class="navbar-brand" href="{{ url('/') }}">
+                    <a class="navbar-brand" href="{{ route('home') }}">
                         {{ config('app.name', 'Laravel') }}
                     </a>
                 </div>
@@ -36,7 +36,12 @@
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">
                     <!-- Left Side Of Navbar -->
                     <ul class="nav navbar-nav">
-                        &nbsp;
+                        @guest
+                            <!-- show nothing -->
+                        @else
+                            <li><a href="{{ route('jira-wrapper') }}">Wrapper</a></li>
+                            <!--<li><a href="{{ route('login') }}">Sync</a></li>-->
+                        @endguest
                     </ul>
 
                     <!-- Right Side Of Navbar -->

@@ -87,6 +87,19 @@ class IssueRepository extends Repository
             ->get();
     }
 
+    public function getLatestUpdatedIssue()
+    {
+        return $this->model
+            ->orderBy('updated','desc')
+            ->limit(1)
+            ->get();
+    }
+
+    public function getCount()
+    {
+        return $this->model->count('*');
+    }
+
     public function syncSprints(Issue $issue, $sprintIds)
     {
         $this->model = $issue;

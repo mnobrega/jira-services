@@ -11,13 +11,11 @@
 |
 */
 
-Route::group(['prefix' => 'jira_wrapper'], function() {
+Route::group(['prefix' => 'jira-services/wrapper'], function() {
 
     // The controllers live in src/Services/JiraWrapper/Http/Controllers
     // Route::get('/', 'UserController@index');
 
-    Route::get('/', function() {
-        return view('jira_wrapper::welcome');
-    });
+    Route::get('/', 'HomeController@index')->name('jira-wrapper');
 
 });
