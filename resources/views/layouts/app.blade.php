@@ -39,7 +39,7 @@
                         @guest
                             <!-- show nothing -->
                         @else
-                            <li><a href="{{ route('jira-wrapper') }}">Wrapper</a></li>
+                            <li><a href="{{ rouphte('jira-wrapper') }}">Wrapper</a></li>
                             <!--<li><a href="{{ route('login') }}">Sync</a></li>-->
                         @endguest
                     </ul>

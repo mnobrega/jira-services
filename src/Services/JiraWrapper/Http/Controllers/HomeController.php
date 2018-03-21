@@ -15,6 +15,6 @@ class HomeController extends Controller
     public function index()
     {
         $featureResult = $this->serve(GetWrapperStatusFeature::class);
-        return view('jira_wrapper::welcome',$featureResult);
+        return view('jira_wrapper::welcome')->with('featureResult',$featureResult);
     }
 }
