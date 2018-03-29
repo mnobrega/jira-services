@@ -6,6 +6,7 @@ use App\Data\RestApis\JiraAgile;
 use App\Domains\Issue\Jobs\CreateOrUpdateIssuesJob;
 use App\Domains\Issue\Jobs\UpdateIssuesRankJob;
 use App\Domains\Jira\Jobs\GetCustomFieldIdJob;
+use App\Domains\Jira\Jobs\GetFieldsJob;
 use App\Domains\Jira\Jobs\SearchJiraBoardByNameJob;
 use App\Domains\Jira\Jobs\SearchJiraBoardSprintsJob;
 use App\Domains\Jira\Jobs\SearchJiraIssuesByJQLJob;
@@ -26,8 +27,12 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
             'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
             'jiraQuery'=>static::JIRA_ISSUES_QUERY." ORDER BY created ASC",
         ]);
+        $jiraFields = $this->run(GetFieldsJob::class,[
+            'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
+        ]);
         $issuesCreatedOrUpdated = $this->run(CreateOrUpdateIssuesJob::class,[
             'jiraIssues'=>$jiraIssues,
+            'jiraFields'=>$jiraFields,
         ]);
 
         $sprintsCreatedOrUpdated = [

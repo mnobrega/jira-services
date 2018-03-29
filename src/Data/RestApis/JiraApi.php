@@ -47,6 +47,7 @@ class JiraApi
         "Minor"=>"Low",
         "Trivial"=>"Lowest",
         "Highest"=>"Highest",
+        null=>"Low",
     ];
     //TODO: HARDCODED - Move this to a table so that it can be configure dynamicaly
     private static $slaveUsersMapping = [
@@ -138,6 +139,15 @@ class JiraApi
         return $this->issueService
             ->search($query,0,1000)
             ->getIssues();
+    }
+
+    /**
+     * @return array
+     * @throws \JiraRestApi\JiraException
+     */
+    public function getFields()
+    {
+        return $this->fieldService->getAllFields();
     }
 
     /**

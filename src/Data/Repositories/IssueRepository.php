@@ -12,12 +12,6 @@ use App\Data\Issue;
 
 class IssueRepository extends Repository
 {
-    static private $jiraCustomFieldsMapping = [
-        'epic_link'=>'customfield_10006',
-        'epic_name'=>'customfield_10007',
-        'epic_color'=>'customfield_10009',
-    ];
-
     /**
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model
@@ -108,9 +102,10 @@ class IssueRepository extends Repository
 
     /**
      * @param \JiraRestApi\Issue\Issue $jiraIssue
+     * @param \JiraRestApi\Field\Field[] $jiraFields
      * @return array
      */
-    static public function getAttributesFromJiraIssue(\JiraRestApi\Issue\Issue $jiraIssue)
+    static public function getAttributesFromJiraIssue(\JiraRestApi\Issue\Issue $jiraIssue, $jiraFields)
     {
         $fixVersions = $jiraIssue->fields->fixVersions;
         $attributesFromJiraIssue = array(
@@ -124,12 +119,15 @@ class IssueRepository extends Repository
             'created' => $jiraIssue->fields->created->format("Y-m-d H:i:s"),
             'updated' => $jiraIssue->fields->updated->format("Y-m-d H:i:s"),
             'fix_version_id' => count($fixVersions)>0?$fixVersions[0]->id:null,
-            'epic_link' => key_exists(static::$jiraCustomFieldsMapping['epic_link'],$jiraIssue->fields->customFields)?
-                $jiraIssue->fields->customFields[static::$jiraCustomFieldsMapping['epic_link']]:null,
-            'epic_name'=>key_exists(static::$jiraCustomFieldsMapping['epic_name'],$jiraIssue->fields->customFields)?
-                $jiraIssue->fields->customFields[static::$jiraCustomFieldsMapping['epic_name']]:null,
-            'epic_color'=>key_exists(static::$jiraCustomFieldsMapping['epic_color'],$jiraIssue->fields->customFields)?
-                $jiraIssue->fields->customFields[static::$jiraCustomFieldsMapping['epic_color']]:null,
+            'epic_link' => key_exists(static::getCustomFieldIdByName('Epic Link',$jiraFields),
+                $jiraIssue->fields->customFields)? $jiraIssue->fields->customFields[
+                    static::getCustomFieldIdByName('Epic Link',$jiraFields)]:null,
+            'epic_name'=>key_exists(static::getCustomFieldIdByName('Epic Name',$jiraFields),
+                $jiraIssue->fields->customFields)? $jiraIssue->fields->customFields[
+                    static::getCustomFieldIdByName('Epic Name',$jiraFields)]:null,
+            'epic_color'=>key_exists(static::getCustomFieldIdByName('Epic Colour',$jiraFields),
+                $jiraIssue->fields->customFields)? $jiraIssue->fields->customFields[
+                    static::getCustomFieldIdByName('Epic Colour',$jiraFields)]:null,
             'assignee' => is_object($jiraIssue->fields->assignee)?$jiraIssue->fields->assignee->name:null,
             'remaining_estimate' => $jiraIssue->fields->timeestimate==0?null:$jiraIssue->fields->timeestimate,
             'original_estimate' => is_object($jiraIssue->fields->timeoriginalestimate)?
@@ -137,4 +135,15 @@ class IssueRepository extends Repository
         );
         return $attributesFromJiraIssue;
     }
+
+    static public function getCustomFieldIdByName($customFieldName, $fields)
+    {
+        foreach ($fields as $field) {
+            if ($field->custom && $field->name==$customFieldName) {
+                return $field->id;
+            }
+        }
+        return null;
+    }
+
 }
