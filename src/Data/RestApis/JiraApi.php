@@ -49,6 +49,14 @@ class JiraApi
         "Highest"=>"Highest",
         null=>"Low",
     ];
+    //TODO: HARDCODED - Move this to a database table so it can by dynamic
+    private static $slaveIssueAssigneesMapping = [
+        "cribeiro"=>"android.dev",
+        "ana.martins"=>"design.dev",
+        "asoares"=>"backend.dev",
+        "jsantos"=>"frontend.dev",
+        "smartins"=>"android.dev",
+    ];
 
     const SLAVE_JIRA_DEFAULT_USER = 'auto.sync.user';
 
@@ -283,7 +291,13 @@ class JiraApi
             ->setPriorityName(static::$slaveIssuePrioritiesMapping[$issue->priority])
             ->setSummary($issue->summary)
             ->setIssueType(static::$slaveIssueTypeMappings[$issue->type]);
-        $issueField->setAssigneeName(static::SLAVE_JIRA_DEFAULT_USER);
+
+        if (!is_null($issue->assignee) && key_exists($issue->assignee,static::$slaveIssueAssigneesMapping)) {
+            $issueField->setAssigneeName(static::$slaveIssueAssigneesMapping[$issue->assignee]);
+        } else {
+            $issueField->setAssigneeName(static::SLAVE_JIRA_DEFAULT_USER);
+        }
+
         if ($issue->type=='Epic') {
             $issueField->addCustomField($this->getEpicNameCustomFieldId(),$issue->epic_name);
             $issueField->addCustomField($this->getEpicColorCustomFieldId(),$issue->epic_color);
