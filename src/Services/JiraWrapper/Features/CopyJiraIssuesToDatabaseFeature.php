@@ -7,6 +7,7 @@ use App\Domains\Issue\Jobs\CreateOrUpdateIssuesJob;
 use App\Domains\Issue\Jobs\UpdateIssuesRankJob;
 use App\Domains\Jira\Jobs\GetCustomFieldIdJob;
 use App\Domains\Jira\Jobs\GetFieldsJob;
+use App\Domains\Jira\Jobs\GetJiraConfigJob;
 use App\Domains\Jira\Jobs\SearchJiraBoardByNameJob;
 use App\Domains\Jira\Jobs\SearchJiraBoardSprintsJob;
 use App\Domains\Jira\Jobs\SearchJiraIssuesByJQLJob;
@@ -16,16 +17,14 @@ use Lucid\Foundation\Feature;
 
 class CopyJiraIssuesToDatabaseFeature extends Feature
 {
-    /** TODO: move this to the database */
-    const JIRA_ISSUES_QUERY = 'project IN (TOW) AND resolution IS NULL';
-    const JIRA_ISSUES_BOARD_NAME = 'EOS Towing Board';
-    const JIRA_ISSUES_BOARD_TYPE = 'scrum';
-
     public function handle()
     {
+        $jiraConfigs = $this->run(GetJiraConfigJob::class);
+        $jiraConfig = $jiraConfigs[0];
+
         $jiraIssues = $this->run(SearchJiraIssuesByJQLJob::class, [
             'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
-            'jiraQuery'=>static::JIRA_ISSUES_QUERY." ORDER BY created ASC",
+            'jiraQuery'=>$jiraConfig->jira_issues_query." ORDER BY created ASC",
         ]);
         $jiraFields = $this->run(GetFieldsJob::class,[
             'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
@@ -39,11 +38,11 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
             'created'=>array(),
             'updated'=>array(),
         ];
-        if (static::JIRA_ISSUES_BOARD_TYPE==JiraAgile::BOARD_TYPE_SCRUM) {
+        if ($jiraConfig->jira_board_type==JiraAgile::BOARD_TYPE_SCRUM) {
 
             $jiraIssuesWithSprintSortedByRankAsc = $this->run(SearchJiraIssuesByJQLJob::class,[
                 'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
-                'jiraQuery'=>static::JIRA_ISSUES_QUERY." AND sprint IS NOT EMPTY ORDER BY rank ASC",
+                'jiraQuery'=>$jiraConfig->jira_issues_query." AND sprint IS NOT EMPTY ORDER BY rank ASC",
             ]);
             $this->run(UpdateIssuesRankJob::class,[
                 'jiraIssues'=>$jiraIssuesWithSprintSortedByRankAsc,
@@ -51,7 +50,7 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
 
             $jiraBoard = $this->run(SearchJiraBoardByNameJob::class,[
                 'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
-                'jiraBoardName'=>static::JIRA_ISSUES_BOARD_NAME,
+                'jiraBoardName'=>$jiraConfig->jira_board_name,
             ]);
 
             if (!is_null($jiraBoard)) {

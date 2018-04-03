@@ -16,6 +16,7 @@ use App\Domains\Issue\Jobs\GetUpdatedIssuesByDateTimeIntervalJob;
 use App\Domains\Issue\Jobs\SearchSlaveJiraIssueByMasterJiraIssueJob;
 use App\Domains\Jira\Jobs\GetJiraVersionJob;
 use App\Domains\Jira\Jobs\GetProjectJob;
+use App\Domains\Jira\Jobs\GetSlaveJiraConfigJob;
 use App\Domains\Jira\Jobs\PublishIssueForBacklogToJiraJob;
 use App\Domains\Jira\Jobs\PublishIssueForSprintToJiraJob;
 use App\Domains\Jira\Jobs\PublishIssueRankJob;
@@ -53,6 +54,9 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             'issuesMovedToBacklog'=>0,
         ];
 
+        $slaveJiraConfigs = $this->run(GetSlaveJiraConfigJob::class);
+        $slaveJiraConfig = $slaveJiraConfigs[0];
+
         $issueVersions = $this->run(GetIssueDistinctVersionsJob::class);
         $publishResult = $this->publishVersions($issueVersions, $publishResult);
 
@@ -70,11 +74,11 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
         ]);
         $publishResult = $this->publishIssues($updatedIssues,$publishResult);
 
-        if (static::JIRA_ISSUES_BOARD_TYPE==JiraAgile::BOARD_TYPE_SCRUM) {
+        if ($slaveJiraConfig->jira_board_type==JiraAgile::BOARD_TYPE_SCRUM) {
             $sprints = $this->run(GetAllSprintsJob::class);
             $jiraBoard = $this->run(SearchJiraBoardByNameJob::class,[
                 'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
-                'jiraBoardName'=>static::JIRA_ISSUES_BOARD_NAME,
+                'jiraBoardName'=>$slaveJiraConfig->jira_board_name,
             ]);
 
             if (!is_null($jiraBoard)) {
