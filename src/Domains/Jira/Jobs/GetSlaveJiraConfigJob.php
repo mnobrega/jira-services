@@ -20,10 +20,16 @@ class GetSlaveJiraConfigJob extends Job
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return mixed
+     * @throws \Exception
      */
     public function handle()
     {
-        return $this->repository->all();
+        $configs =  $this->repository->all();
+        if (count($configs)==1) {
+            return $configs[0];
+        } else {
+            throw new \Exception("Missing JIRA wrapper configuration. Please add it to the database");
+        }
     }
 }

@@ -35,7 +35,7 @@ class IssueRepository extends Repository
 
     /**
      * @param $key
-     * @return mixed
+     * @return \App\Data\Issue;
      * @throws \Exception
      */
     public function getByKey($key)

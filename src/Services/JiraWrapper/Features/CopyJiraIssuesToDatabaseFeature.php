@@ -3,10 +3,12 @@ namespace App\Services\JiraWrapper\Features;
 
 use App\Data\RestApis\Config;
 use App\Data\RestApis\JiraAgile;
+use App\Domains\Issue\Jobs\CreateOrUpdateIssueLinksJob;
 use App\Domains\Issue\Jobs\CreateOrUpdateIssuesJob;
 use App\Domains\Issue\Jobs\UpdateIssuesRankJob;
 use App\Domains\Jira\Jobs\GetCustomFieldIdJob;
 use App\Domains\Jira\Jobs\GetFieldsJob;
+use App\Domains\Jira\Jobs\GetIssueLinksJob;
 use App\Domains\Jira\Jobs\GetJiraConfigJob;
 use App\Domains\Jira\Jobs\SearchJiraBoardByNameJob;
 use App\Domains\Jira\Jobs\SearchJiraBoardSprintsJob;
@@ -19,8 +21,7 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
 {
     public function handle()
     {
-        $jiraConfigs = $this->run(GetJiraConfigJob::class);
-        $jiraConfig = $jiraConfigs[0];
+        $jiraConfig = $this->run(GetJiraConfigJob::class);
 
         $jiraIssues = $this->run(SearchJiraIssuesByJQLJob::class, [
             'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
@@ -33,6 +34,13 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
             'jiraIssues'=>$jiraIssues,
             'jiraFields'=>$jiraFields,
         ]);
+
+        foreach ($jiraIssues as $jiraIssue) {
+            $this->run(CreateOrUpdateIssueLinksJob::class,[
+                'jiraIssue'=>$jiraIssue,
+                'jiraIssueLinks'=>$jiraIssue->fields->issuelinks,
+            ]);
+        }
 
         $sprintsCreatedOrUpdated = [
             'created'=>array(),

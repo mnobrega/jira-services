@@ -54,8 +54,7 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             'issuesMovedToBacklog'=>0,
         ];
 
-        $slaveJiraConfigs = $this->run(GetSlaveJiraConfigJob::class);
-        $slaveJiraConfig = $slaveJiraConfigs[0];
+        $slaveJiraConfig = $this->run(GetSlaveJiraConfigJob::class);
 
         $issueVersions = $this->run(GetIssueDistinctVersionsJob::class);
         $publishResult = $this->publishVersions($issueVersions, $publishResult);

@@ -23,4 +23,10 @@ class Issue extends Model
         return $this->hasMany('App\Data\IssueHistory','jira_wrapper_issues_histories',
             'issue_id');
     }
+
+    public function links()
+    {
+        return $this->hasMany('App\Data\IssueLink','jira_wrapper_issues_links',
+            'issue_id');
+    }
 }
