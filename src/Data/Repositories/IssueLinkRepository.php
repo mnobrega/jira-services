@@ -36,7 +36,10 @@ class IssueLinkRepository extends Repository
         $attributes = array (
             'jira_id'=>$jiraIssueLink->id,
             'type'=>$jiraIssueLink->type->name,
-            'outward_issue_key'=>$jiraIssueLink->outwardIssue->key,
+            'inward'=>$jiraIssueLink->type->inward,
+            'outward'=>$jiraIssueLink->type->outward,
+            'inward_issue_key'=>@$jiraIssueLink->inwardIssue->key,
+            'outward_issue_key'=>@$jiraIssueLink->outwardIssue->key
         );
         return $attributes;
     }

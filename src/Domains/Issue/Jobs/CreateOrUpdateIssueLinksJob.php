@@ -5,7 +5,6 @@ use App\Data\Issue;
 use App\Data\IssueLink;
 use App\Data\Repositories\IssueLinkRepository;
 use App\Data\Repositories\IssueRepository;
-use JiraRestApi\JiraRestApiServiceProvider;
 use Lucid\Foundation\Job;
 
 class CreateOrUpdateIssueLinksJob extends Job
@@ -13,19 +12,16 @@ class CreateOrUpdateIssueLinksJob extends Job
     private $jiraIssue;
     private $issueLinkRepository;
     private $issueRepository;
-    private $jiraIssueLinks;
 
     /**
      * CreateOrUpdateIssueLinksJob constructor.
      * @param \JiraRestApi\Issue\Issue $jiraIssue
-     * @param $jiraIssueLinks
      */
-    public function __construct(\JiraRestApi\Issue\Issue $jiraIssue, Array $jiraIssueLinks)
+    public function __construct(\JiraRestApi\Issue\Issue $jiraIssue)
     {
         $this->issueLinkRepository = new IssueLinkRepository(new IssueLink());
         $this->issueRepository = new IssueRepository(new Issue());
         $this->jiraIssue = $jiraIssue;
-        $this->jiraIssueLinks = $jiraIssueLinks;
     }
 
     /**
@@ -36,15 +32,25 @@ class CreateOrUpdateIssueLinksJob extends Job
         $issue = $this->issueRepository->getByKey($this->jiraIssue->key);
 
         $currentLinksJiraIds = array();
-        foreach ($this->jiraIssueLinks as $jiraIssueLink) {
+        foreach ($this->jiraIssue->fields->issuelinks as $jiraIssueLink) {
             $currentLinksJiraIds[] = $jiraIssueLink->id;
             $issueLinks = $this->issueLinkRepository->getByAttributes(["jira_id"=>$jiraIssueLink->id]);
             switch(count($issueLinks)) {
                 case 0:
                     $issueLinkAttributes = IssueLinkRepository::getAttributesFromJiraIssueLink($jiraIssueLink);
-                    $outwardIssue = $this->issueRepository->getByKey($issueLinkAttributes['outward_issue_key']);
-                    $issueLinkAttributes['issue_id'] = $issue->id;
-                    $issueLinkAttributes['outward_issue_id'] = $outwardIssue->id;
+                    $inwardIssue = $this->issueRepository->searchByKey($issueLinkAttributes['inward_issue_key']);
+                    $outwardIssue = $this->issueRepository->searchByKey($issueLinkAttributes['outward_issue_key']);
+                    $issueLinkAttributes['inward_issue_id'] = !is_null($inwardIssue)?$inwardIssue->id:null;
+                    $issueLinkAttributes['outward_issue_id'] = !is_null($outwardIssue)?$outwardIssue->id:null;
+
+                    if ($issue->key='TOWAND-6000') {
+                        $test = $this->issueRepository->getByAttributes(['issue_key'=>$this->jiraIssue->key]);
+                        dump($this->jiraIssue->key);
+                        dump($test[0]->key);
+                        dump($issue->key);
+                        dump($this->jiraIssue->key);
+                        dd($issueLinkAttributes);
+                    }
                     $this->issueLinkRepository->create($issueLinkAttributes, $issue);
                     break;
                 case 1:

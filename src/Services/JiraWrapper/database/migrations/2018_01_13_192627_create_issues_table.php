@@ -15,7 +15,7 @@ class CreateIssuesTable extends Migration
     {
         \Schema::create('jira_wrapper_issues',function(Blueprint $table) {
             $table->increments('id');
-            $table->string('key',50);
+            $table->string('issue_key',50);
             $table->string('project_key',50);
             $table->string('priority',50)->nullable();
             $table->integer('ranking')->nullable();
@@ -31,7 +31,7 @@ class CreateIssuesTable extends Migration
             $table->string('assignee',50)->nullable();
             $table->integer('remaining_estimate')->nullable();
             $table->integer('original_estimate')->nullable();
-            $table->index('key','idx_key');
+            $table->index('issue_key','idx_issue_key');
             $table->index('project_key','idx_project_key');
             $table->timestamps();
             $table->softDeletes();

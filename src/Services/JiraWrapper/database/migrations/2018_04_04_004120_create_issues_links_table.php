@@ -16,9 +16,12 @@ class CreateIssuesLinksTable extends Migration
         Schema::create('jira_wrapper_issues_links', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('jira_id');
-            $table->string('type');
-            $table->integer('outward_issue_id');
             $table->integer('issue_id');
+            $table->string('type');
+            $table->string('inward');
+            $table->string('outward');
+            $table->integer('inward_issue_id')->nullable();
+            $table->integer('outward_issue_id')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

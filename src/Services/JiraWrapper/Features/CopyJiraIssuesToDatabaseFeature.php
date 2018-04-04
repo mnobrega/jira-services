@@ -38,7 +38,6 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
         foreach ($jiraIssues as $jiraIssue) {
             $this->run(CreateOrUpdateIssueLinksJob::class,[
                 'jiraIssue'=>$jiraIssue,
-                'jiraIssueLinks'=>$jiraIssue->fields->issuelinks,
             ]);
         }
 

@@ -33,7 +33,7 @@ class CreateOrUpdateIssuesJob extends Job
             'updated'=>array(),
         ];
         foreach ($this->jiraIssues as $jiraIssue) {
-            $foundIssues = $this->repository->getByAttributes(['key' => $jiraIssue->key]);
+            $foundIssues = $this->repository->getByAttributes(['issue_key' => $jiraIssue->key]);
             switch (count($foundIssues)) {
                 case 0:
                     $createdIssue = $this->repository->create(IssueRepository::getAttributesFromJiraIssue($jiraIssue,

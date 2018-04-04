@@ -34,17 +34,29 @@ class IssueRepository extends Repository
     }
 
     /**
-     * @param $key
-     * @return \App\Data\Issue;
+     * @param $issueKey
+     * @return \Illuminate\Database\Eloquent\Model|\App\Data\Issue
+     */
+    public function getByKey($issueKey)
+    {
+        return $this->findBy('issue_key',$issueKey);
+    }
+
+    /**
+     * @param $issueKey
+     * @return mixed|null
      * @throws \Exception
      */
-    public function getByKey($key)
+    public function searchByKey($issueKey)
     {
-        $issues = $this->getByAttributes(['key'=>$key]);
-        if (count($issues)==1) {
-            return $issues[0];
-        } else {
-            throw new \Exception("Not found or wrong number of issues with key:".$key);
+        $issues = $this->getByAttributes(['issue_key'=>$issueKey]);
+        switch (count($issues)) {
+            case 0:
+                return null;
+            case 1:
+                return $issues[0];
+            default:
+                throw new \Exception("There cannot be more than 1 issue with the same key");
         }
     }
 
@@ -109,7 +121,7 @@ class IssueRepository extends Repository
     {
         $fixVersions = $jiraIssue->fields->fixVersions;
         $attributesFromJiraIssue = array(
-            'key' => $jiraIssue->key,
+            'issue_key' => $jiraIssue->key,
             'project_key' => $jiraIssue->fields->project->key,
             'priority' => (is_object($jiraIssue->fields->priority))?$jiraIssue->fields->priority->name:null,
             'ranking' => null,//not available from JIRA directly
