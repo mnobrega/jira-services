@@ -36,10 +36,6 @@ use Lucid\Foundation\Feature;
 
 class PublishIssuesToSlaveJiraInstanceFeature extends Feature
 {
-    /** TODO: move this to the database */
-    const JIRA_ISSUES_BOARD_NAME = 'ViaVerde';
-    const JIRA_ISSUES_BOARD_TYPE = 'scrum';
-
     /**
      * @throws \Exception
      */
