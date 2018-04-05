@@ -35,7 +35,7 @@ class SyncSprintsIssuesJob extends Job
     {
         $jiraSprintIdToSprintIdMap = $this->getJiraSprintIdToSprintIdMap();
         foreach ($this->jiraIssues as $jiraIssue) {
-            $issue = $this->issueRepository->getByAttributes(['key'=>$jiraIssue->key])[0];
+            $issue = $this->issueRepository->getByAttributes(['issue_key'=>$jiraIssue->key])[0];
             $issueSprintIds = $this->getJiraIssueSprintIds($jiraIssue,$jiraSprintIdToSprintIdMap);
             $this->issueRepository->syncSprints($issue, $issueSprintIds);
         }

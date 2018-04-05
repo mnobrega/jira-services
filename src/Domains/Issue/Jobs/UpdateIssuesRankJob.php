@@ -29,7 +29,7 @@ class UpdateIssuesRankJob extends Job
     {
         $ranking = 1;
         foreach ($this->jiraIssues as $jiraIssue) {
-            $issue = $this->repository->findBy('key',$jiraIssue->key);
+            $issue = $this->repository->findBy('issue_key',$jiraIssue->key);
             $this->repository->update($issue,['ranking'=>$ranking]);
             $ranking++;
         }

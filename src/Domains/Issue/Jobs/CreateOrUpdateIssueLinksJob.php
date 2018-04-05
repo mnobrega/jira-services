@@ -42,15 +42,6 @@ class CreateOrUpdateIssueLinksJob extends Job
                     $outwardIssue = $this->issueRepository->searchByKey($issueLinkAttributes['outward_issue_key']);
                     $issueLinkAttributes['inward_issue_id'] = !is_null($inwardIssue)?$inwardIssue->id:null;
                     $issueLinkAttributes['outward_issue_id'] = !is_null($outwardIssue)?$outwardIssue->id:null;
-
-                    if ($issue->key='TOWAND-6000') {
-                        $test = $this->issueRepository->getByAttributes(['issue_key'=>$this->jiraIssue->key]);
-                        dump($this->jiraIssue->key);
-                        dump($test[0]->key);
-                        dump($issue->key);
-                        dump($this->jiraIssue->key);
-                        dd($issueLinkAttributes);
-                    }
                     $this->issueLinkRepository->create($issueLinkAttributes, $issue);
                     break;
                 case 1:
