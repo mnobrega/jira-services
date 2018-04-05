@@ -46,7 +46,8 @@ class PublishIssuesToSlaveJira extends Command
             $this->output->writeln('<info>'.$featureResult['publishedIssues'].' issues published.</info>');
             $this->output->writeln('<info>'.$featureResult['publishedSprints'].' sprints published.</info>');
             $this->output->writeln('<info>'.$featureResult['publishedVersions'].' versions published.</info>');
-            $this->output->writeln('<info>'.$featureResult['publishedIssueRanks'].' issues rank changed.</info>');
+            $this->output->writeln('<info>'.$featureResult['publishedIssuesRanks'].' issues rank changed.</info>');
+            $this->output->writeln('<info>'.$featureResult['publishedIssuesLinks'].' issues links published </info>');
             $this->output->writeln('<info>'.$featureResult['issuesMovedToSprint'].' issues moved to sprints.</info>');
             $this->output->writeln('<info>'.$featureResult['issuesMovedToBacklog'].' issues moved to backlog.</info>');
 

@@ -43,7 +43,8 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
     {
         $publishResult = [
             'publishedIssues'=>0,
-            'publishedIssueRanks'=>0,
+            'publishedIssuesRanks'=>0,
+            'publishedIssuesLinks'=>0,
             'publishedSprints'=>0,
             'publishedVersions'=>0,
             'issuesMovedToSprint'=>0,
@@ -231,9 +232,10 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
                     'slaveJiraIssue'=>$slaveJiraIssue,
                     'rankBeforeSlaveJiraIssue'=>$slaveJiraIssuesSortedByRank[$arrayIndex-1],
                 ]);
-                $publishResult['publishedIssueRanks']++;
+                $publishResult['publishedIssuesRanks']++;
             }
         }
         return $publishResult;
     }
+
 }
