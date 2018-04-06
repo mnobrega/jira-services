@@ -16,7 +16,7 @@ class CreateSlaveJiraIssueLinkTable extends Migration
         Schema::create('jira_sync_slave_jira_issue_link', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('master_issue_link_jira_id');
-            $table->integer('slave_issue_link_jida_id');
+            $table->integer('slave_issue_link_jira_id');
             $table->timestamps();
         });
     }

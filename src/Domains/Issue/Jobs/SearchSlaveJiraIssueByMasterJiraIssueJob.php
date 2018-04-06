@@ -23,6 +23,7 @@ class SearchSlaveJiraIssueByMasterJiraIssueJob extends Job
 
     /**
      * @throws \Exception
+     * @return \App\Data\SlaveJiraIssue|null
      */
     public function handle()
     {

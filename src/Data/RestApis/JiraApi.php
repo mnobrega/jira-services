@@ -355,4 +355,8 @@ class JiraApi
         }
         return $this->issueLinkService->addIssueLink($jiraIssueLink);
     }
+
+    public function deleteIssueLink(\App\Data\SlaveJiraIssueLink $slaveJiraIssueLink) {
+        return $this->issueLinkService->deleteIssueLink($slaveJiraIssueLink->slave_issue_link_jira_id);
+    }
 }

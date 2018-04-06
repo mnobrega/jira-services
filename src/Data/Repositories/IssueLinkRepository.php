@@ -27,9 +27,19 @@ class IssueLinkRepository extends Repository
         return $this->fillAndSave($attributes);
     }
 
+    /**
+     * @param IssueLink $issueLink
+     * @return bool|null
+     * @throws \Exception
+     */
+    public function delete(IssueLink $issueLink)
+    {
+        return $issueLink->delete();
+    }
+
     public function getUpdatedIssuesLinksByDateTimeInterval($from, $to)
     {
-        return $this->model
+        return \App\Data\IssueLink::withTrashed()
             ->where('updated_at','>=',$from)
             ->where('updated_at','<=',$to)
             ->where('type','<>','Epic')

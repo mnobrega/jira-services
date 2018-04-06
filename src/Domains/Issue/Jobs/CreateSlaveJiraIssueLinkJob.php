@@ -15,9 +15,9 @@ class CreateSlaveJiraIssueLinkJob extends Job
     /**
      * CreateSlaveJiraIssueLinkJob constructor.
      * @param IssueLink $masterIssueLink
-     * @param \JiraRestApi\IssueLink\IssueLink $slaveJiraIssueLink
+     * @param \stdClass $slaveJiraIssueLink
      */
-    public function __construct(IssueLink $masterIssueLink, \JiraRestApi\IssueLink\IssueLink $slaveJiraIssueLink)
+    public function __construct(IssueLink $masterIssueLink, \stdClass $slaveJiraIssueLink)
     {
         $this->repository = new SlaveJiraIssueLinkRepository(new SlaveJiraIssueLink());
         $this->masterIssueLink = $masterIssueLink;
@@ -31,9 +31,8 @@ class CreateSlaveJiraIssueLinkJob extends Job
     {
         $attributes = [
             'master_issue_link_jira_id'=>$this->masterIssueLink->jira_id,
-            'slave_issue_link_jira_id'=>$this->slaveJiraIssueLink->id,
+            'slave_issue_link_jira_id'=>(integer)$this->slaveJiraIssueLink->id,
         ];
-        dd($attributes);
         return $this->repository->create($attributes);
     }
 }

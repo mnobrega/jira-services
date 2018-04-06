@@ -135,6 +135,12 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
         return $publishResult;
     }
 
+    /**
+     * @param $issuesLinks
+     * @param $publishResult
+     * @return mixed
+     * @throws \Exception
+     */
     private function publishIssuesLinks($issuesLinks, $publishResult)
     {
         foreach ($issuesLinks as $issueLink) {
@@ -159,13 +165,18 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
                 'inwardSlaveJiraIssue'=>$inwardSlaveJiraIssue,
                 'outwardSlaveJiraIssue'=>$outwardSlaveJiraIssue,
             ]);
-            dd($jiraIssueLink);
             if (is_null($slaveJiraIssueLink)) {
-                $this->run(CreateSlaveJiraIssueLinkJob::class,[
-                    'masterIssueLink'=>$issueLink,
-                    'slaveJiraIssueLink'=>$jiraIssueLink,
-                ]);
+                if (!is_null($jiraIssueLink)) {
+                    $this->run(CreateSlaveJiraIssueLinkJob::class,[
+                        'masterIssueLink'=>$issueLink,
+                        'slaveJiraIssueLink'=>$jiraIssueLink,
+                    ]);
+                } else {
+                    throw new \Exception("A Slave Jira Issue Link should have been created");
+                }
             }
+
+            $publishResult['publishedIssuesLinks']++;
         }
 
         return $publishResult;

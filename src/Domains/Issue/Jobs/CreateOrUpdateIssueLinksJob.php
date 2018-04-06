@@ -31,9 +31,9 @@ class CreateOrUpdateIssueLinksJob extends Job
     {
         $issue = $this->issueRepository->getByKey($this->jiraIssue->key);
 
-        $currentLinksJiraIds = array();
+        $currentIssueLinkJiraIds = array();
         foreach ($this->jiraIssue->fields->issuelinks as $jiraIssueLink) {
-            $currentLinksJiraIds[] = $jiraIssueLink->id;
+            $currentIssueLinkJiraIds[] = $jiraIssueLink->id;
             $issueLinks = $this->issueLinkRepository->getByAttributes(["jira_id"=>$jiraIssueLink->id]);
             switch(count($issueLinks)) {
                 case 0:
@@ -52,6 +52,10 @@ class CreateOrUpdateIssueLinksJob extends Job
             }
         }
 
-        //TODO: softdelete the ones that are missing in the currentLinks
+        foreach ($issue->links()->get() as $issueLink) {
+            if (!in_array($issueLink->jira_id,$currentIssueLinkJiraIds)){
+                $this->issueLinkRepository->delete($issueLink);
+            }
+        }
     }
 }

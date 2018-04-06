@@ -36,17 +36,33 @@ class PublishIssueLinkToJiraJob extends Job
     }
 
     /**
+     * @return mixed
+     * @throws \Exception
      * @throws \JiraRestApi\JiraException
      * @throws \JsonMapper_Exception
      */
     public function handle()
     {
         if (is_null($this->slaveJiraIssueLink)) {
-            $jiraIssueLink = $this->jiraApi->createIssueLink($this->issueLink, $this->slaveJiraIssue,
-                $this->inwardSlaveJiraIssue, $this->outwardSlaveJiraIssue);
+            $this->jiraApi->createIssueLink($this->issueLink, $this->slaveJiraIssue, $this->inwardSlaveJiraIssue,
+                $this->outwardSlaveJiraIssue);
+        }
+        if (!is_null($this->issueLink->deleted_at)) {
+            $this->jiraApi->deleteIssueLink($this->slaveJiraIssueLink);
+        } else {
+            $issue = $this->jiraApi->getIssue($this->slaveJiraIssue->slave_issue_key);
+            foreach ($issue->fields->issuelinks as $issueLink) {
+                if ($issueLink->type->name==$this->issueLink->type && $this->issueLink->type &&
+                    (
+                        (property_exists($issueLink,"inwardIssue") && $issueLink->inwardIssue->key==$this->inwardSlaveJiraIssue->slave_issue_key) ||
+                        (property_exists($issueLink,"outwardIssue") && $issueLink->outwardIssue->key==$this->outwardSlaveJiraIssue->slave_issue_key)
+                    )
+                ) {
+                    return $issueLink;
+                }
+            }
         }
 
-        $slaveJiraIssue = $this->jiraApi->getIssue($this->slaveJiraIssue->issue_key);
-        dd($slaveJiraIssue);
+        return null;
     }
 }

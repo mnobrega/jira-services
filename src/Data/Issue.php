@@ -20,13 +20,11 @@ class Issue extends Model
 
     public function histories()
     {
-        return $this->hasMany('App\Data\IssueHistory','jira_wrapper_issues_histories',
-            'issue_id');
+        return $this->hasMany('App\Data\IssueHistory','issue_id', 'id');
     }
 
     public function links()
     {
-        return $this->hasMany('App\Data\IssueLink','jira_wrapper_issues_links',
-            'issue_id');
+        return $this->hasMany('App\Data\IssueLink','issue_id', 'id');
     }
 }
