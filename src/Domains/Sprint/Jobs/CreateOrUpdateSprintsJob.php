@@ -25,27 +25,36 @@ class CreateOrUpdateSprintsJob extends Job
      */
     public function handle()
     {
-        $sprints = [
+        $result = [
             'created'=>array(),
             'updated'=>array(),
         ];
+        $currentSprintJiraIds = array();
         foreach ($this->jiraSprints as $jiraSprint) {
+            $currentSprintJiraIds[] = $jiraSprint->id;
             $foundSprints = $this->repository->getByAttributes(['jira_id'=>$jiraSprint->id]);
             switch(count($foundSprints)) {
                 case 0:
                     $createdSprint = $this->repository->create(
                         SprintRepository::getAttributesFromJiraSprint($jiraSprint));
-                    $sprints['created'][] = $createdSprint;
+                    $result['created'][] = $createdSprint;
                     break;
                 case 1:
                     $updatedSprint = $this->repository->update($foundSprints[0],
                         SprintRepository::getAttributesFromJiraSprint($jiraSprint));
-                    $sprints['updated'][] = $updatedSprint;
+                    $result['updated'][] = $updatedSprint;
                     break;
                 default:
                     throw new \Exception("Found more than 1 sprint with the same sprint_id:".$jiraSprint->id);
             }
         }
-        return $sprints;
+
+        $sprints = $this->repository->all();
+        foreach ($sprints as $sprint) {
+            if(!in_array($sprint->jira_id,$currentSprintJiraIds)) {
+                $this->repository->update($sprint,['state'=>'closed']);
+            }
+        }
+        return $result;
     }
 }
