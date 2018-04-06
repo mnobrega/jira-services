@@ -16,11 +16,11 @@ class IssueLink extends Model
 
     public function inwardIssue()
     {
-        return $this->hasOne('App\Data\Issue','inward_issue_id');
+        return $this->hasOne('App\Data\Issue','id','inward_issue_id');
     }
 
     public function outwardIssue()
     {
-        return $this->hasOne('App\Data\Issue','outward_issue_id');
+        return $this->hasOne('App\Data\Issue','id','outward_issue_id');
     }
 }

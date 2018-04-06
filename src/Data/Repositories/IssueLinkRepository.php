@@ -27,6 +27,16 @@ class IssueLinkRepository extends Repository
         return $this->fillAndSave($attributes);
     }
 
+    public function getUpdatedIssuesLinksByDateTimeInterval($from, $to)
+    {
+        return $this->model
+            ->where('updated_at','>=',$from)
+            ->where('updated_at','<=',$to)
+            ->where('type','<>','Epic')
+            ->orderBy('created_at','asc')
+            ->get();
+    }
+
     /**
      * @param $jiraIssueLink
      * @return array

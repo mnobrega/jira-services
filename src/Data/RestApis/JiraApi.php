@@ -8,6 +8,7 @@
 
 namespace App\Data\RestApis;
 
+use App\Data\SlaveJiraIssue;
 use JiraRestApi\Configuration\ArrayConfiguration;
 use JiraRestApi\Field\FieldService;
 use JiraRestApi\Issue\IssueField;
@@ -15,6 +16,8 @@ use JiraRestApi\Issue\IssueService;
 use JiraRestApi\Issue\Issue;
 use JiraRestApi\Issue\TimeTracking;
 use JiraRestApi\Issue\Transition;
+use JiraRestApi\IssueLink\IssueLink;
+use JiraRestApi\IssueLink\IssueLinkService;
 use JiraRestApi\Project\ProjectService;
 use JiraRestApi\Version\Version;
 use JiraRestApi\Version\VersionService;
@@ -65,6 +68,7 @@ class JiraApi
     const FIELD_NAME_EPIC_COLOR = 'Epic Colour';
 
     private $issueService;
+    private $issueLinkService;
     private $fieldService;
     private $versionService;
     private $projectService;
@@ -82,6 +86,7 @@ class JiraApi
     {
         $configuration = new ArrayConfiguration(Config::getCredentials($instance));
         $this->issueService = new IssueService($configuration);
+        $this->issueLinkService = new IssueLinkService($configuration);
         $this->fieldService = new FieldService($configuration);
         $this->versionService = new VersionService($configuration);
         $this->projectService = new ProjectService($configuration);
@@ -324,5 +329,30 @@ class JiraApi
         $this->issueService->transition($issueIdOrKey,$transition);
 
         return $this->getIssue($issueIdOrKey);
+    }
+
+    /**
+     * @param \App\Data\IssueLink $issueLink
+     * @param SlaveJiraIssue $slaveJiraIssue
+     * @param $inwardSlaveJiraIssue
+     * @param $outwardSlaveJiraIssue
+     * @throws \JiraRestApi\JiraException
+     */
+    public function createIssueLink(\App\Data\IssueLink $issueLink, SlaveJiraIssue $slaveJiraIssue,
+                                    $inwardSlaveJiraIssue, $outwardSlaveJiraIssue)
+    {
+        $jiraIssueLink = new IssueLink();
+        $jiraIssueLink->setLinkTypeName($issueLink->type);
+        if (!is_null($inwardSlaveJiraIssue)) {
+            $jiraIssueLink->setInwardIssue($inwardSlaveJiraIssue->slave_issue_key);
+        } else {
+            $jiraIssueLink->setInwardIssue($slaveJiraIssue->slave_issue_key);
+        }
+        if (!is_null($outwardSlaveJiraIssue)) {
+            $jiraIssueLink->setOutwardIssue($outwardSlaveJiraIssue->slave_issue_key);
+        } else {
+            $jiraIssueLink->setInwardIssue($slaveJiraIssue->slave_issue_key);
+        }
+        return $this->issueLinkService->addIssueLink($jiraIssueLink);
     }
 }

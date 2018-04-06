@@ -51,5 +51,7 @@ class CreateOrUpdateIssueLinksJob extends Job
                     throw new \Exception("Wrong number of issue links found. It should be 1.");
             }
         }
+
+        //TODO: softdelete the ones that are missing in the currentLinks
     }
 }

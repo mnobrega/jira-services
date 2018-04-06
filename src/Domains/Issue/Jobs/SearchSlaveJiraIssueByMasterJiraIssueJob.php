@@ -13,9 +13,9 @@ class SearchSlaveJiraIssueByMasterJiraIssueJob extends Job
 
     /**
      * SearchSlaveJiraIssueByMasterJiraIssueJob constructor.
-     * @param Issue $masterJiraIssue
+     * @param Issue|null $masterJiraIssue
      */
-    public function __construct(Issue $masterJiraIssue)
+    public function __construct($masterJiraIssue)
     {
         $this->repository = new SlaveJiraIssueRepository(new SlaveJiraIssue());
         $this->masterJiraIssue = $masterJiraIssue;
@@ -26,6 +26,9 @@ class SearchSlaveJiraIssueByMasterJiraIssueJob extends Job
      */
     public function handle()
     {
-        return $this->repository->searchByMasterJiraKey($this->masterJiraIssue->key);
+        if (!is_null($this->masterJiraIssue)) {
+            return $this->repository->searchByMasterJiraKey($this->masterJiraIssue->issue_key);
+        }
+        return null;
     }
 }

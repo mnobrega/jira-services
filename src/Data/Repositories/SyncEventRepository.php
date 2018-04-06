@@ -26,7 +26,7 @@ class SyncEventRepository extends Repository
             'from_datetime' => $fromDateTime,
             'to_datetime' => $toDateTime,
         ];
-        return $this->fillAndSave($attributes);
+        return $this->fill($attributes);
     }
 
     /**
