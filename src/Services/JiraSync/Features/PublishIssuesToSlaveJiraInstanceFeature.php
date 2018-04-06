@@ -55,40 +55,40 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             'issuesMovedToBacklog'=>0,
         ];
 
-//        $slaveJiraConfig = $this->run(GetSlaveJiraConfigJob::class);
-//
-//        $issueVersions = $this->run(GetIssueDistinctVersionsJob::class);
-//        $publishResult = $this->publishVersions($issueVersions, $publishResult);
-//
-//        $epicIssues = $this->run(GetAllEpicIssuesJob::class);
-//        $publishResult = $this->publishIssues($epicIssues,$publishResult);
-//
+        $slaveJiraConfig = $this->run(GetSlaveJiraConfigJob::class);
+
+        $issueVersions = $this->run(GetIssueDistinctVersionsJob::class);
+        $publishResult = $this->publishVersions($issueVersions, $publishResult);
+
+        $epicIssues = $this->run(GetAllEpicIssuesJob::class);
+        $publishResult = $this->publishIssues($epicIssues,$publishResult);
+
         $latestSyncEvent = $this->run(GetLatestSyncEventJob::class);
         $syncEvent = $this->run(CreateSyncEventJob::class,[
             'fromDateTime'=>new \DateTime($latestSyncEvent->to_datetime),
             'toDateTime'=>now()
         ]);
-//        $updatedIssues = $this->run(GetUpdatedIssuesByDateTimeIntervalJob::class,[
-//            'fromDateTime'=>new \DateTime($syncEvent->from_datetime),
-//            'toDateTime'=>new \DateTime($syncEvent->to_datetime),
-//        ]);
-//        $publishResult = $this->publishIssues($updatedIssues,$publishResult);
-//
-//        if ($slaveJiraConfig->jira_board_type==JiraAgile::BOARD_TYPE_SCRUM) {
-//            $sprints = $this->run(GetAllSprintsJob::class);
-//            $jiraBoard = $this->run(SearchJiraBoardByNameJob::class,[
-//                'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
-//                'jiraBoardName'=>$slaveJiraConfig->jira_board_name,
-//            ]);
-//
-//            if (!is_null($jiraBoard)) {
-//                $publishResult = $this->publishSprints($sprints, $jiraBoard->id, $publishResult);
-//                $slaveJiraIssues = $this->run(GetAllSlaveJiraIssuesJob::class);
-//                $publishResult = $this->publishSlaveJiraIssuesForSprintOrBacklog($slaveJiraIssues, $publishResult);
-//            }
-//        }
-//
-//        $publishResult = $this->publishIssuesRank($publishResult);
+        $updatedIssues = $this->run(GetUpdatedIssuesByDateTimeIntervalJob::class,[
+            'fromDateTime'=>new \DateTime($syncEvent->from_datetime),
+            'toDateTime'=>new \DateTime($syncEvent->to_datetime),
+        ]);
+        $publishResult = $this->publishIssues($updatedIssues,$publishResult);
+
+        if ($slaveJiraConfig->jira_board_type==JiraAgile::BOARD_TYPE_SCRUM) {
+            $sprints = $this->run(GetAllSprintsJob::class);
+            $jiraBoard = $this->run(SearchJiraBoardByNameJob::class,[
+                'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
+                'jiraBoardName'=>$slaveJiraConfig->jira_board_name,
+            ]);
+
+            if (!is_null($jiraBoard)) {
+                $publishResult = $this->publishSprints($sprints, $jiraBoard->id, $publishResult);
+                $slaveJiraIssues = $this->run(GetAllSlaveJiraIssuesJob::class);
+                $publishResult = $this->publishSlaveJiraIssuesForSprintOrBacklog($slaveJiraIssues, $publishResult);
+            }
+        }
+
+        $publishResult = $this->publishIssuesRank($publishResult);
 
         $updatedIssuesLinks = $this->run(GetUpdatedIssuesLinksByDateTimeIntervalJob::class,[
             'fromDateTime'=>new \DateTime($syncEvent->from_datetime),
