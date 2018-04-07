@@ -47,10 +47,14 @@ class PublishIssueToJiraJob extends Job
         $this->issue->epic_link = $this->remoteEpicIssueKey;
         $this->issue->fix_version_id = $this->removeVersionId;
         if (is_null($this->remoteIssueKey)) {
-            return $this->jiraApi->createIssue($this->issue);
+            $jiraIssue = $this->jiraApi->createIssue($this->issue);
         } else {
-            return $this->jiraApi->updateIssue($this->remoteIssueKey, $this->issue);
+            $jiraIssue = $this->jiraApi->updateIssue($this->remoteIssueKey, $this->issue);
         }
+        if (!is_null($this->issue->deleted_at)) {
+            $this->jiraApi->deleteIssue($this->issue->issue_key);
+        }
+        return $jiraIssue;
     }
 
 }

@@ -67,6 +67,8 @@ class JiraApi
     const FIELD_NAME_EPIC_NAME = 'Epic Name';
     const FIELD_NAME_EPIC_COLOR = 'Epic Colour';
 
+    const MAX_JIRA_RESULTS = 1000;
+
     private $issueService;
     private $issueLinkService;
     private $fieldService;
@@ -144,9 +146,18 @@ class JiraApi
      */
     public function getIssuesByJQL($query)
     {
-        return $this->issueService
-            ->search($query,0,1000)
+        $start = 0;
+        $maxResults = static::MAX_JIRA_RESULTS;
+        $issues = $this->issueService
+            ->search($query,$start,$maxResults)
             ->getIssues();
+        while (count($issues) == $start + static::MAX_JIRA_RESULTS) {
+            $start += static::MAX_JIRA_RESULTS;
+            array_merge($issues,$this->issueService
+                ->search($query,$start,$maxResults)
+                ->getIssues());
+        }
+        return $issues;
     }
 
     /**
@@ -329,6 +340,11 @@ class JiraApi
         $this->issueService->transition($issueIdOrKey,$transition);
 
         return $this->getIssue($issueIdOrKey);
+    }
+
+    public function deleteIssue($issueIdOrKey)
+    {
+        return $this->issueService->deleteIssue($issueIdOrKey);
     }
 
     /**

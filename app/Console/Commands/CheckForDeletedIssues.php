@@ -2,27 +2,27 @@
 
 namespace Framework\Console\Commands;
 
-use App\Services\JiraWrapper\Features\CopyJiraIssuesHistoryToDatabaseFeature;
+use App\Services\JiraWrapper\Features\CheckForDeletedIssuesFeature;
 use Illuminate\Console\Command;
 use Lucid\Foundation\ServesFeaturesTrait;
 
-class CopyJiraIssuesHistoryToDatabase extends Command
+class CheckForDeletedIssues extends Command
 {
-
     use ServesFeaturesTrait;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'jira-wrapper:issues:copy-history';
+    protected $signature = 'jira-wrapper:issues:check-deleted';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Copy latest issues history to the local database';
+    protected $description = 'Checks for deleted master JIRA issues.';
 
     /**
      * Create a new command instance.
@@ -42,11 +42,13 @@ class CopyJiraIssuesHistoryToDatabase extends Command
     public function handle()
     {
         try {
-            $featureResult = $this->serve(CopyJiraIssuesHistoryToDatabaseFeature::class);
+            $featureResult = $this->serve(CheckForDeletedIssuesFeature::class);
+            $this->output->writeln('<info>'.$featureResult['deleted'].' Issues Deleted.</info>');
+            $this->output->writeln('<info>'.$featureResult['keeped'].' Issues Keeped.</info>');
+            $this->output->writeln('<info>Issues deleted:'.implode(",",$featureResult['deletedIssueKeys']).'</info>');
         } catch (\Exception $e) {
             $this->output->writeln('<error>An error has ocurred.</error>');
             $this->output->writeln('<info>Error: '.$e->getMessage().'</info>');
-            dump($e);
         }
     }
 }

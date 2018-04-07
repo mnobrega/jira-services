@@ -2,10 +2,13 @@
 
 namespace App\Data;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Lucid\Foundation\Model;
 
 class Issue extends Model
 {
+    use SoftDeletes;
+
     const TYPE_EPIC = 'Epic';
 
     protected $table = 'jira_wrapper_issues';

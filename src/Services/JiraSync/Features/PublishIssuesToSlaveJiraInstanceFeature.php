@@ -15,6 +15,7 @@ use App\Domains\Issue\Jobs\GetIssuesSortedByRankJob;
 use App\Domains\Issue\Jobs\GetSlaveJiraIssuesByIssuesJob;
 use App\Domains\Issue\Jobs\GetUpdatedIssuesByDateTimeIntervalJob;
 use App\Domains\Issue\Jobs\GetUpdatedIssuesLinksByDateTimeIntervalJob;
+use App\Domains\Issue\Jobs\GetUpdatedIssuesWithTrashedByDateTimeIntervalJob;
 use App\Domains\Issue\Jobs\SearchSlaveJiraIssueByMasterJiraIssueJob;
 use App\Domains\Issue\Jobs\SearchSlaveJiraIssueLinkByMasterIssueLinkJob;
 use App\Domains\Jira\Jobs\GetJiraVersionJob;
@@ -68,7 +69,7 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             'fromDateTime'=>new \DateTime($latestSyncEvent->to_datetime),
             'toDateTime'=>now()
         ]);
-        $updatedIssues = $this->run(GetUpdatedIssuesByDateTimeIntervalJob::class,[
+        $updatedIssues = $this->run(GetUpdatedIssuesWithTrashedByDateTimeIntervalJob::class,[
             'fromDateTime'=>new \DateTime($syncEvent->from_datetime),
             'toDateTime'=>new \DateTime($syncEvent->to_datetime),
         ]);

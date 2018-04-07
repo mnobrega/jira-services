@@ -24,6 +24,17 @@ class IssueRepository extends Repository
 
     /**
      * @param Issue $issue
+     * @return bool|null
+     * @throws \Exception
+     */
+    public function delete(Issue $issue)
+    {
+        $this->model = $issue;
+        return $this->model->delete();
+    }
+
+    /**
+     * @param Issue $issue
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model
      */
@@ -68,6 +79,21 @@ class IssueRepository extends Repository
     public function getUpdatedIssuesByDateTimeInterval($from, $to)
     {
         return $this->model
+            ->where('updated','>=',$from)
+            ->where('updated','<=',$to)
+            ->where('type','<>','Epic')
+            ->orderBy('created','asc')
+            ->get();
+    }
+
+    /**
+     * @param $from
+     * @param $to
+     * @return \App\Data\Issue[]
+     */
+    public function getUpdatedIssuesWithTrashedByDateTimeInterval($from, $to)
+    {
+        return Issue::withTrashed()
             ->where('updated','>=',$from)
             ->where('updated','<=',$to)
             ->where('type','<>','Epic')

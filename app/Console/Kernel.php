@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         Commands\CopyJiraIssuesToDatabase::class,
         Commands\CopyJiraIssuesHistoryToDatabase::class,
         Commands\PublishIssuesToSlaveJira::class,
+        Commands\CheckForDeletedIssues::class,
     ];
 
     /**
