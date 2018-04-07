@@ -30,6 +30,6 @@ class PublishIssueForSprintToJiraJob extends Job
     public function handle()
     {
         $this->jiraAgileApi->moveIssueToSprint($this->slaveJiraIssue->slave_issue_key,
-            $this->slaveJiraSprint->slave_sprint_id);
+            $this->slaveJiraSprint->slave_sprint_jira_id);
     }
 }

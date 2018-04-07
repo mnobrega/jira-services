@@ -15,8 +15,8 @@ class CreateSlaveJiraSprintsTable extends Migration
     {
         Schema::create('jira_sync_slave_jira_sprints', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('master_sprint_id');
-            $table->integer('slave_sprint_id');
+            $table->integer('master_sprint_jira_id');
+            $table->integer('slave_sprint_jira_id');
             $table->timestamps();
         });
     }

@@ -209,7 +209,7 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
                 'remoteEpicIssueKey'=>is_null($slaveJiraEpicIssue)?null:$slaveJiraEpicIssue->slave_issue_key,
                 'remoteVersionId'=>is_null($slaveJiraVersion)?null:$slaveJiraVersion->slave_version_id,
             ]);
-            if (is_null($slaveJiraIssue)) {
+            if (is_null($slaveJiraIssue) && !is_null($jiraIssue)) {
                 $this->run(CreateSlaveJiraIssueJob::class,[
                     'masterJiraIssue'=>$issue,
                     'slaveJiraIssue'=>$jiraIssue,
@@ -231,7 +231,7 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
                     'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
                     'boardId'=>$jiraBoardId,
                     'sprint'=>$sprint,
-                    'remoteSprintId'=>is_null($slaveJiraSprint)?null:$slaveJiraSprint->slave_sprint_id,
+                    'slaveSprintId'=>is_null($slaveJiraSprint)?null:$slaveJiraSprint->slave_sprint_jira_id,
                 ]);
                 if (is_null($slaveJiraSprint)) {
                     $this->run(CreateSlaveJiraSprintJob::class,[

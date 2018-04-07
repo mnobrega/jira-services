@@ -27,6 +27,6 @@ class SearchSlaveJiraSprintByMasterJiraSprintJob extends Job
      */
     public function handle()
     {
-        return $this->repository->searchByMasterSprintId($this->masterJiraSprint->id);
+        return $this->repository->searchByMasterSprintJiraId($this->masterJiraSprint->jira_id);
     }
 }

@@ -28,7 +28,7 @@ class SearchSlaveJiraIssueByMasterJiraIssueJob extends Job
     public function handle()
     {
         if (!is_null($this->masterJiraIssue)) {
-            return $this->repository->searchByMasterJiraKey($this->masterJiraIssue->issue_key);
+            return $this->repository->searchByMasterIssueKey($this->masterJiraIssue->issue_key);
         }
         return null;
     }

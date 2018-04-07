@@ -24,6 +24,10 @@ class CopyJiraIssuesHistoryToDatabaseFeature extends Feature
             'toDateTime'=>new \DateTime($syncEvent->to_datetime),
         ]);
 
+        $issuesHistories = [
+            'created'=>array(),
+            'updated'=>array(),
+        ];
         foreach ($updatedIssues as $updatedIssue) {
             $issueHistoriesForDateInterval = $this->run(GetIssueHistoriesForDateIntervalJob::class,[
                 'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
@@ -36,5 +40,7 @@ class CopyJiraIssuesHistoryToDatabaseFeature extends Feature
                 'issueHistories'=>$issueHistoriesForDateInterval
             ]);
         }
+
+        return $issuesHistories;
     }
 }

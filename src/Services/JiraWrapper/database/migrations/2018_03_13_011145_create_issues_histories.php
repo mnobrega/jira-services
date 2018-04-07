@@ -23,6 +23,7 @@ class CreateIssuesHistories extends Migration
             $table->text('from_string')->nullable();
             $table->text('to_string')->nullable();
             $table->string('author_name');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -3,6 +3,7 @@ namespace App\Services\JiraWrapper\Features;
 
 use App\Data\RestApis\Config;
 use App\Domains\Issue\Jobs\DeleteDeadIssuesJob;
+use App\Domains\Issue\Jobs\DeleteDeadSlaveIssuesJob;
 use App\Domains\Jira\Jobs\GetJiraConfigJob;
 use App\Domains\Jira\Jobs\GetJiraIssueKeysJob;
 use App\Domains\Jira\Jobs\SearchJiraIssuesByJQLJob;
@@ -22,8 +23,12 @@ class CheckForDeletedIssuesFeature extends Feature
         $liveJiraIssueKeys = $this->run(GetJiraIssueKeysJob::class,[
             'jiraIssues'=>$jiraIssues,
         ]);
-        return $this->run(DeleteDeadIssuesJob::class,[
-            'liveIssueKeys'=>$liveJiraIssueKeys
+        $result = $this->run(DeleteDeadIssuesJob::class,[
+            'liveIssueKeys'=>$liveJiraIssueKeys,
         ]);
+        $this->run(DeleteDeadSlaveIssuesJob::class,[
+            'deletedMasterIssueKeys'=>$result['deletedIssueKeys'],
+        ]);
+        return $result;
     }
 }

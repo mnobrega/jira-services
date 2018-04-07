@@ -11,6 +11,6 @@ class SlaveJiraIssue extends Model
 
     public function issue()
     {
-        return $this->hasOne('App\Data\Issue');
+        return $this->hasOne('App\Data\Issue','issue_key','master_issue_key');
     }
 }

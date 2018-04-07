@@ -43,6 +43,9 @@ class CopyJiraIssuesHistoryToDatabase extends Command
     {
         try {
             $featureResult = $this->serve(CopyJiraIssuesHistoryToDatabaseFeature::class);
+            $this->output->writeln('<info>'.count($featureResult['created']).' Histories Created.</info>');
+            $this->output->writeln('<info>'.count($featureResult['updated']).' Histories Updated.</info>');
+
         } catch (\Exception $e) {
             $this->output->writeln('<error>An error has ocurred.</error>');
             $this->output->writeln('<info>Error: '.$e->getMessage().'</info>');

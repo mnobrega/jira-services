@@ -19,19 +19,30 @@ class SlaveJiraIssueRepository extends Repository
         $this->model = new SlaveJiraIssue();
         $attributes = [
             'slave_issue_key' => $slaveJiraIssueKey,
-            'master_issue_key' => $issue->key,
+            'master_issue_key' => $issue->issue_key,
         ];
         return $this->fillAndSave($attributes);
     }
 
     /**
-     * @param $masterJiraKey
+     * @param SlaveJiraIssue $slaveJiraIssue
+     * @return bool|null
+     * @throws \Exception
+     */
+    public function delete(SlaveJiraIssue $slaveJiraIssue)
+    {
+        $this->model = $slaveJiraIssue;
+        return $this->model->delete();
+    }
+
+    /**
+     * @param $masterIssueKey
      * @return mixed|null
      * @throws \Exception
      */
-    public function searchByMasterJiraKey($masterJiraKey)
+    public function searchByMasterIssueKey($masterIssueKey)
     {
-        $issues = $this->getByAttributes(["master_issue_key"=>$masterJiraKey]);
+        $issues = $this->getByAttributes(["master_issue_key"=>$masterIssueKey]);
         switch (count($issues)) {
             case 0:
                 return null;
@@ -40,7 +51,7 @@ class SlaveJiraIssueRepository extends Repository
                 return $issues[0];
                 break;
             default:
-                throw new \Exception("More than 1 result found for the same Master Issue key:".$masterJiraKey);
+                throw new \Exception("More than 1 result found for the same Master Issue key:".$masterIssueKey);
         }
     }
 }

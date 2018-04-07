@@ -22,20 +22,20 @@ class SlaveJiraSprintRepository extends Repository
     {
         $this->model = new SlaveJiraSprint();
         $attributes = [
-            'master_sprint_id'=>$sprint->id,
-            'slave_sprint_id'=>$slaveJiraSprintId,
+            'master_sprint_jira_id'=>$sprint->jira_id,
+            'slave_sprint_jira_id'=>$slaveJiraSprintId,
         ];
         return $this->fillAndSave($attributes);
     }
 
     /**
-     * @param $masterSprintId
+     * @param $masterSprintJiraId
      * @return mixed|null
      * @throws \Exception
      */
-    public function searchByMasterSprintId($masterSprintId)
+    public function searchByMasterSprintJiraId($masterSprintJiraId)
     {
-        $slaveSprints = $this->getByAttributes(["master_sprint_id"=>$masterSprintId]);
+        $slaveSprints = $this->getByAttributes(["master_sprint_jira_id"=>$masterSprintJiraId]);
         switch(count($slaveSprints)) {
             case 0:
                 return null;

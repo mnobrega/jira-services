@@ -27,6 +27,7 @@ class CreateSprintsTable extends Migration
             $table->increments('id');
             $table->integer('sprint_id');
             $table->integer('issue_id');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

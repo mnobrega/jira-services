@@ -33,8 +33,8 @@ class CreateIssuesTable extends Migration
             $table->integer('original_estimate')->nullable();
             $table->index('issue_key','idx_issue_key');
             $table->index('project_key','idx_project_key');
-            $table->timestamps();
             $table->softDeletes();
+            $table->timestamps();
         });
     }
 
