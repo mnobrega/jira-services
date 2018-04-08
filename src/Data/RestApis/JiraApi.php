@@ -39,7 +39,8 @@ class JiraApi
         "In Progress"=>"In Progress",
         "Ready To Review"=>"In Progress",
         "Review"=>"In Progress",
-        "Done"=>"Done"
+        "Done"=>"Done",
+        "DONE"=>"Done",
     ];
     //TODO: HARDCODED - Move this to a table so that it can be configure dynamicaly
     private static $slaveIssuePrioritiesMapping = [
@@ -48,6 +49,7 @@ class JiraApi
         "Major"=>"Medium",
         "Medium"=>"Medium",
         "Minor"=>"Low",
+        "Low"=>"Low",
         "Trivial"=>"Lowest",
         "Highest"=>"Highest",
         null=>"Low",
@@ -342,6 +344,11 @@ class JiraApi
         return $this->getIssue($issueIdOrKey);
     }
 
+    /**
+     * @param $issueIdOrKey
+     * @return bool|string
+     * @throws \JiraRestApi\JiraException
+     */
     public function deleteIssue($issueIdOrKey)
     {
         return $this->issueService->deleteIssue($issueIdOrKey);
@@ -367,11 +374,16 @@ class JiraApi
         if (!is_null($outwardSlaveJiraIssue)) {
             $jiraIssueLink->setOutwardIssue($outwardSlaveJiraIssue->slave_issue_key);
         } else {
-            $jiraIssueLink->setInwardIssue($slaveJiraIssue->slave_issue_key);
+            $jiraIssueLink->setOutwardIssue($slaveJiraIssue->slave_issue_key);
         }
         return $this->issueLinkService->addIssueLink($jiraIssueLink);
     }
 
+    /**
+     * @param \App\Data\SlaveJiraIssueLink $slaveJiraIssueLink
+     * @return string
+     * @throws \JiraRestApi\JiraException
+     */
     public function deleteIssueLink(\App\Data\SlaveJiraIssueLink $slaveJiraIssueLink) {
         return $this->issueLinkService->deleteIssueLink($slaveJiraIssueLink->slave_issue_link_jira_id);
     }
