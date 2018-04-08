@@ -71,6 +71,13 @@ class IssueRepository extends Repository
         }
     }
 
+    public function getAllEpicIssuesWithTrashed()
+    {
+        return Issue::withTrashed()
+            ->where('type','=',Issue::TYPE_EPIC)
+            ->get();
+    }
+
     /**
      * @param $from
      * @param $to

@@ -51,8 +51,13 @@ class CreateOrUpdateSprintsJob extends Job
 
         $sprints = $this->repository->all();
         foreach ($sprints as $sprint) {
+            /** @var \App\Data\Sprint $sprint */
             if(!in_array($sprint->jira_id,$currentSprintJiraIds)) {
-                $this->repository->update($sprint,['state'=>'closed']);
+                if ($sprint->state=='active') {
+                    $this->repository->update($sprint,['state'=>'closed']);
+                } else if ($sprint->state=='future'){
+                    $this->repository->update($sprint,['state'=>'active']);
+                }
             }
         }
         return $result;

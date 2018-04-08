@@ -26,9 +26,6 @@ class CheckForDeletedIssuesFeature extends Feature
         $result = $this->run(DeleteDeadIssuesJob::class,[
             'liveIssueKeys'=>$liveJiraIssueKeys,
         ]);
-        $this->run(DeleteDeadSlaveIssuesJob::class,[
-            'deletedMasterIssueKeys'=>$result['deletedIssueKeys'],
-        ]);
         return $result;
     }
 }

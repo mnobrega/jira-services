@@ -7,6 +7,7 @@ use App\Data\RestApis\JiraAgile;
 use App\Domains\Issue\Jobs\CreateSlaveJiraIssueJob;
 use App\Domains\Issue\Jobs\CreateSlaveJiraIssueLinkJob;
 use App\Domains\Issue\Jobs\GetAllEpicIssuesJob;
+use App\Domains\Issue\Jobs\GetAllEpicIssuesWithTrashedJob;
 use App\Domains\Issue\Jobs\GetAllIssueVersionIdsJob;
 use App\Domains\Issue\Jobs\GetAllSlaveJiraIssuesJob;
 use App\Domains\Issue\Jobs\GetIssueByKeyJob;
@@ -61,7 +62,7 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
         $issueVersions = $this->run(GetIssueDistinctVersionsJob::class);
         $publishResult = $this->publishVersions($issueVersions, $publishResult);
 
-        $epicIssues = $this->run(GetAllEpicIssuesJob::class);
+        $epicIssues = $this->run(GetAllEpicIssuesWithTrashedJob::class);
         $publishResult = $this->publishIssues($epicIssues,$publishResult);
 
         $latestSyncEvent = $this->run(GetLatestSyncEventJob::class);
