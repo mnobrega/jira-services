@@ -17,6 +17,7 @@ use App\Domains\Issue\Jobs\GetSlaveJiraIssuesByIssuesJob;
 use App\Domains\Issue\Jobs\GetUpdatedIssuesByDateTimeIntervalJob;
 use App\Domains\Issue\Jobs\GetUpdatedIssuesLinksByDateTimeIntervalJob;
 use App\Domains\Issue\Jobs\GetUpdatedIssuesWithTrashedByDateTimeIntervalJob;
+use App\Domains\Issue\Jobs\SearchIssueByKeyJob;
 use App\Domains\Issue\Jobs\SearchSlaveJiraIssueByMasterJiraIssueJob;
 use App\Domains\Issue\Jobs\SearchSlaveJiraIssueLinkByMasterIssueLinkJob;
 use App\Domains\Jira\Jobs\GetJiraVersionJob;
@@ -196,7 +197,7 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
                 'masterVersionId'=>$issue->fix_version_id,
             ]);
             if (!is_null($issue->epic_link)) {
-                $epicIssue = $this->run(GetIssueByKeyJob::class,[
+                $epicIssue = $this->run(SearchIssueByKeyJob::class,[
                     'issueKey'=>$issue->epic_link,
                 ]);
                 $slaveJiraEpicIssue = $this->run(SearchSlaveJiraIssueByMasterJiraIssueJob::class,[
@@ -249,28 +250,31 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
     private function publishSlaveJiraIssuesForSprintOrBacklog($slaveJiraIssues, $publishResult)
     {
         foreach ($slaveJiraIssues as $slaveJiraIssue) {
-            $issue = $this->run(GetIssueByKeyJob::class,[
+            $issue = $this->run(SearchIssueByKeyJob::class,[
                 'issueKey'=>$slaveJiraIssue->master_issue_key,
             ]);
-            $sprint = $this->run(GetIssueUnclosedSprintJob::class,[
-                'issue'=>$issue,
-            ]);
-            if (!is_null($sprint)) {
-                $slaveJiraSprint = $this->run(SearchSlaveJiraSprintByMasterJiraSprintJob::class,[
-                    'masterJiraSprint'=>$sprint
+
+            if (!is_null($issue)) {
+                $sprint = $this->run(GetIssueUnclosedSprintJob::class,[
+                    'issue'=>$issue,
                 ]);
-                $this->run(PublishIssueForSprintToJiraJob::class,[
-                    'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
-                    'slaveJiraIssue'=>$slaveJiraIssue,
-                    'slaveJiraSprint'=>$slaveJiraSprint,
-                ]);
-                $publishResult['issuesMovedToSprint']++;
-            } else {
-                $this->run(PublishIssueForBacklogToJiraJob::class,[
-                    'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
-                    'slaveJiraIssue'=>$slaveJiraIssue,
-                ]);
-                $publishResult['issuesMovedToBacklog']++;
+                if (!is_null($sprint)) {
+                    $slaveJiraSprint = $this->run(SearchSlaveJiraSprintByMasterJiraSprintJob::class,[
+                        'masterJiraSprint'=>$sprint
+                    ]);
+                    $this->run(PublishIssueForSprintToJiraJob::class,[
+                        'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
+                        'slaveJiraIssue'=>$slaveJiraIssue,
+                        'slaveJiraSprint'=>$slaveJiraSprint,
+                    ]);
+                    $publishResult['issuesMovedToSprint']++;
+                } else {
+                    $this->run(PublishIssueForBacklogToJiraJob::class,[
+                        'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,
+                        'slaveJiraIssue'=>$slaveJiraIssue,
+                    ]);
+                    $publishResult['issuesMovedToBacklog']++;
+                }
             }
         }
         return $publishResult;

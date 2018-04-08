@@ -86,8 +86,8 @@ class IssueRepository extends Repository
     public function getUpdatedIssuesByDateTimeInterval($from, $to)
     {
         return $this->model
-            ->where('updated','>=',$from)
-            ->where('updated','<=',$to)
+            ->where('updated_at','>=',$from)
+            ->where('updated_at','<=',$to)
             ->where('type','<>','Epic')
             ->orderBy('created','asc')
             ->get();
@@ -101,10 +101,10 @@ class IssueRepository extends Repository
     public function getUpdatedIssuesWithTrashedByDateTimeInterval($from, $to)
     {
         return Issue::withTrashed()
-            ->where('updated','>=',$from)
-            ->where('updated','<=',$to)
+            ->where('updated_at','>=',$from)
+            ->where('updated_at','<=',$to)
             ->where('type','<>','Epic')
-            ->orderBy('created','asc')
+            ->orderBy('created_at','asc')
             ->get();
     }
 
@@ -129,7 +129,7 @@ class IssueRepository extends Repository
     public function getLatestUpdatedIssue()
     {
         return $this->model
-            ->orderBy('updated','desc')
+            ->orderBy('updated_at','desc')
             ->limit(1)
             ->get();
     }

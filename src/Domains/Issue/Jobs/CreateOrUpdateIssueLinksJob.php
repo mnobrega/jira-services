@@ -29,7 +29,7 @@ class CreateOrUpdateIssueLinksJob extends Job
      */
     public function handle()
     {
-        $issue = $this->issueRepository->getByKey($this->jiraIssue->key);
+        $issue = $this->issueRepository->searchByKey($this->jiraIssue->key);
 
         $currentIssueLinkJiraIds = array();
         foreach ($this->jiraIssue->fields->issuelinks as $jiraIssueLink) {
