@@ -321,11 +321,11 @@ class JiraApi
             $issueField->addCustomField($this->getEpicColorCustomFieldId(),$issue->epic_color);
         }
 
-        if (!is_null($issue->epic_link)) {
-            $issueField->addCustomField($this->getEpicLinkCustomFieldId(),$issue->epic_link);
-        }
+        $issueField->addCustomField($this->getEpicLinkCustomFieldId(),$issue->epic_link);
         if (!is_null($issue->fix_version_id)) {
             $issueField->fixVersions = array(array("id"=>$issue->fix_version_id));
+        } else {
+            $issueField->fixVersions = null;
         }
 
         $this->issueService->update($issueIdOrKey, $issueField, $editParams);

@@ -6,15 +6,11 @@ use App\Data\RestApis\Config;
 use App\Data\RestApis\JiraAgile;
 use App\Domains\Issue\Jobs\CreateSlaveJiraIssueJob;
 use App\Domains\Issue\Jobs\CreateSlaveJiraIssueLinkJob;
-use App\Domains\Issue\Jobs\GetAllEpicIssuesJob;
 use App\Domains\Issue\Jobs\GetAllEpicIssuesWithTrashedJob;
-use App\Domains\Issue\Jobs\GetAllIssueVersionIdsJob;
 use App\Domains\Issue\Jobs\GetAllSlaveJiraIssuesJob;
-use App\Domains\Issue\Jobs\GetIssueByKeyJob;
 use App\Domains\Issue\Jobs\GetIssueDistinctVersionsJob;
 use App\Domains\Issue\Jobs\GetIssuesSortedByRankJob;
 use App\Domains\Issue\Jobs\GetSlaveJiraIssuesByIssuesJob;
-use App\Domains\Issue\Jobs\GetUpdatedIssuesByDateTimeIntervalJob;
 use App\Domains\Issue\Jobs\GetUpdatedIssuesLinksByDateTimeIntervalJob;
 use App\Domains\Issue\Jobs\GetUpdatedIssuesWithTrashedByDateTimeIntervalJob;
 use App\Domains\Issue\Jobs\SearchIssueByKeyJob;
@@ -289,6 +285,7 @@ class PublishIssuesToSlaveJiraInstanceFeature extends Feature
             'issues'=>$issuesSortedByRank,
         ]);
         foreach ($slaveJiraIssuesSortedByRank as $arrayIndex=>$slaveJiraIssue) {
+            /** @var $slaveJiraIssue \App\Data\SlaveJiraIssue */
             if ($arrayIndex > 0) {
                 $this->run(PublishIssueRankJob::class,[
                     'jiraInstance'=>Config::JIRA_SLAVE_INSTANCE,

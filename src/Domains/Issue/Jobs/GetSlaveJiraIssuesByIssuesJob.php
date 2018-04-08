@@ -30,7 +30,7 @@ class GetSlaveJiraIssuesByIssuesJob extends Job
     {
         $slaveIssues = array();
         foreach ($this->issues as $issue) {
-            $foundIssues = $this->repository->getByAttributes(['master_issue_key'=>$issue->key]);
+            $foundIssues = $this->repository->getByAttributes(['master_issue_key'=>$issue->issue_key]);
             if (count($foundIssues)==1) {
                 $slaveIssues[] = $foundIssues[0];
             }
