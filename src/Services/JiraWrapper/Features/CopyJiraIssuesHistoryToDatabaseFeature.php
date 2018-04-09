@@ -35,10 +35,13 @@ class CopyJiraIssuesHistoryToDatabaseFeature extends Feature
                 'fromDateTime'=>new \DateTime($syncEvent->from_datetime),
                 'toDateTime'=>new \DateTime($syncEvent->to_datetime),
             ]);
-            $issuesHistories = $this->run(CreateOrUpdateIssueHistoriesJob::class,[
+            $jobResult = $this->run(CreateOrUpdateIssueHistoriesJob::class,[
                 'issue'=>$updatedIssue,
                 'issueHistories'=>$issueHistoriesForDateInterval
             ]);
+
+            $issuesHistories['created'] = array_merge($issuesHistories['created'],$jobResult['created']);
+            $issuesHistories['updated'] = array_merge($issuesHistories['updated'],$jobResult['updated']);
         }
 
         return $issuesHistories;

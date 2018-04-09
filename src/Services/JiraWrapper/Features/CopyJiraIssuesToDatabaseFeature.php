@@ -49,7 +49,8 @@ class CopyJiraIssuesToDatabaseFeature extends Feature
 
             $jiraIssuesWithSprintSortedByRankAsc = $this->run(SearchJiraIssuesByJQLJob::class,[
                 'jiraInstance'=>Config::JIRA_MASTER_INSTANCE,
-                'jiraQuery'=>$jiraConfig->jira_issues_query." AND sprint IS NOT EMPTY ORDER BY rank ASC",
+                'jiraQuery'=>$jiraConfig->jira_issues_query.
+                    " AND sprint IS NOT EMPTY AND resolution IS EMPTY ORDER BY rank ASC",
             ]);
             $this->run(UpdateIssuesRankJob::class,[
                 'jiraIssues'=>$jiraIssuesWithSprintSortedByRankAsc,
