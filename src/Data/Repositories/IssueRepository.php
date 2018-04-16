@@ -89,7 +89,18 @@ class IssueRepository extends Repository
             ->where('updated_at','>=',$from)
             ->where('updated_at','<=',$to)
             ->where('type','<>','Epic')
-            ->orderBy('created','asc')
+            ->orderBy('created_at','asc')
+            ->get();
+    }
+
+    public function getDoneIssuesByDateTimeInterval ($from, $to)
+    {
+        return $this->model
+            ->where('updated','>=',$from)
+            ->where('updated','<=',$to)
+            ->where('type','<>','Epic')
+            ->where('status','=',Issue::STATUS_DONE)
+            ->orderBy('updated','desc')
             ->get();
     }
 

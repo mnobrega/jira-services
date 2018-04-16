@@ -39,7 +39,14 @@
                         @guest
                             <!-- show nothing -->
                         @else
-                            <li><a href="{{ route('jira-wrapper') }}">Wrapper</a></li>
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"
+                                   aria-haspopup="true"href="{{ route('jira-wrapper') }}">Wrapper</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{{ route('jira-wrapper') }}">Dashboard</a></li>
+                                    <li><a href="{{ route('jira-wrapper-activity-report')}}">Activity Report</a></li>
+                                </ul>
+                            </li>
                             <!--<li><a href="{{ route('login') }}">Sync</a></li>-->
                         @endguest
                     </ul>
@@ -79,7 +86,6 @@
         @yield('content')
     </div>
 
-    <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
 </body>
 </html>

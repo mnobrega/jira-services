@@ -18,4 +18,7 @@ Route::group(['prefix' => 'jira-services/wrapper'], function() {
 
     Route::get('/', 'HomeController@index')->name('jira-wrapper');
 
+    Route::get('activity-report/','ActivityReportController@index')
+        ->name('jira-wrapper-activity-report');
+
 });

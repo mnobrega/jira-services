@@ -29,6 +29,18 @@ class IssueHistoryRepository extends Repository
         return $this->fillAndSave($attributes);
     }
 
+    /**
+     * @param $issueId
+     * @return \App\Data\IssueHistory []
+     */
+    public function getIssueHistoriesByIssueId($issueId)
+    {
+        return $this->model
+            ->where('issue_id','=',$issueId)
+            ->orderBy("created","asc")
+            ->get();
+    }
+
     static public function getFieldFromJiraIssueHistory($jiraIssueHistory)
     {
         return $jiraIssueHistory->items[0]->field;

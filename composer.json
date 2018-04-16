@@ -22,10 +22,10 @@
         "php": ">=7.0.0",
         "laravel/framework": "5.5.*",
         "laravel/tinker": "~1.0",
+        "lesstif/php-jira-rest-client": "dev-feature/versions",
         "lucid-arch/laravel-foundation": "5.5.*",
-        "mnobrega/php-jira-agile-rest-client":"1.*",
-        "mnobrega/php-jira-greenhopper-rest-client":"1.*",
-        "lesstif/php-jira-rest-client": "dev-feature/versions"
+        "mnobrega/php-jira-agile-rest-client": "1.*",
+        "mnobrega/php-jira-greenhopper-rest-client": "1.*"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.4",

@@ -34,13 +34,23 @@ class JiraApi
         'Improvement'=>'Story',
     ];
     //TODO: HARDCODED - Move this to a table so that it can be configure dynamicaly
-    private static $slaveIssueStatusTransitionMapping = [
+    public static $slaveIssueStatusTransitionMapping = [
         "To Do"=>"To Do",
         "In Progress"=>"In Progress",
         "Ready To Review"=>"In Progress",
         "Review"=>"In Progress",
         "Done"=>"Done",
         "DONE"=>"Done",
+        "Analysing"=>"To Do",
+        "Finished"=>"Done",
+        "Reopened"=>"In Progress",
+        "Open"=>"To Do",
+        "Master"=>"In Progress",
+        "Code Review"=>"In Progress",
+        "In CI"=>"In Progress",
+        "Spec Ready"=>"To Do",
+        "In QA"=>"In Progress",
+        "Pré PROD"=>"In Progress",
     ];
     //TODO: HARDCODED - Move this to a table so that it can be configure dynamicaly
     private static $slaveIssuePrioritiesMapping = [
