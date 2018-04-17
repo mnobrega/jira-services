@@ -10,7 +10,8 @@ class Issue extends Model
     use SoftDeletes;
 
     const TYPE_EPIC = 'Epic';
-    const STATUS_DONE = 'Done';
+
+    const STATUS_IN_PROGRESS = 'In Progress';
 
     protected $table = 'jira_wrapper_issues';
     protected $fillable = ['issue_key','project_key','priority','ranking','type','status','summary','created','updated',

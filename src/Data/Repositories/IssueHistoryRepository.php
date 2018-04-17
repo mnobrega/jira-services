@@ -60,7 +60,7 @@ class IssueHistoryRepository extends Repository
             'field_type'=>$jiraIssueHistory->items[0]->fieldtype,
             'from_string'=>$jiraIssueHistory->items[0]->fromString,
             'to_string'=>$jiraIssueHistory->items[0]->toString,
-            'author_name'=>$jiraIssueHistory->author->name,
+            'author_name'=>property_exists($jiraIssueHistory,"author")?$jiraIssueHistory->author->name:"",
         );
         return $attributes;
     }

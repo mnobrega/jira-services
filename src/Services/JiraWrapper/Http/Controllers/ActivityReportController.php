@@ -20,6 +20,6 @@ class ActivityReportController extends Controller
     public function index()
     {
         $featureResult = $this->serve(GetActivityReportFeature::class);
-        return view ('jira_wrapper::activity-report');
+        return view ('jira_wrapper::activity-report')->with("issuesTimeSpent",$featureResult);
     }
 }

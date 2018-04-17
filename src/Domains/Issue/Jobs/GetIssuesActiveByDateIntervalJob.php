@@ -5,7 +5,7 @@ use App\Data\Issue;
 use App\Data\Repositories\IssueRepository;
 use Lucid\Foundation\Job;
 
-class GetIssuesDoneByDateIntervalJob extends Job
+class GetIssuesActiveByDateIntervalJob extends Job
 {
     private $repository;
     private $from;
@@ -28,7 +28,8 @@ class GetIssuesDoneByDateIntervalJob extends Job
      */
     public function handle()
     {
-        return $this->repository->getDoneIssuesByDateTimeInterval($this->from->format("Y-m-d H:i:s"),
+        return $this->repository->getActiveIssuesByDateTimeInterval(
+            $this->from->format("Y-m-d H:i:s"),
             $this->to->format("Y-m-d H:i:s"));
     }
 }

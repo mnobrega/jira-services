@@ -93,13 +93,14 @@ class IssueRepository extends Repository
             ->get();
     }
 
-    public function getDoneIssuesByDateTimeInterval ($from, $to)
+    public function getActiveIssuesByDateTimeInterval ($from, $to)
     {
         return $this->model
-            ->where('updated','>=',$from)
-            ->where('updated','<=',$to)
-            ->where('type','<>','Epic')
-            ->where('status','=',Issue::STATUS_DONE)
+            ->whereHas('histories',function($query) use ($from, $to) {
+                /** @var $query \App\Data\IssueHistory */
+                $query->where("to_string","=",Issue::STATUS_IN_PROGRESS)
+                    ->whereBetween("created",array($from,$to));
+            })
             ->orderBy('updated','desc')
             ->get();
     }

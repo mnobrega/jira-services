@@ -11,16 +11,18 @@
                             <thead>
                             <th>Issue Key</th>
                             <th>Summary</th>
-                            <th>Time Spent (days)</th>
+                            <th>Time Spent (hours)</th>
                             <th>Time Spent (percentage)</th>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td>Key</td>
-                                <td>Summary</td>
-                                <td>10</td>
-                                <td>5%</td>
-                            </tr>
+                                @foreach($issuesTimeSpent['issues'] as $issueTimeSpent)
+                                    <tr>
+                                        <td>{{$issueTimeSpent['issue']->issue_key}}</td>
+                                        <td>{{$issueTimeSpent['issue']->summary}}</td>
+                                        <td>{{$issueTimeSpent['time_spent_in_hours']}}</td>
+                                        <td>{{round(($issueTimeSpent['time_spent_in_hours']/$issuesTimeSpent['total_time_spent_in_hours'])*100,2)}}</td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
