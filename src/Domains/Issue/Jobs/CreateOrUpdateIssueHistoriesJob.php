@@ -3,6 +3,7 @@ namespace App\Domains\Issue\Jobs;
 
 use App\Data\IssueHistory;
 use App\Data\Repositories\IssueHistoryRepository;
+use App\Data\Repositories\IssueRepository;
 use Lucid\Foundation\Job;
 
 class CreateOrUpdateIssueHistoriesJob extends Job
@@ -36,7 +37,9 @@ class CreateOrUpdateIssueHistoriesJob extends Job
         foreach ($this->issueHistories as $issueHistory)
         {
             //WHY: because description history items are too long and i meanwhile I will not store them
-            if(IssueHistoryRepository::getFieldFromJiraIssueHistory($issueHistory)==IssueHistoryRepository::FIELD_NAME_STATUS) {
+            $acceptedFieldNames = array(IssueHistoryRepository::FIELD_NAME_STATUS,
+                IssueHistoryRepository::FIELD_NAME_FLAGGED);
+            if(in_array(IssueHistoryRepository::getFieldFromJiraIssueHistory($issueHistory),$acceptedFieldNames)) {
                 $searchResult = $this->repository->getByAttributes(array('jira_id'=>$issueHistory->id));
                 switch(count($searchResult))
                 {

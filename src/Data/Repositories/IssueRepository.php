@@ -83,25 +83,12 @@ class IssueRepository extends Repository
      * @param $to
      * @return \App\Data\Issue[]
      */
-    public function getUpdatedIssuesByDateTimeInterval($from, $to)
+    public function getJiraUpdatedIssuesByDateTimeInterval($from, $to)
     {
         return $this->model
-            ->where('updated_at','>=',$from)
-            ->where('updated_at','<=',$to)
+            ->whereBetween('updated',array($from,$to))
             ->where('type','<>','Epic')
-            ->orderBy('created_at','asc')
-            ->get();
-    }
-
-    public function getActiveIssuesByDateTimeInterval ($from, $to)
-    {
-        return $this->model
-            ->whereHas('histories',function($query) use ($from, $to) {
-                /** @var $query \App\Data\IssueHistory */
-                $query->where("to_string","=",Issue::STATUS_IN_PROGRESS)
-                    ->whereBetween("created",array($from,$to));
-            })
-            ->orderBy('updated','desc')
+            ->orderBy('created','asc')
             ->get();
     }
 
@@ -113,8 +100,7 @@ class IssueRepository extends Repository
     public function getUpdatedIssuesWithTrashedByDateTimeInterval($from, $to)
     {
         return Issue::withTrashed()
-            ->where('updated_at','>=',$from)
-            ->where('updated_at','<=',$to)
+            ->whereBetween('updated_at',array($from,$to))
             ->where('type','<>','Epic')
             ->orderBy('created_at','asc')
             ->get();

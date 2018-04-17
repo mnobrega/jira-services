@@ -3,7 +3,7 @@ namespace App\Services\JiraWrapper\Features;
 
 use App\Data\RestApis\Config;
 use App\Domains\Issue\Jobs\CreateOrUpdateIssueHistoriesJob;
-use App\Domains\Issue\Jobs\GetUpdatedIssuesByDateTimeIntervalJob;
+use App\Domains\Issue\Jobs\GetJiraUpdatedIssuesByDateTimeIntervalJob;
 use App\Domains\Jira\Jobs\GetIssueHistoriesForDateIntervalJob;
 use App\Domains\Sync\Jobs\CreateWrapperSyncEventJob;
 use App\Domains\Sync\Jobs\GetLatestWrapperSyncEventJob;
@@ -19,7 +19,7 @@ class CopyJiraIssuesHistoryToDatabaseFeature extends Feature
             'toDateTime'=>now()
         ]);
 
-        $updatedIssues = $this->run(GetUpdatedIssuesByDateTimeIntervalJob::class,[
+        $updatedIssues = $this->run(GetJiraUpdatedIssuesByDateTimeIntervalJob::class,[
             'fromDateTime'=>new \DateTime($syncEvent->from_datetime),
             'toDateTime'=>new \DateTime($syncEvent->to_datetime),
         ]);

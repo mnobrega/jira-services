@@ -5,7 +5,7 @@ use Lucid\Foundation\Job;
 use App\Data\Issue;
 use App\Data\Repositories\IssueRepository;
 
-class GetUpdatedIssuesByDateTimeIntervalJob extends Job
+class GetJiraUpdatedIssuesByDateTimeIntervalJob extends Job
 {
     private $repository;
     private $fromDateTime;
@@ -28,7 +28,7 @@ class GetUpdatedIssuesByDateTimeIntervalJob extends Job
      */
     public function handle()
     {
-        return $this->repository->getUpdatedIssuesByDateTimeInterval($this->fromDateTime->format("Y-m-d H:i:s"),
+        return $this->repository->getJiraUpdatedIssuesByDateTimeInterval($this->fromDateTime->format("Y-m-d H:i:s"),
             $this->toDateTime->format("Y-m-d H:i:s"));
     }
 }

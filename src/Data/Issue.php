@@ -39,6 +39,9 @@ class Issue extends Model
             'issue_id','sprint_id')->withTimestamps();
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function histories()
     {
         return $this->hasMany('App\Data\IssueHistory','issue_id', 'id');

@@ -14,6 +14,7 @@ use App\Data\IssueHistory;
 class IssueHistoryRepository extends Repository
 {
     const FIELD_NAME_STATUS = 'status';
+    const FIELD_NAME_FLAGGED = 'Flagged';
 
     public function create(Array $attributes, Issue $issue)
     {
