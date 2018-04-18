@@ -11,6 +11,7 @@
                             <thead>
                             <th>Issue Key</th>
                             <th>Summary</th>
+                            <th>Time Estimated (hours)</th>
                             <th>Time Spent (hours)</th>
                             <th>Time Spent (percentage)</th>
                             </thead>
@@ -19,6 +20,7 @@
                                     <tr>
                                         <td>{{$issueTimeSpent['issue']->issue_key}}</td>
                                         <td>{{$issueTimeSpent['issue']->summary}}</td>
+                                        <td>{{$issueTimeSpent['issue']->original_estimate/(3600)}}</td>
                                         <td>{{$issueTimeSpent['time_spent_in_hours']}}</td>
                                         <td>{{round(($issueTimeSpent['time_spent_in_hours']/$issuesTimeSpent['total_time_spent_in_hours'])*100,2)}}</td>
                                     </tr>

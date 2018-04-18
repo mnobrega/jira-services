@@ -12,6 +12,10 @@ use App\Data\Issue;
 
 class IssueRepository extends Repository
 {
+    const ISSUE_TYPE_EPIC = 'Epic';
+    const ISSUE_STATUS_IN_PROGRESS = 'In Progress';
+    const ISSUE_IMPEDIMENT = 'Impediment';
+
     /**
      * @param array $attributes
      * @return \Illuminate\Database\Eloquent\Model
@@ -74,7 +78,7 @@ class IssueRepository extends Repository
     public function getAllEpicIssuesWithTrashed()
     {
         return Issue::withTrashed()
-            ->where('type','=',Issue::TYPE_EPIC)
+            ->where('type','=',static::ISSUE_TYPE_EPIC)
             ->get();
     }
 

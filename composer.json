@@ -25,7 +25,8 @@
         "lesstif/php-jira-rest-client": "dev-feature/versions",
         "lucid-arch/laravel-foundation": "5.5.*",
         "mnobrega/php-jira-agile-rest-client": "1.*",
-        "mnobrega/php-jira-greenhopper-rest-client": "1.*"
+        "mnobrega/php-jira-greenhopper-rest-client": "1.*",
+        "nuxia/business-day-manipulator": "^0.1.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.4",

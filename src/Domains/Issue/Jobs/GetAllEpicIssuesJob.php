@@ -24,6 +24,6 @@ class GetAllEpicIssuesJob extends Job
      */
     public function handle()
     {
-        return $this->repository->getByAttributes(["type"=>Issue::TYPE_EPIC]);
+        return $this->repository->getByAttributes(["type"=>IssueRepository::ISSUE_TYPE_EPIC]);
     }
 }
