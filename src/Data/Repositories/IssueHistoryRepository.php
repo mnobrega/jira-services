@@ -42,25 +42,25 @@ class IssueHistoryRepository extends Repository
             ->get();
     }
 
-    static public function getFieldFromJiraIssueHistory($jiraIssueHistory)
+    static public function getFieldFromJiraIssueHistoryItem($item)
     {
-        return $jiraIssueHistory->items[0]->field;
+        return $item->field;
     }
 
     /**
      * @param $jiraIssueHistory
      * @return array
      */
-    static public function getAttributesFromJiraIssueHistory($jiraIssueHistory)
+    static public function getAttributesFromJiraIssueHistory($jiraIssueHistory, $item)
     {
         $created = new \DateTime($jiraIssueHistory->created);
         $attributes = array (
             'jira_id'=>$jiraIssueHistory->id,
             'created'=>$created->format("Y-m-d H:i:s"),
-            'field'=>$jiraIssueHistory->items[0]->field,
-            'field_type'=>$jiraIssueHistory->items[0]->fieldtype,
-            'from_string'=>$jiraIssueHistory->items[0]->fromString,
-            'to_string'=>$jiraIssueHistory->items[0]->toString,
+            'field'=>$item->field,
+            'field_type'=>$item->fieldtype,
+            'from_string'=>$item->fromString,
+            'to_string'=>$item->toString,
             'author_name'=>property_exists($jiraIssueHistory,"author")?$jiraIssueHistory->author->name:"",
         );
         return $attributes;

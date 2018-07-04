@@ -39,22 +39,27 @@ class CreateOrUpdateIssueHistoriesJob extends Job
             //WHY: because description history items are too long and i meanwhile I will not store them
             $acceptedFieldNames = array(IssueHistoryRepository::FIELD_NAME_STATUS,
                 IssueHistoryRepository::FIELD_NAME_FLAGGED);
-            if(in_array(IssueHistoryRepository::getFieldFromJiraIssueHistory($issueHistory),$acceptedFieldNames)) {
-                $searchResult = $this->repository->getByAttributes(array('jira_id'=>$issueHistory->id));
-                switch(count($searchResult))
-                {
-                    case 0:
-                        $issueHistory = $this->repository->create(IssueHistoryRepository::getAttributesFromJiraIssueHistory($issueHistory),
-                            $this->issue);
-                        $issuesHistories['created'][] = $issueHistory;
-                        break;
-                    case 1:
-                        //do nothing for now
-                        break;
-                    default:
-                        throw new \Exception("Found more than 1 issueHistory with the same id:".$issueHistory->id);
+
+            foreach ($issueHistory->items as $item) {
+                if(in_array(IssueHistoryRepository::getFieldFromJiraIssueHistoryItem($item),$acceptedFieldNames)) {
+                    $searchResult = $this->repository->getByAttributes(array('jira_id'=>$issueHistory->id));
+                    switch(count($searchResult))
+                    {
+                        case 0:
+                            $issueHistory = $this->repository
+                                ->create(IssueHistoryRepository::getAttributesFromJiraIssueHistory($issueHistory,$item),
+                                $this->issue);
+                            $issuesHistories['created'][] = $issueHistory;
+                            break;
+                        case 1:
+                            //do nothing for now
+                            break;
+                        default:
+                            throw new \Exception("Found more than 1 issueHistory with the same id:".$issueHistory->id);
+                    }
                 }
             }
+
         }
         return $issueHistories;
     }
