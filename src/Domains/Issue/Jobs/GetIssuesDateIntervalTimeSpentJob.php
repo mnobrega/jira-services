@@ -117,19 +117,19 @@ class GetIssuesDateIntervalTimeSpentJob extends Job
                 $issueResult['time_spent_in_hours'] += $this->businessDayManipulator->getBusinessDays() *
                     static::WORKING_HOURS;
             }
-            foreach ($inactiveIntervals as $inactiveInterval) {
-                /** @var $inactiveInterval DateInterval */
-                $startInactive = (new \DateTime)->setTimestamp(max($inactiveInterval->start->getTimestamp(),
-                    $this->from->getTimestamp()));
-                $endInactive = (new \DateTime)->setTimestamp(min($inactiveInterval->end->getTimestamp(),
-                    $this->to->getTimestamp()));
-                $this->businessDayManipulator->setStartDate($startInactive);
-                $this->businessDayManipulator->setEndDate($endInactive);
-                $issueResult['time_spent_in_hours'] -= $this->businessDayManipulator->getBusinessDays() *
-                    static::WORKING_HOURS;
-            }
+//            foreach ($inactiveIntervals as $inactiveInterval) {
+//                /** @var $inactiveInterval DateInterval */
+//                $startInactive = (new \DateTime)->setTimestamp(max($inactiveInterval->start->getTimestamp(),
+//                    $this->from->getTimestamp()));
+//                $endInactive = (new \DateTime)->setTimestamp(min($inactiveInterval->end->getTimestamp(),
+//                    $this->to->getTimestamp()));
+//                $this->businessDayManipulator->setStartDate($startInactive);
+//                $this->businessDayManipulator->setEndDate($endInactive);
+//                $issueResult['time_spent_in_hours'] -= $this->businessDayManipulator->getBusinessDays() *
+//                    static::WORKING_HOURS;
+//            }
 
-            if ($issueResult['time_spent_in_hours']>0) {
+            if ($issueResult['time_spent_in_hours']>=0) {
                 $result['issues'][] = $issueResult;
                 $result['total_time_spent_in_hours'] += $issueResult['time_spent_in_hours'];
             }
