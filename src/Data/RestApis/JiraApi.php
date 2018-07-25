@@ -348,7 +348,13 @@ class JiraApi
         }
 
         $transition = new Transition();
+        $issueTransitions = $this->issueService->getTransition($issueIdOrKey);
         $transition->setTransitionName(static::$slaveIssueStatusTransitionMapping[$issue->status]);
+        foreach ($issueTransitions as $issueTransition) {
+            if ($issueTransition->name == $transition->transition['name']) {
+                $transition->setTransitionId($issueTransition->id);
+            }
+        }
         $this->issueService->transition($issueIdOrKey,$transition);
 
         return $this->getIssue($issueIdOrKey);
