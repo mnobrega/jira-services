@@ -12,11 +12,12 @@ class GetIssueHistoriesForDateIntervalJob extends Job
     private $toDateTime;
 
     /**
-     * GetIssueChangelogJob constructor.
+     * GetIssueHistoriesForDateIntervalJob constructor.
      * @param $jiraInstance
      * @param $issueIdOrKey
      * @param \DateTime $fromDateTime
      * @param \DateTime $toDateTime
+     * @throws \Exception
      */
     public function __construct($jiraInstance, $issueIdOrKey, \DateTime $fromDateTime, \DateTime $toDateTime)
     {

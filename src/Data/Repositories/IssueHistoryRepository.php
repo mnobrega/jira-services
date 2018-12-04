@@ -16,6 +16,8 @@ class IssueHistoryRepository extends Repository
     const FIELD_NAME_STATUS = 'status';
     const FIELD_NAME_FLAGGED = 'Flagged';
 
+    static $acceptedFieldNames = array(self::FIELD_NAME_FLAGGED, self::FIELD_NAME_STATUS);
+
     public function create(Array $attributes, Issue $issue)
     {
         $this->model = new IssueHistory();
@@ -42,25 +44,20 @@ class IssueHistoryRepository extends Repository
             ->get();
     }
 
-    static public function getFieldFromJiraIssueHistory($jiraIssueHistory)
-    {
-        return $jiraIssueHistory->items[0]->field;
-    }
-
     /**
      * @param $jiraIssueHistory
      * @return array
      */
-    static public function getAttributesFromJiraIssueHistory($jiraIssueHistory)
+    static public function getAttributesFromJiraIssueHistory($jiraIssueHistory, $jiraIssueHistoryItem)
     {
         $created = new \DateTime($jiraIssueHistory->created);
         $attributes = array (
             'jira_id'=>$jiraIssueHistory->id,
             'created'=>$created->format("Y-m-d H:i:s"),
-            'field'=>$jiraIssueHistory->items[0]->field,
-            'field_type'=>$jiraIssueHistory->items[0]->fieldtype,
-            'from_string'=>$jiraIssueHistory->items[0]->fromString,
-            'to_string'=>$jiraIssueHistory->items[0]->toString,
+            'field'=>$jiraIssueHistoryItem->field,
+            'field_type'=>$jiraIssueHistoryItem->fieldtype,
+            'from_string'=>$jiraIssueHistoryItem->fromString,
+            'to_string'=>$jiraIssueHistoryItem->toString,
             'author_name'=>property_exists($jiraIssueHistory,"author")?$jiraIssueHistory->author->name:"",
         );
         return $attributes;
