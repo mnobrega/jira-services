@@ -16,6 +16,4 @@ class IssueHistory extends Model
     {
         return $this->belongsTo('App\Data\Issue','issue_id');
     }
-
-
 }

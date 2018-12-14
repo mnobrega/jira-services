@@ -58,16 +58,16 @@ class GetIssuesDateIntervalTimeSpentJob extends Job
         ];
 
         foreach ($this->issues as $issue) {
-
             $issueResult = [
                 'issue' => $issue,
                 'time_spent_in_hours' => 0,
+                'time_impeded_in_hours' => 0,
             ];
 
             $activeIntervals = array();
-            $inactiveIntervals = array();
             $activeIntervalStart = null;
-            $inactiveIntervalStart = null;
+            $impedimentIntervals = array();
+            $impedimentIntervalStart = null;
             foreach ($issue->histories()->orderBy('created', 'asc')->get() as $history) {
                 /** @var $history IssueHistory */
                 if ($history->field == IssueHistoryRepository::FIELD_NAME_STATUS) {
@@ -85,15 +85,15 @@ class GetIssuesDateIntervalTimeSpentJob extends Job
                 }
                 if ($history->field == IssueHistoryRepository::FIELD_NAME_FLAGGED) {
                     if ($history->to_string == IssueRepository::ISSUE_IMPEDIMENT) {
-                        $inactiveIntervalStart = new \DateTime($history->created);
+                        $impedimentIntervalStart = new \DateTime($history->created);
                     }
-                    if (!is_null($inactiveIntervalStart) && $history->from_string == IssueRepository::ISSUE_IMPEDIMENT) {
+                    if (!is_null($impedimentIntervalStart) && $history->from_string == IssueRepository::ISSUE_IMPEDIMENT) {
                         $inactiveIntervalEnd = new \DateTime($history->created);
                         if ($inactiveIntervalEnd->getTimestamp() >= $this->from->getTimestamp() &&
-                            $inactiveIntervalStart->getTimestamp() <= $this->to->getTimestamp()) {
-                            $inactiveIntervals[] = new DateInterval($inactiveIntervalStart,$inactiveIntervalEnd);
+                            $impedimentIntervalStart->getTimestamp() <= $this->to->getTimestamp()) {
+                            $impedimentIntervals[] = new DateInterval($impedimentIntervalStart,$inactiveIntervalEnd);
                         }
-                        $inactiveIntervalStart = null;
+                        $impedimentIntervalStart = null;
                     }
                 }
             }
@@ -101,9 +101,9 @@ class GetIssuesDateIntervalTimeSpentJob extends Job
                 $activeIntervalStart->getTimestamp() <= $this->to->getTimestamp()) {
                 $activeIntervals[] = new DateInterval($activeIntervalStart,now());
             }
-            if (!is_null($inactiveIntervalStart) &&
-                $inactiveIntervalStart->getTimestamp() <= $this->to->getTimestamp()) {
-                $inactiveIntervals[] = new DateInterval($inactiveIntervalStart,now());
+            if (!is_null($impedimentIntervalStart) &&
+                $impedimentIntervalStart->getTimestamp() <= $this->to->getTimestamp()) {
+                $impedimentIntervals[] = new DateInterval($impedimentIntervalStart,now());
             }
 
             foreach ($activeIntervals as $activeInterval) {
@@ -117,15 +117,15 @@ class GetIssuesDateIntervalTimeSpentJob extends Job
                 $issueResult['time_spent_in_hours'] += $this->businessDayManipulator->getBusinessDays() *
                     static::WORKING_HOURS;
             }
-            foreach ($inactiveIntervals as $inactiveInterval) {
-                /** @var $inactiveInterval DateInterval */
-                $startInactive = (new \DateTime)->setTimestamp(max($inactiveInterval->start->getTimestamp(),
+            foreach ($impedimentIntervals as $impedimentInterval) {
+                /** @var $impedimentInterval DateInterval */
+                $startInactive = (new \DateTime)->setTimestamp(max($impedimentInterval->start->getTimestamp(),
                     $this->from->getTimestamp()));
-                $endInactive = (new \DateTime)->setTimestamp(min($inactiveInterval->end->getTimestamp(),
+                $endInactive = (new \DateTime)->setTimestamp(min($impedimentInterval->end->getTimestamp(),
                     $this->to->getTimestamp()));
                 $this->businessDayManipulator->setStartDate($startInactive);
                 $this->businessDayManipulator->setEndDate($endInactive);
-                $issueResult['time_spent_in_hours'] -= $this->businessDayManipulator->getBusinessDays() *
+                $issueResult['time_impeded_in_hours'] += $this->businessDayManipulator->getBusinessDays() *
                     static::WORKING_HOURS;
             }
 
